@@ -238,7 +238,7 @@ st.markdown("---")
 st.caption(
     "Implements a rule-based Thai numeral system. "
     "Irregular forms such as ยี่ (20s) and เอ็ด (final 1) "
-    "are handled explicitly. Further discussion appears "
+    "are handled explicitly. Converter created by Yi Zou. Further discussion appears "
     "in the Linguistics section."
 )
 

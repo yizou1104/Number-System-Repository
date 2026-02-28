@@ -206,8 +206,11 @@ else:
 
 st.markdown("---")
 st.caption(
-    "Implements canonical Roman numeral rules, including subtractive notation "
-    "and extended overline-based magnitudes."
+    "Implements the Roman numeral system. "
+    "Supports Roman digits and Arabic numbers. "
+    "Data sourced from Wikipedia: [Roman numerals](https://en.wikipedia.org/wiki/Roman_numerals). "
+    "Converter algorithm created by Yi Zou. "
+    "Grammar explained in the Linguistics section."
 )
 
 # ------------------------------------------------------------

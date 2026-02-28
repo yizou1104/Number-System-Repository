@@ -173,8 +173,10 @@ if arabic_input:
 
 st.markdown("---")
 st.caption(
-    "Implements a rule-based Tibetan numeral generator. "
-    "Source data retrieved from Wikipedia & converter algorithm created by Yi Zou. "
+    "Implements the Tibetan numeral system. "
+    "Source data retrieved from Omniglot at https://www.omniglot.com/language/numbers/tibetan.htm. "
+    "Converter algorithm created by Yi Zou. "
+    "Grammar explained in the Linguistics section."
 )
 
 # --------------------------------------------------

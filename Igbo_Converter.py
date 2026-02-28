@@ -199,9 +199,11 @@ if arabic_input:
 
 st.markdown("---")
 st.caption(
-    "The decimal system reflects modern Standard Igbo usage. "
-    "The vigesimal system reflects the traditional base-20 structure. "
-    "Both are presented side-by-side for linguistic comparison."
+    "Implements the Igbo numeral system. "
+    "Supports Igbo digits and arabic numbers. "
+    "Data sourced from Omniglot: [Igbo numerals](https://www.omniglot.com/language/numbers/igbo.htm). "
+    "Converter algorithm created by Yi Zou. "
+    "Grammar explained in the Linguistics section."
 )
 
 # ------------------------------------------------------------
