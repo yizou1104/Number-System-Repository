@@ -496,6 +496,10 @@ nav_cols = st.columns(3)
 with nav_cols[0]:
     st.page_link("pages/Tamil_Linguistics.py", label="Linguistics")
 with nav_cols[1]:
-    st.page_link("pages/Tamil_Olympiad_Problems.py", label="Olympiad Problems")
+    st.page_link(
+        "pages/Olympiad_Problems.py",
+        label="Olympiad Problems",
+        help="Olympiad Problems"
+    )
 with nav_cols[2]:
     st.page_link("pages/Tamil_Converter.py", label="Converter")

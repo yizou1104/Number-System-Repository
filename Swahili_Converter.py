@@ -139,9 +139,9 @@ with nav_cols[0]:
 
 with nav_cols[1]:
     st.page_link(
-        "pages/Swahili_Olympiad_Problems.py",
+        "pages/Olympiad_Problems.py",
         label="Olympiad Problems",
-        help="Competition-style problems involving Swahili numerals"
+        help="Olympiad Problems"
     )
 
 with nav_cols[2]:

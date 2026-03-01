@@ -350,6 +350,3 @@ with col1:
 
 with col2:
     st.page_link("pages/Tamil_Linguistics.py", label="Linguistics")
-
-with col3:
-    st.page_link("pages/Tamil_Olympiad_Problems.py", label="Olympiad Problems")

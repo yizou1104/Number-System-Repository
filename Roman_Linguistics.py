@@ -254,6 +254,3 @@ with col1:
 
 with col2:
     st.page_link("pages/Roman_Linguistics.py", label="Linguistics")
-
-with col3:
-    st.page_link("pages/Roman_Olympiad_Problems.py", label="Olympiad Problems")

@@ -227,7 +227,7 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("🇪Basque Numeral Converter (Batua)")
+st.title("Basque Numeral Converter (Batua)")
 st.write(
     "Convert between **Arabic numerals** and **Basque numerals** (Batua). "
     "Implements vigesimal system with lexical blocking and additive `eta`."
@@ -336,9 +336,9 @@ with nav_cols[0]:
 
 with nav_cols[1]:
     st.page_link(
-        "pages/Basque_Olympiad_Problems.py",
+        "pages/Olympiad_Problems.py",
         label="Olympiad Problems",
-        help="Competition-style problems involving Basque numerals"
+        help="Olympiad Problems"
     )
 
 with nav_cols[2]:

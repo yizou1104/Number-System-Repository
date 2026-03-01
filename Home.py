@@ -14,8 +14,10 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    html, body, [class*="css"] {
-        font-family: "Source Serif 4", "Georgia", serif;
+    @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap');
+
+    .stApp {
+        font-family: "Crimson Text", Georgia, serif !important;
     }
 
     .family-title {

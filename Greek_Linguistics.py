@@ -346,6 +346,3 @@ with col1:
 
 with col2:
     st.page_link("pages/Greek_Linguistics.py", label="Linguistics")
-
-with col3:
-    st.page_link("pages/Greek_Olympiad_Problems.py", label="Olympiad Problems")
