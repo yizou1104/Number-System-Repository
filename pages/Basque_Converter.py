@@ -1,4 +1,5 @@
 import streamlit as st
+from ui import apply_global_styles
 
 # ============================================================
 # BASQUE NUMERAL GENERATOR & PARSER (BATUA)
@@ -227,6 +228,9 @@ st.set_page_config(
     layout="centered"
 )
 
+apply_global_styles()
+
+
 st.title("Basque Numeral Converter (Batua)")
 st.write(
     "Convert between **Arabic numerals** and **Basque numerals** (Batua). "
@@ -325,7 +329,7 @@ st.caption(
 st.markdown("---")
 st.subheader("Explore More")
 
-nav_cols = st.columns(3)
+nav_cols = st.columns(2)
 
 with nav_cols[0]:
     st.page_link(
@@ -335,13 +339,6 @@ with nav_cols[0]:
     )
 
 with nav_cols[1]:
-    st.page_link(
-        "pages/Olympiad_Problems.py",
-        label="Olympiad Problems",
-        help="Olympiad Problems"
-    )
-
-with nav_cols[2]:
     st.page_link(
         "pages/Basque_Converter.py",
         label="Converter",

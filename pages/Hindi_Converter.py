@@ -1,4 +1,5 @@
 import streamlit as st
+from ui import apply_global_styles
 
 # ============================================================
 # HINDI NUMERAL SYSTEM
@@ -384,6 +385,9 @@ st.set_page_config(
     layout="centered"
 )
 
+apply_global_styles()
+
+
 st.title("Hindi Numeral Converter")
 st.write(
     "Convert between **Arabic numerals** and **Hindi representations**: "
@@ -499,23 +503,16 @@ st.caption(
 st.markdown("---")
 st.subheader("Explore More")
 
-nav_cols = st.columns(3)
+nav_cols = st.columns(2)
 
 with nav_cols[0]:
     st.page_link(
         "pages/Hindi_Linguistics.py",
         label="Linguistics",
-        help="Structure, grammar, and historical development of the numeral system"
+        help="Structure, grammar, and historical development of the Hindi numeral system"
     )
 
 with nav_cols[1]:
-    st.page_link(
-        "pages/Olympiad_Problems.py",
-        label="Olympiad Problems",
-        help="Olympiad Problems"
-    )
-
-with nav_cols[2]:
     st.page_link(
         "pages/Hindi_Converter.py",
         label="Converter",

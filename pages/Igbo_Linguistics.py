@@ -1,6 +1,10 @@
 import streamlit as st
+from ui import apply_global_styles
 
 st.set_page_config(page_title="Igbo Numerals — Linguistics", layout="centered")
+
+apply_global_styles()
+
 
 st.title("Igbo Numerals — Linguistic Structure")
 

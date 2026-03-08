@@ -1,4 +1,5 @@
 import streamlit as st
+from ui import apply_global_styles
 
 # ============================================================
 # IGBO NUMERAL CONVERTER
@@ -138,6 +139,9 @@ st.set_page_config(
     layout="centered"
 )
 
+apply_global_styles()
+
+
 st.title("Igbo Numeral Converter")
 
 st.write(
@@ -212,23 +216,16 @@ st.caption(
 st.markdown("---")
 st.subheader("Explore More")
 
-nav_cols = st.columns(3)
+nav_cols = st.columns(2)
 
 with nav_cols[0]:
     st.page_link(
         "pages/Igbo_Linguistics.py",
         label="Linguistics",
-        help="Explanation of decimal vs vigesimal Igbo numeral systems"
+        help="Structure, grammar, and historical development of the Igbo numeral system"
     )
 
 with nav_cols[1]:
-    st.page_link(
-        "pages/Olympiad_Problems.py",
-        label="Olympiad Problems",
-        help="Olympiad Problems"
-    )
-
-with nav_cols[2]:
     st.page_link(
         "pages/Igbo_Converter.py",
         label="Converter",

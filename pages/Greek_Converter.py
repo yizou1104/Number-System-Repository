@@ -1,10 +1,12 @@
 import streamlit as st
+from ui import apply_global_styles
 import unicodedata
 """
 Greek numeral converter: Arabic ↔ Greek (Greek script words, romanized words)
 Fully corrected with feminine hundreds and robust parsing.
 Based on: https://www.omniglot.com/language/numbers/greek.htm
 """
+apply_global_styles()
 
 import unicodedata
 
@@ -394,14 +396,18 @@ st.caption(
 st.markdown("---")
 st.subheader("Explore More")
 
-nav_cols = st.columns(3)
+nav_cols = st.columns(2)
+
 with nav_cols[0]:
-    st.page_link("pages/Greek_Linguistics.py", label="Linguistics")
+    st.page_link(
+        "pages/Greek_Linguistics.py",
+        label="Linguistics",
+        help="Structure, grammar, and historical development of the Greek numeral system"
+    )
+
 with nav_cols[1]:
     st.page_link(
-        "pages/Olympiad_Problems.py",
-        label="Olympiad Problems",
-        help="Olympiad Problems"
+        "pages/Greek_Converter.py",
+        label="Converter",
+        help="Return to the numeral converter"
     )
-with nav_cols[2]:
-    st.page_link("pages/Greek_Converter.py", label="Converter")

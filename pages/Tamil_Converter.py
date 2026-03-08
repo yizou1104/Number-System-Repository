@@ -1,4 +1,5 @@
 import streamlit as st
+from ui import apply_global_styles
 # ------------------------------------------------------------
 # 1. TAMIL DIGITS (0-9, plus special symbols for 10,100,1000)
 # ------------------------------------------------------------
@@ -417,6 +418,9 @@ st.set_page_config(
     layout="centered"
 )
 
+apply_global_styles()
+
+
 st.title("Tamil Numeral Converter")
 st.write(
     "Convert between **Arabic numerals** and **Hindi representations**: "
@@ -492,14 +496,7 @@ st.caption("Implements the Tamil numeral system. "
     "Converter algorithm created by Yi Zou. "
     "Grammar explained in the Linguistics section.")
 
-nav_cols = st.columns(3)
+nav_cols = st.columns(2)
 with nav_cols[0]:
-    st.page_link("pages/Tamil_Linguistics.py", label="Linguistics")
 with nav_cols[1]:
-    st.page_link(
-        "pages/Olympiad_Problems.py",
-        label="Olympiad Problems",
-        help="Olympiad Problems"
-    )
-with nav_cols[2]:
     st.page_link("pages/Tamil_Converter.py", label="Converter")

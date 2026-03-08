@@ -1,6 +1,8 @@
 # pages/Olympiad_Problems.py
 
 import streamlit as st
+from ui import apply_global_styles
+from streamlit.errors import StreamlitSecretNotFoundError
 import pandas as pd
 import json
 import os
@@ -31,7 +33,10 @@ TAGS = [
     # add more tags as needed
 ]
 
-ADMIN_PASSWORD = st.secrets.get("admin_password", "admin")
+try:
+    ADMIN_PASSWORD = st.secrets.get("admin_password", "admin")
+except StreamlitSecretNotFoundError:
+    ADMIN_PASSWORD = "admin"
 
 # ------------------------------------------------------------
 # Page config and custom CSS
@@ -41,26 +46,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.markdown("""
-<style>
-    .stApp {
-        background-color: white;
-    }
-    h1, h2, h3 {
-        color: crimson;
-    }
-    p, li, .stMarkdown {
-        color: black;
-    }
-    .stButton>button {
-        background-color: gray;
-        color: white;
-    }
-    .stTextInput>div>div>input {
-        border-color: crimson;
-    }
-</style>
-""", unsafe_allow_html=True)
+apply_global_styles()
 
 # ------------------------------------------------------------
 # Data paths and initialisation
@@ -384,6 +370,4 @@ with st.expander("🛠️ Admin Panel (manage problems)"):
 # ------------------------------------------------------------
 st.markdown("---")
 st.caption("Problems are stored locally. For permanent hosting, consider cloud storage.")
-
-
 
