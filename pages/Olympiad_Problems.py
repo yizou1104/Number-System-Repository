@@ -51,15 +51,24 @@ apply_global_styles()
 # ------------------------------------------------------------
 # Data paths and initialisation
 # ------------------------------------------------------------
-METADATA_FILE = "metadata.json"
-PROBLEM_DIR = "problems"
-SOLUTION_DIR = "solutions"
+BASE_DIR = Path(__file__).resolve().parent.parent
+METADATA_FILE = BASE_DIR / "metadata.json"
+PROBLEM_DIR = BASE_DIR / "problems"
+SOLUTION_DIR = BASE_DIR / "solutions"
+PROBLEM_DIR_REL = Path("problems")
+SOLUTION_DIR_REL = Path("solutions")
 
 os.makedirs(PROBLEM_DIR, exist_ok=True)
 os.makedirs(SOLUTION_DIR, exist_ok=True)
 
+def resolve_path(path_str: str) -> Path:
+    path = Path(path_str)
+    if not path.is_absolute():
+        path = BASE_DIR / path
+    return path
+
 def load_metadata():
-    if os.path.exists(METADATA_FILE):
+    if METADATA_FILE.exists():
         with open(METADATA_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     return []
@@ -87,30 +96,31 @@ if "show_solution" not in st.session_state:
 # Helper to display a file
 # ------------------------------------------------------------
 def display_file(file_path, label="File"):
-    if not os.path.exists(file_path):
+    resolved = resolve_path(file_path)
+    if not resolved.exists():
         st.warning(f"File not found: {file_path}")
         return
 
-    ext = Path(file_path).suffix.lower()
+    ext = resolved.suffix.lower()
     if ext in (".png", ".jpg", ".jpeg", ".gif", ".bmp"):
-        st.image(file_path, use_container_width=True)
+        st.image(str(resolved), use_container_width=True)
     elif ext == ".pdf":
-        with open(file_path, "rb") as f:
+        with open(resolved, "rb") as f:
             st.download_button(
                 label=f"Download {label} (PDF)",
                 data=f,
-                file_name=os.path.basename(file_path),
+                file_name=resolved.name,
                 mime="application/pdf"
             )
     elif ext == ".txt":
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(resolved, "r", encoding="utf-8") as f:
             st.text(f.read())
     else:
-        with open(file_path, "rb") as f:
+        with open(resolved, "rb") as f:
             st.download_button(
                 label=f"Download {label}",
                 data=f,
-                file_name=os.path.basename(file_path)
+                file_name=resolved.name
             )
 
 # ------------------------------------------------------------
@@ -246,13 +256,13 @@ with st.expander("🛠️ Admin Panel (manage problems)"):
 
                         prob_ext = Path(problem_file.name).suffix
                         prob_filename = f"prob_{new_id}{prob_ext}"
-                        prob_path = os.path.join(PROBLEM_DIR, prob_filename)
+                        prob_path = PROBLEM_DIR / prob_filename
                         with open(prob_path, "wb") as f:
                             f.write(problem_file.getbuffer())
 
                         sol_ext = Path(solution_file.name).suffix
                         sol_filename = f"sol_{new_id}{sol_ext}"
-                        sol_path = os.path.join(SOLUTION_DIR, sol_filename)
+                        sol_path = SOLUTION_DIR / sol_filename
                         with open(sol_path, "wb") as f:
                             f.write(solution_file.getbuffer())
 
@@ -260,8 +270,8 @@ with st.expander("🛠️ Admin Panel (manage problems)"):
                             "id": new_id,
                             "title": title,
                             "tags": selected_tags,
-                            "problem_file": prob_path,
-                            "solution_file": sol_path
+                            "problem_file": str(PROBLEM_DIR_REL / prob_filename),
+                            "solution_file": str(SOLUTION_DIR_REL / sol_filename)
                         }
                         metadata.append(new_entry)
                         save_metadata(metadata)
@@ -323,24 +333,26 @@ with st.expander("🛠️ Admin Panel (manage problems)"):
                             problem["tags"] = new_tags
 
                             if new_problem_file is not None:
-                                if os.path.exists(problem["problem_file"]):
-                                    os.remove(problem["problem_file"])
+                                existing_prob = resolve_path(problem["problem_file"])
+                                if existing_prob.exists():
+                                    os.remove(existing_prob)
                                 prob_ext = Path(new_problem_file.name).suffix
                                 prob_filename = f"prob_{problem['id']}{prob_ext}"
-                                prob_path = os.path.join(PROBLEM_DIR, prob_filename)
+                                prob_path = PROBLEM_DIR / prob_filename
                                 with open(prob_path, "wb") as f:
                                     f.write(new_problem_file.getbuffer())
-                                problem["problem_file"] = prob_path
+                                problem["problem_file"] = str(PROBLEM_DIR_REL / prob_filename)
 
                             if new_solution_file is not None:
-                                if os.path.exists(problem["solution_file"]):
-                                    os.remove(problem["solution_file"])
+                                existing_sol = resolve_path(problem["solution_file"])
+                                if existing_sol.exists():
+                                    os.remove(existing_sol)
                                 sol_ext = Path(new_solution_file.name).suffix
                                 sol_filename = f"sol_{problem['id']}{sol_ext}"
-                                sol_path = os.path.join(SOLUTION_DIR, sol_filename)
+                                sol_path = SOLUTION_DIR / sol_filename
                                 with open(sol_path, "wb") as f:
                                     f.write(new_solution_file.getbuffer())
-                                problem["solution_file"] = sol_path
+                                problem["solution_file"] = str(SOLUTION_DIR_REL / sol_filename)
 
                             save_metadata(metadata)
                             st.session_state.edit_id = None
@@ -353,10 +365,12 @@ with st.expander("🛠️ Admin Panel (manage problems)"):
 
                 if st.button("🗑️ Delete this problem", type="primary"):
                     if st.checkbox("I understand this cannot be undone"):
-                        if os.path.exists(problem["problem_file"]):
-                            os.remove(problem["problem_file"])
-                        if os.path.exists(problem["solution_file"]):
-                            os.remove(problem["solution_file"])
+                        delete_prob = resolve_path(problem["problem_file"])
+                        delete_sol = resolve_path(problem["solution_file"])
+                        if delete_prob.exists():
+                            os.remove(delete_prob)
+                        if delete_sol.exists():
+                            os.remove(delete_sol)
                         metadata.remove(problem)
                         save_metadata(metadata)
                         st.session_state.edit_id = None
@@ -370,4 +384,3 @@ with st.expander("🛠️ Admin Panel (manage problems)"):
 # ------------------------------------------------------------
 st.markdown("---")
 st.caption("Problems are stored locally. For permanent hosting, consider cloud storage.")
-
