@@ -53,10 +53,11 @@ apply_global_styles()
 # ------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 METADATA_FILE = BASE_DIR / "metadata.json"
-PROBLEM_DIR = BASE_DIR / "problems"
-SOLUTION_DIR = BASE_DIR / "solutions"
-PROBLEM_DIR_REL = Path("problems")
-SOLUTION_DIR_REL = Path("solutions")
+STATIC_DIR = BASE_DIR / "static"
+PROBLEM_DIR = STATIC_DIR / "problems"
+SOLUTION_DIR = STATIC_DIR / "solutions"
+PROBLEM_DIR_REL = Path("static") / "problems"
+SOLUTION_DIR_REL = Path("static") / "solutions"
 
 os.makedirs(PROBLEM_DIR, exist_ok=True)
 os.makedirs(SOLUTION_DIR, exist_ok=True)
@@ -79,6 +80,31 @@ def save_metadata(metadata):
 
 metadata = load_metadata()
 df = pd.DataFrame(metadata) if metadata else pd.DataFrame()
+
+# ------------------------------------------------------------
+# Diagnostics
+# ------------------------------------------------------------
+def render_asset_diagnostics():
+    if not metadata:
+        st.info("No metadata entries to diagnose.")
+        return
+
+    rows = []
+    for item in metadata:
+        prob_path = resolve_path(item.get("problem_file", ""))
+        sol_path = resolve_path(item.get("solution_file", ""))
+        rows.append({
+            "id": item.get("id"),
+            "title": item.get("title"),
+            "problem_file": item.get("problem_file"),
+            "problem_exists": prob_path.exists(),
+            "solution_file": item.get("solution_file"),
+            "solution_exists": sol_path.exists(),
+            "problem_abs": str(prob_path),
+            "solution_abs": str(sol_path),
+        })
+
+    st.dataframe(pd.DataFrame(rows), use_container_width=True)
 
 # ------------------------------------------------------------
 # Session state
@@ -384,3 +410,10 @@ with st.expander("🛠️ Admin Panel (manage problems)"):
 # ------------------------------------------------------------
 st.markdown("---")
 st.caption("Problems are stored locally. For permanent hosting, consider cloud storage.")
+
+# ------------------------------------------------------------
+# Asset diagnostics (debug)
+# ------------------------------------------------------------
+with st.expander("🧪 Asset Diagnostics (server file check)"):
+    st.write("Checks whether each referenced file exists on the server.")
+    render_asset_diagnostics()

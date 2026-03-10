@@ -8,7 +8,7 @@
       "IOL",
       "Overcounting"
     ],
-    "problem_file": "problems/Umbu-Ungu.png",
-    "solution_file": "solutions/Umbu-Ungu Solution.png"
+    "problem_file": "static/problems/Umbu-Ungu.png",
+    "solution_file": "static/solutions/Umbu-Ungu Solution.png"
   }
 ]
