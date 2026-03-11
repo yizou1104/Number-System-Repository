@@ -1,0 +1,85 @@
+[
+  {
+    "id": 1,
+    "title": "Umbu-Ungu",
+    "tags": [
+      "Table",
+      "Hard",
+      "IOL",
+      "Overcounting"
+    ],
+    "problem_file": "static/problems/Umbu-Ungu.png",
+    "solution_files": [
+      "static/solutions/Umbu-Ungu_Solution.png"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Chabu",
+    "tags": [
+      "Special Format",
+      "Other Competitions",
+      "Medium"
+    ],
+    "problem_file": "static/problems/Chabu.png",
+    "solution_files": [
+      "static/solutions/Chabu_Solution.png"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Selkup",
+    "tags": [
+      "Chaos & Order",
+      "Overcounting",
+      "Subtractive Systems",
+      "Medium",
+      "Other Competitions"
+    ],
+    "problem_file": "static/problems/Selkup.png",
+    "solution_files": [
+      "static/solutions/Selkup_Solution_1.png",
+      "static/solutions/Selkup_Solution_2.png"
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Mansi",
+    "tags": [
+      "Table",
+      "Overcounting",
+      "Subtractive Systems",
+      "Morphological Changes",
+      "Hard",
+      "IOL"
+    ],
+    "problem_file": "static/problems/Mansi.png",
+    "solution_files": [
+      "static/solutions/Mansi_Solution_1.png",
+      "static/solutions/Mansi_Solution_2.png"
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Waorani",
+    "tags": [
+      "Equations",
+      "Easy",
+      "UKLO"
+    ],
+    "problem_file": "static/problems/Waorani.png",
+    "solution_files": [
+      "static/solutions/Waorani_Solution.png"
+    ]
+  },
+  {
+    "id": 6,
+    "title": "No Zeroes in Xerente",
+    "tags": [
+      "Equations",
+      "Easy",
+      "UKLO"
+    ],
+    "problem_file": "static/problems/No_Zeroes_in_Xerente.pdf"
+  }
+]
