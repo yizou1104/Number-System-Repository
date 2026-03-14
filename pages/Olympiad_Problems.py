@@ -125,12 +125,33 @@ def display_file(file_path, label="File"):
             )
 
 # ------------------------------------------------------------
+# Helper to detect missing values safely
+# ------------------------------------------------------------
+def is_missing_value(value) -> bool:
+    if value is None:
+        return True
+    try:
+        result = pd.isna(value)
+        if isinstance(result, bool):
+            return result
+    except Exception:
+        pass
+    return False
+
+# ------------------------------------------------------------
 # Helper to display multiple solution files
 # ------------------------------------------------------------
 def display_solution_files(solution_paths):
     """Display multiple solution files with tabs or expanders"""
+    if is_missing_value(solution_paths):
+        st.info("Solution is currently unavailable.")
+        return
+
+    if isinstance(solution_paths, str):
+        solution_paths = [solution_paths]
+
     if not solution_paths:
-        st.info("No solution files available.")
+        st.info("Solution is currently unavailable.")
         return
     
     if len(solution_paths) == 1:
@@ -198,12 +219,12 @@ if st.session_state.selected_problem is not None:
     if st.session_state.show_solution:
         st.subheader("Solution")
         # Handle both old format (single file) and new format (multiple files)
-        if "solution_files" in prob:
-            display_solution_files(prob["solution_files"])
+        if "solution_files" in prob and not is_missing_value(prob.get("solution_files")):
+            display_solution_files(prob.get("solution_files"))
         elif "solution_file" in prob:
             display_file(prob["solution_file"], "Solution")
         else:
-            st.warning("No solution files found.")
+            st.info("Solution is currently unavailable.")
 
     st.stop()
 
