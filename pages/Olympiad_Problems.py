@@ -125,33 +125,12 @@ def display_file(file_path, label="File"):
             )
 
 # ------------------------------------------------------------
-# Helper to detect missing values safely
-# ------------------------------------------------------------
-def is_missing_value(value) -> bool:
-    if value is None:
-        return True
-    try:
-        result = pd.isna(value)
-        if isinstance(result, bool):
-            return result
-    except Exception:
-        pass
-    return False
-
-# ------------------------------------------------------------
 # Helper to display multiple solution files
 # ------------------------------------------------------------
 def display_solution_files(solution_paths):
     """Display multiple solution files with tabs or expanders"""
-    if is_missing_value(solution_paths):
-        st.info("Solution is currently unavailable.")
-        return
-
-    if isinstance(solution_paths, str):
-        solution_paths = [solution_paths]
-
     if not solution_paths:
-        st.info("Solution is currently unavailable.")
+        st.info("No solution files available.")
         return
     
     if len(solution_paths) == 1:
@@ -219,12 +198,12 @@ if st.session_state.selected_problem is not None:
     if st.session_state.show_solution:
         st.subheader("Solution")
         # Handle both old format (single file) and new format (multiple files)
-        if "solution_files" in prob and not is_missing_value(prob.get("solution_files")):
-            display_solution_files(prob.get("solution_files"))
+        if "solution_files" in prob:
+            display_solution_files(prob["solution_files"])
         elif "solution_file" in prob:
             display_file(prob["solution_file"], "Solution")
         else:
-            st.info("Solution is currently unavailable.")
+            st.warning("No solution files found.")
 
     st.stop()
 
@@ -259,216 +238,8 @@ else:
     st.info("No problems in the repository yet.")
 
 # ------------------------------------------------------------
-# ADMIN PANEL – UPDATED FOR MULTIPLE SOLUTION FILES
-# ------------------------------------------------------------
-with st.expander("🛠️ Admin Panel (manage problems)"):
-    password = st.text_input("Enter admin password", type="password")
-    if password == ADMIN_PASSWORD:
-        st.session_state.admin_authenticated = True
-    else:
-        st.session_state.admin_authenticated = False
-
-    if st.session_state.admin_authenticated:
-        st.success("Authenticated. You can add, edit, or delete problems.")
-
-        admin_mode = st.radio(
-            "Admin actions",
-            ["➕ Add new problem", "✏️ Edit / Delete existing"],
-            horizontal=True
-        )
-
-        # ADD NEW PROBLEM
-        if admin_mode == "➕ Add new problem":
-            with st.form("upload_form", clear_on_submit=True):
-                title = st.text_input("Problem title")
-                selected_tags = st.multiselect("Select tags", TAGS)
-
-                problem_file = st.file_uploader(
-                    "Upload problem file (image/PDF)",
-                    type=["png", "jpg", "jpeg", "gif", "pdf"]
-                )
-                
-                st.markdown("**Solution files** (you can upload multiple)")
-                solution_files = st.file_uploader(
-                    "Upload solution files (image/PDF/txt)",
-                    type=["png", "jpg", "jpeg", "gif", "pdf", "txt"],
-                    accept_multiple_files=True,
-                    key="solution_uploader"
-                )
-
-                submitted = st.form_submit_button("Add Problem")
-
-                if submitted:
-                    if not (title and selected_tags and problem_file and solution_files):
-                        st.error("Problem title, tags, problem file, and at least one solution file are required.")
-                    else:
-                        new_id = max([p["id"] for p in metadata], default=0) + 1
-
-                        # Save problem file
-                        prob_ext = Path(problem_file.name).suffix
-                        prob_filename = f"prob_{new_id}{prob_ext}"
-                        prob_path = PROBLEM_DIR / prob_filename
-                        with open(prob_path, "wb") as f:
-                            f.write(problem_file.getbuffer())
-
-                        # Save all solution files
-                        solution_paths = []
-                        for i, sol_file in enumerate(solution_files):
-                            sol_ext = Path(sol_file.name).suffix
-                            sol_filename = f"sol_{new_id}_{i+1}{sol_ext}"
-                            sol_path = SOLUTION_DIR / sol_filename
-                            with open(sol_path, "wb") as f:
-                                f.write(sol_file.getbuffer())
-                            solution_paths.append(str(SOLUTION_DIR_REL / sol_filename))
-
-                        new_entry = {
-                            "id": new_id,
-                            "title": title,
-                            "tags": selected_tags,
-                            "problem_file": str(PROBLEM_DIR_REL / prob_filename),
-                            "solution_files": solution_paths
-                        }
-                        metadata.append(new_entry)
-                        save_metadata(metadata)
-
-                        st.success(f"Problem '{title}' added successfully with {len(solution_paths)} solution files!")
-                        st.rerun()
-
-        # EDIT / DELETE EXISTING PROBLEMS
-        else:
-            if not metadata:
-                st.info("No problems to manage.")
-            else:
-                problem_options = {p["id"]: p["title"] for p in metadata}
-                selected_id = st.selectbox(
-                    "Choose a problem to edit/delete",
-                    options=list(problem_options.keys()),
-                    format_func=lambda x: problem_options[x]
-                )
-
-                problem = next(p for p in metadata if p["id"] == selected_id)
-
-                if st.button("Edit this problem"):
-                    st.session_state.edit_id = selected_id
-
-                if st.session_state.edit_id == selected_id:
-                    st.markdown("---")
-                    st.subheader(f"Editing: {problem['title']}")
-
-                    with st.form("edit_form"):
-                        new_title = st.text_input("Title", value=problem["title"])
-                        new_tags = st.multiselect(
-                            "Tags",
-                            options=TAGS,
-                            default=problem["tags"]
-                        )
-
-                        st.markdown("**Replace problem file (optional)**")
-                        new_problem_file = st.file_uploader(
-                            "Upload new problem file",
-                            type=["png", "jpg", "jpeg", "gif", "pdf"],
-                            key="edit_prob"
-                        )
-
-                        st.markdown("**Replace solution files (optional)**")
-                        st.markdown("*Leave empty to keep existing solution files*")
-                        new_solution_files = st.file_uploader(
-                            "Upload new solution files",
-                            type=["png", "jpg", "jpeg", "gif", "pdf", "txt"],
-                            accept_multiple_files=True,
-                            key="edit_sol"
-                        )
-
-                        col1, col2 = st.columns(2)
-                        with col1:
-                            save_changes = st.form_submit_button("💾 Save changes")
-                        with col2:
-                            cancel = st.form_submit_button("Cancel")
-
-                        if save_changes:
-                            problem["title"] = new_title
-                            problem["tags"] = new_tags
-
-                            # Handle problem file replacement
-                            if new_problem_file is not None:
-                                # Delete old file
-                                old_prob_path = resolve_path(problem["problem_file"])
-                                if old_prob_path.exists():
-                                    os.remove(old_prob_path)
-                                
-                                # Save new file
-                                prob_ext = Path(new_problem_file.name).suffix
-                                prob_filename = f"prob_{problem['id']}{prob_ext}"
-                                prob_path = PROBLEM_DIR / prob_filename
-                                with open(prob_path, "wb") as f:
-                                    f.write(new_problem_file.getbuffer())
-                                problem["problem_file"] = str(PROBLEM_DIR_REL / prob_filename)
-
-                            # Handle solution files replacement
-                            if new_solution_files:
-                                # Delete old solution files
-                                if "solution_files" in problem:
-                                    for old_sol in problem["solution_files"]:
-                                        old_sol_path = resolve_path(old_sol)
-                                        if old_sol_path.exists():
-                                            os.remove(old_sol_path)
-                                elif "solution_file" in problem:
-                                    old_sol_path = resolve_path(problem["solution_file"])
-                                    if old_sol_path.exists():
-                                        os.remove(old_sol_path)
-                                
-                                # Save new solution files
-                                solution_paths = []
-                                for i, sol_file in enumerate(new_solution_files):
-                                    sol_ext = Path(sol_file.name).suffix
-                                    sol_filename = f"sol_{problem['id']}_{i+1}{sol_ext}"
-                                    sol_path = SOLUTION_DIR / sol_filename
-                                    with open(sol_path, "wb") as f:
-                                        f.write(sol_file.getbuffer())
-                                    solution_paths.append(str(SOLUTION_DIR_REL / sol_filename))
-                                problem["solution_files"] = solution_paths
-                                
-                                # Remove old single solution field if it exists
-                                if "solution_file" in problem:
-                                    del problem["solution_file"]
-
-                            save_metadata(metadata)
-                            st.session_state.edit_id = None
-                            st.success("Changes saved!")
-                            st.rerun()
-
-                        if cancel:
-                            st.session_state.edit_id = None
-                            st.rerun()
-
-                if st.button("🗑️ Delete this problem", type="primary"):
-                    if st.checkbox("I understand this cannot be undone"):
-                        # Delete problem file
-                        prob_path = resolve_path(problem["problem_file"])
-                        if prob_path.exists():
-                            os.remove(prob_path)
-                        
-                        # Delete all solution files
-                        if "solution_files" in problem:
-                            for sol_file in problem["solution_files"]:
-                                sol_path = resolve_path(sol_file)
-                                if sol_path.exists():
-                                    os.remove(sol_path)
-                        elif "solution_file" in problem:
-                            sol_path = resolve_path(problem["solution_file"])
-                            if sol_path.exists():
-                                os.remove(sol_path)
-                        
-                        metadata.remove(problem)
-                        save_metadata(metadata)
-                        st.session_state.edit_id = None
-                        st.success("Problem deleted.")
-                        st.rerun()
-                    else:
-                        st.warning("Please confirm deletion.")
-
-# ------------------------------------------------------------
 # Footer
 # ------------------------------------------------------------
 st.markdown("---")
-st.caption("Problems are stored in the static/ folder. For permanent hosting, commit files to GitHub.")
+st.caption("Problems are sourced from various Olympiads and are for educational purposes. If you have a problem to contribute, please contact the administrator at yizou1104@gmail.com.")
+st.caption("Mention to Vlad A. Neacșu's book Linguistics Olympiad Training Guide for contributing the sources for some of the problems.")
