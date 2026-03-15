@@ -1,7 +1,7 @@
 import streamlit as st
-from ui import apply_global_styles
 from cn2an import cn2an, an2cn
-
+from ui import apply_global_styles
+apply_global_styles()
 # --------------------------------------------------
 # Page config
 # --------------------------------------------------
@@ -9,9 +9,6 @@ st.set_page_config(
     page_title="Chinese Numeral Converter",
     layout="centered"
 )
-
-apply_global_styles()
-
 
 # --------------------------------------------------
 # Title
@@ -118,16 +115,23 @@ st.caption(
 st.markdown("---")
 st.subheader("Explore More")
 
-nav_cols = st.columns(2)
+nav_cols = st.columns(3)
 
 with nav_cols[0]:
     st.page_link(
         "pages/Chinese_Linguistics.py",
         label="Linguistics",
-        help="Structure, grammar, and historical development of the Chinese numeral system"
+        help="Structure, grammar, and historical development of the numeral system"
     )
 
 with nav_cols[1]:
+    st.page_link(
+        "pages/Olympiad_Problems.py",
+        label="Olympiad Problems",
+        help="Competition-style problems involving Chinese numerals"
+    )
+
+with nav_cols[2]:
     st.page_link(
         "pages/Chinese_Converter.py",
         label="Converter",

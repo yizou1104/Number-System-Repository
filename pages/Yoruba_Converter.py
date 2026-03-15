@@ -1,6 +1,6 @@
 import streamlit as st
 from ui import apply_global_styles
-
+apply_global_styles()
 # ============================================================
 # TRADITIONAL YORUBA NUMERAL GENERATOR (FINAL)
 # Arabic numeral → Yoruba numeral
@@ -155,9 +155,6 @@ def number_to_yoruba(n):
 
 st.set_page_config(page_title="Yoruba Numeral Converter", layout="centered")
 
-apply_global_styles()
-
-
 st.title("Yoruba Numeral Converter")
 
 st.write(
@@ -221,16 +218,23 @@ st.caption(
 st.markdown("---")
 st.subheader("Explore More")
 
-nav_cols = st.columns(2)
+nav_cols = st.columns(3)
 
 with nav_cols[0]:
     st.page_link(
         "pages/Yoruba_Linguistics.py",
         label="Linguistics",
-        help="Structure, grammar, and historical development of the Yoruba numeral system"
+        help="Structure, grammar, and historical development of the numeral system"
     )
 
 with nav_cols[1]:
+    st.page_link(
+        "pages/Olympiad_Problems.py",
+        label="Olympiad Problems",
+        help="Olympiad Problems"
+    )
+
+with nav_cols[2]:
     st.page_link(
         "pages/Yoruba_Converter.py",
         label="Converter",

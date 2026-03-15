@@ -1,10 +1,8 @@
 import streamlit as st
 from ui import apply_global_styles
-
-st.set_page_config(page_title="Thai Numerals — Linguistics", layout="centered")
-
 apply_global_styles()
 
+st.set_page_config(page_title="Thai Numerals — Linguistics", layout="centered")
 
 st.title("Thai Numerals — Linguistic Structure")
 

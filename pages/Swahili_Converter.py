@@ -1,6 +1,7 @@
 import streamlit as st
-from ui import apply_global_styles
 from tarakimu import num_to_words
+from ui import apply_global_styles
+apply_global_styles()
 
 try:
     from tarakimu.utils import words_to_num
@@ -17,9 +18,6 @@ st.set_page_config(
     page_title="Swahili Numeral Converter",
     layout="centered"
 )
-
-apply_global_styles()
-
 
 # --------------------------------------------------
 # Title
@@ -132,16 +130,23 @@ st.caption(
 st.markdown("---")
 st.subheader("Explore More")
 
-nav_cols = st.columns(2)
+nav_cols = st.columns(3)
 
 with nav_cols[0]:
     st.page_link(
         "pages/Swahili_Linguistics.py",
         label="Linguistics",
-        help="Structure, grammar, and historical development of the Swahili numeral system"
+        help="Structure, morphology, and agreement patterns in Swahili numerals"
     )
 
 with nav_cols[1]:
+    st.page_link(
+        "pages/Olympiad_Problems.py",
+        label="Olympiad Problems",
+        help="Olympiad Problems"
+    )
+
+with nav_cols[2]:
     st.page_link(
         "pages/Swahili_Converter.py",
         label="Converter",

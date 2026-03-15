@@ -8,6 +8,7 @@ import json
 import os
 import shutil
 from pathlib import Path
+apply_global_styles()
 
 # ------------------------------------------------------------
 # CONFIGURATION
@@ -153,21 +154,6 @@ st.markdown("""
 Welcome! This repository contains Olympiad‑style problems from number systems and linguistics.  
 Use the **tags** below to filter, then click **View** to see the problem and its solution.
 """)
-
-with st.expander("📌 Sample problems (static examples)"):
-    st.markdown("""
-    **1. Babylonian fractions**  
-    *Tags: base‑60, positional*  
-    Convert 2/5 into a sexagesimal fraction.
-
-    **2. Roman numeral puzzle**  
-    *Tags: subtractive, additive*  
-    Find the largest number that can be written with exactly four symbols (I, V, X, L, C, D, M).
-
-    **3. Thai numeral irregularities**  
-    *Tags: positional, special forms*  
-    Explain why 21 is written *ยี่สิบเอ็ด* and not *สองสิบหนึ่ง*.
-    """)
 
 st.divider()
 
