@@ -125,6 +125,32 @@ st.markdown(
         box-shadow: 0 2px 12px rgba(99, 102, 241, 0.1);
         color: #0f172a;
     }
+
+    /* New style for Olympiad card */
+    .olympiad-card {
+        background: linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%);
+        border: 2px solid #111827;
+        border-radius: 22px;
+        padding: 2rem;
+        margin: 2rem 0;
+        box-shadow: 12px 12px 0 rgba(99, 102, 241, 0.2);
+        transition: all 0.3s ease;
+    }
+    .olympiad-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 16px 16px 0 rgba(99, 102, 241, 0.25);
+    }
+    .olympiad-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #111827;
+        margin-bottom: 0.5rem;
+    }
+    .olympiad-sub {
+        font-size: 1.2rem;
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -169,6 +195,23 @@ st.write(
 )
 
 st.write("")
+
+# --------------------------------------------------
+# OLYMPIAD PROBLEMS REPOSITORY – NEW SECTION
+# --------------------------------------------------
+st.markdown("""
+<div class="olympiad-card">
+    <div class="olympiad-title">🏆 Olympiad Problems Repository</div>
+    <div class="olympiad-sub">Test your skills with curated problems from linguistics and number systems olympiads.</div>
+</div>
+""", unsafe_allow_html=True)
+
+# Use a prominent button to navigate
+col1, col2, col3 = st.columns([1,2,1])
+with col2:
+    st.page_link("pages/Olympiad_Problems.py", label="Enter Olympiad Problems Repository →", use_container_width=True)
+
+st.markdown("---")
 
 # --------------------------------------------------
 # Helper: boxed language link
