@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles
+from ui import apply_global_styles, home_nav
 
 # ============================================================
 # TIBETAN NUMERAL SYSTEM
@@ -205,3 +205,4 @@ st.markdown("""
     <a class="conv-nav-btn" href="/Tibetan_Linguistics">Tibetan Linguistics →</a>
 </div>
 """, unsafe_allow_html=True)
+home_nav()

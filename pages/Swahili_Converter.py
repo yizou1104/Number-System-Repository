@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles
+from ui import apply_global_styles, home_nav
 from tarakimu import num_to_words
 
 try:
@@ -105,3 +105,4 @@ st.markdown('''
     <a class="conv-nav-btn" href="/Swahili_Linguistics">Swahili Linguistics →</a>
 </div>
 ''', unsafe_allow_html=True)
+home_nav()

@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles
+from ui import apply_global_styles, home_nav
 from cn2an import cn2an, an2cn
 
 # ============================================================
@@ -99,3 +99,4 @@ st.markdown('''
     <a class="conv-nav-btn" href="/Chinese_Linguistics">Chinese Linguistics →</a>
 </div>
 ''', unsafe_allow_html=True)
+home_nav()

@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles
+from ui import apply_global_styles, home_nav
 
 # ============================================================
 # HINDI NUMERAL SYSTEM
@@ -320,3 +320,4 @@ st.markdown("""
     <a class="conv-nav-btn" href="/Hindi_Linguistics">Hindi Linguistics →</a>
 </div>
 """, unsafe_allow_html=True)
+home_nav()

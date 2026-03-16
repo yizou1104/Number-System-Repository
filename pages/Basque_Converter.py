@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles
+from ui import apply_global_styles, home_nav
 
 # ============================================================
 # BASQUE NUMERAL GENERATOR & PARSER (BATUA)
@@ -486,3 +486,4 @@ st.markdown("""
     <a class="conv-nav-btn" href="/Basque_Linguistics">Basque Linguistics →</a>
 </div>
 """, unsafe_allow_html=True)
+home_nav()

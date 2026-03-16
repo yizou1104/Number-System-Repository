@@ -1,7 +1,7 @@
 # pages/Olympiad_Problems.py
 
 import streamlit as st
-from ui import apply_global_styles
+from ui import apply_global_styles, home_nav
 from streamlit.errors import StreamlitSecretNotFoundError
 import pandas as pd
 import json
@@ -229,3 +229,4 @@ else:
 st.markdown("---")
 st.caption("Problems are sourced from various Olympiads and are for educational purposes. If you have a problem to contribute, please contact the administrator at yizou1104@gmail.com.")
 st.caption("Mention to Vlad A. Neacșu's book Linguistics Olympiad Training Guide for contributing the sources for some of the problems.")
+home_nav()

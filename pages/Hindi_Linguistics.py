@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles
+from ui import apply_global_styles, home_nav
 
 st.set_page_config(page_title="Hindi Numerals — Linguistics", layout="centered")
 
@@ -409,3 +409,4 @@ st.markdown("""
     <a class="ling-nav-btn active" href="/Hindi_Linguistics">Hindi Linguistics</a>
 </div>
 """, unsafe_allow_html=True)
+home_nav()

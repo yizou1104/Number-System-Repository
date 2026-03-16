@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles
+from ui import apply_global_styles, home_nav
 import unicodedata
 
 # ============================================================
@@ -234,3 +234,4 @@ st.markdown("""
     <a class="conv-nav-btn" href="/Roman_Linguistics">Roman Linguistics →</a>
 </div>
 """, unsafe_allow_html=True)
+home_nav()

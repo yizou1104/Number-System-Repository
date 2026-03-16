@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles
+from ui import apply_global_styles, home_nav
 
 st.set_page_config(page_title="Swahili Numerals — Linguistics", layout="centered")
 apply_global_styles()
@@ -228,3 +228,4 @@ st.markdown("""
     <a class="ling-nav-btn active" href="/Swahili_Linguistics">Swahili Linguistics</a>
 </div>
 """, unsafe_allow_html=True)
+home_nav()
