@@ -488,18 +488,10 @@ def apply_global_styles():
         }
 
         /* ─────────────────────────────────────────
-           SIDEBAR
+           SIDEBAR — hidden (navigation is manual)
+           See the HIDE STREAMLIT CHROME block below
+           for the display:none rule.
         ───────────────────────────────────────── */
-        div[data-testid="stSidebar"] {
-            background: var(--parchment-2) !important;
-            border-right: 1px solid var(--rule-strong) !important;
-        }
-
-        div[data-testid="stSidebar"] h1,
-        div[data-testid="stSidebar"] h2,
-        div[data-testid="stSidebar"] h3 {
-            font-size: 1.1rem !important;
-        }
 
         /* ─────────────────────────────────────────
            MULTISELECT
@@ -532,7 +524,151 @@ def apply_global_styles():
             color: var(--accent) !important;
         }
 
+        /* ─────────────────────────────────────────
+           HIDE STREAMLIT CHROME
+           ─────────────────────────────────────────
+           Removes all default Streamlit UI shell
+           elements so the app presents as a clean,
+           custom standalone web interface:
+
+             • stSidebar              — left nav panel
+             • stSidebarCollapsedControl — collapse arrow
+             • stHeader               — top white bar
+             • stToolbar              — deploy/settings icons
+             • #MainMenu              — hamburger menu
+             • footer                 — "Made with Streamlit"
+
+           Companion requirement in every page file:
+             st.set_page_config(layout="wide")
+           This ensures the content fills the full
+           viewport width once the sidebar is hidden.
+        ───────────────────────────────────────── */
+        [data-testid="stSidebar"]                { display: none !important; }
+        [data-testid="stSidebarCollapsedControl"] { display: none !important; }
+        [data-testid="stHeader"]                 { display: none !important; }
+        [data-testid="stToolbar"]                { display: none !important; }
+        #MainMenu                                { display: none !important; }
+        footer                                   { display: none !important; }
+
+        /* Reclaim the top padding Streamlit reserves
+           for the now-hidden header bar */
+        [data-testid="stAppViewContainer"] > section.main {
+            padding-top: 1rem !important;
+        }
+
+        /* Full-width content area — no sidebar offset,
+           consistent horizontal breathing room */
+        .main .block-container {
+            max-width: 100% !important;
+            padding-left:  2.5rem !important;
+            padding-right: 2.5rem !important;
+        }
+
+        /* ─────────────────────────────────────────
+           HOME NAV BUTTON
+           Shared class used by home_nav() below.
+        ───────────────────────────────────────── */
+        .home-nav-wrap {
+            display: flex;
+            justify-content: flex-start;
+            padding: 1.6rem 0 0.5rem 0;
+            border-top: 1px solid var(--rule);
+            margin-top: 2.5rem;
+        }
+        .home-nav-btn {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--ink);
+            background: var(--parchment-2);
+            border: 1.5px solid var(--rule-strong);
+            border-radius: 3px;
+            padding: 0.55rem 1.1rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            white-space: nowrap;
+            cursor: pointer;
+            box-shadow: 2px 2px 0 rgba(26,22,18,0.08);
+            transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+        }
+        .home-nav-btn:hover {
+            background: var(--ink);
+            color: var(--parchment);
+            border-color: var(--ink);
+            box-shadow: 3px 3px 0 var(--accent);
+            transform: translate(-1px,-1px);
+            text-decoration: none;
+        }
+
         </style>
         """,
+        unsafe_allow_html=True,
+    )
+
+
+# ============================================================
+# HOME NAVIGATION COMPONENT
+# ============================================================
+#
+# TWO WAYS TO USE IT
+# ──────────────────
+#
+# OPTION A — Standalone footer (adds its own ruled divider)
+# Use on pages that have NO existing nav footer, or where
+# you want the Home button to sit alone on its own row.
+#
+#   from ui import apply_global_styles, home_nav
+#   ...
+#   home_nav()          # call at the bottom of the page
+#
+# Renders:
+#   ─────────────────────────────────
+#   [ ← Return to Home ]
+#
+#
+# OPTION B — Inline button (slot into an existing nav footer)
+# Use on pages that already have a conv-nav-footer or
+# ling-nav-footer. Just prepend HOME_BTN inside the existing
+# nav footer HTML string so all buttons sit on one row.
+#
+#   from ui import apply_global_styles, HOME_BTN
+#   ...
+#   st.markdown(f'''
+#   <div class="conv-nav-footer">
+#       {HOME_BTN}
+#       <a class="conv-nav-btn active" href="/Basque_Converter">Basque Converter</a>
+#       <a class="conv-nav-btn" href="/Basque_Linguistics">Basque Linguistics →</a>
+#   </div>
+#   ''', unsafe_allow_html=True)
+#
+# Renders:
+#   ─────────────────────────────────────────────────────────
+#   [ ← Home ]  [ Basque Converter ]  [ Basque Linguistics → ]
+#
+# ============================================================
+
+# Inline anchor — visually identical to conv-nav-btn / ling-nav-btn.
+# Import this constant and drop it into any nav footer HTML string.
+HOME_BTN = '<a class="conv-nav-btn" href="/">← Home</a>'
+
+
+def home_nav():
+    """
+    Render a standalone Return-to-Home footer with its own ruled divider.
+
+    Use when the page has no existing nav footer, or when you want the
+    Home button isolated on its own row at the bottom of the page.
+
+    For pages that already have a conv-nav-footer or ling-nav-footer,
+    use the HOME_BTN constant instead (see module docstring above).
+    """
+    st.markdown(
+        '<div class="home-nav-wrap">'
+        '<a class="home-nav-btn" href="/">← Return to Home</a>'
+        '</div>',
         unsafe_allow_html=True,
     )
