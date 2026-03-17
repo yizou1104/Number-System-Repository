@@ -1,14 +1,16 @@
 [
   {
     "id": 1,
-    "title": "Umbu-Ungu",
+    "title": "Umbu-Ungu: IOL 2012 Problem #2",
     "tags": [
       "Table",
       "Hard",
       "IOL",
       "Overcounting"
     ],
-    "problem_file": "static/problems/Umbu-Ungu.png",
+    "problem_files": [
+      "static/problems/Umbu-Ungu.png"
+    ],
     "solution_files": [
       "static/solutions/Umbu-Ungu_Solution.png"
     ]
@@ -21,7 +23,9 @@
       "Other Competitions",
       "Medium"
     ],
-    "problem_file": "static/problems/Chabu.png",
+    "problem_files": [
+      "static/problems/Chabu.png"
+    ],
     "solution_files": [
       "static/solutions/Chabu_Solution.png"
     ]
@@ -36,7 +40,9 @@
       "Medium",
       "Other Competitions"
     ],
-    "problem_file": "static/problems/Selkup.png",
+    "problem_files": [
+      "static/problems/Selkup.png"
+    ],
     "solution_files": [
       "static/solutions/Selkup_Solution_1.png",
       "static/solutions/Selkup_Solution_2.png"
@@ -53,7 +59,9 @@
       "Hard",
       "IOL"
     ],
-    "problem_file": "static/problems/Mansi.png",
+    "problem_files": [
+      "static/problems/Mansi.png"
+    ],
     "solution_files": [
       "static/solutions/Mansi_Solution_1.png",
       "static/solutions/Mansi_Solution_2.png"
@@ -67,7 +75,9 @@
       "Easy",
       "UKLO"
     ],
-    "problem_file": "static/problems/Waorani.png",
+    "problem_files": [
+      "static/problems/Waorani.png"
+    ],
     "solution_files": [
       "static/solutions/Waorani_Solution.png"
     ]
@@ -80,6 +90,72 @@
       "Hard",
       "PLO"
     ],
-    "problem_file": "static/problems/No_Zeroes_in_Xerente.pdf"
+    "problem_files": [
+      "static/problems/No_Zeroes_in_Xerente.pdf"
+    ],
+    "solution_files": []
+  },
+  {
+    "id": 7,
+    "title": "Drehu: IOL 2010 Problem #2",
+    "tags": [
+      "Chaos & Order",
+      "Hard",
+      "IOL"
+    ],
+    "problem_files": [
+      "static/problems/Drehu.png"
+    ],
+    "solution_files": [
+      "static/solutions/Drehu_Solution.png"
+    ]
+  },
+  {
+    "id": 8,
+    "title": "EAN-13: IOL 2011 Problem #5",
+    "tags": [
+      "Special Format",
+      "Hard",
+      "IOL"
+    ],
+    "problem_files": [
+      "static/problems/EAN-13_Part_1.png",
+      "static/problems/EAN-13_Part_2.png"
+    ],
+    "solution_files": [
+      "static/solutions/EAN-13_Solution.png"
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Nahuatl and Arammba: IOL 2015 Problem #1",
+    "tags": [
+      "Equations",
+      "Hard",
+      "IOL"
+    ],
+    "problem_files": [
+      "static/problems/Nahuatl_and_Arammba.png"
+    ],
+    "solution_files": [
+      "static/solutions/Nahuatl_and_Arammba_Solution_1.png",
+      "static/solutions/Nahuatl_and_Arammba_Solution_2.png",
+      "static/solutions/Nahuatl_and_Arammba_Solution_3.png"
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Birom: IOL 2017 Problem #1",
+    "tags": [
+      "Equations",
+      "Hard",
+      "IOL"
+    ],
+    "problem_files": [
+      "static/problems/Birom.png"
+    ],
+    "solution_files": [
+      "static/solutions/Birom_Solution.png"
+    ]
   }
 ]
