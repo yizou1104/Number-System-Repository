@@ -6,7 +6,7 @@ import json
 import os
 import shutil
 from pathlib import Path
-from ui import apply_global_styles
+from ui import apply_global_styles, home_nav
 apply_global_styles()
 
 # ------------------------------------------------------------
@@ -448,3 +448,4 @@ with st.expander("🛠️ Admin Panel (manage problems)"):
 # ------------------------------------------------------------
 st.markdown("---")
 st.caption("Problems are stored in the static/ folder. For permanent hosting, commit files to GitHub.")
+home_nav()

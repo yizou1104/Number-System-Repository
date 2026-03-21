@@ -126,25 +126,39 @@ def display_file(file_path, label="File"):
             )
 
 # ------------------------------------------------------------
-# Helper to display multiple solution files
+# Helper to display multiple files with tabs
 # ------------------------------------------------------------
-def display_solution_files(solution_paths):
-    """Display multiple solution files with tabs or expanders"""
-    if not solution_paths:
-        st.info("No solution files available.")
+def display_multiple_files(file_paths, base_label="File"):
+    """Display multiple files with tabs"""
+    if not file_paths:
+        st.info(f"No {base_label} files available.")
         return
     
-    if len(solution_paths) == 1:
-        # Single solution - show directly
-        display_file(solution_paths[0], "Solution")
+    if len(file_paths) == 1:
+        # Single file - show directly
+        display_file(file_paths[0], base_label)
     else:
-        # Multiple solutions - show in tabs
-        tab_names = [f"Solution Part {i+1}" for i in range(len(solution_paths))]
+        # Multiple files - show in tabs
+        tab_names = [f"{base_label} Part {i+1}" for i in range(len(file_paths))]
         tabs = st.tabs(tab_names)
         
-        for i, (tab, sol_path) in enumerate(zip(tabs, solution_paths)):
+        for i, (tab, file_path) in enumerate(zip(tabs, file_paths)):
             with tab:
-                display_file(sol_path, f"Solution {i+1}")
+                display_file(file_path, f"{base_label} {i+1}")
+
+# ------------------------------------------------------------
+# Helper to display multiple solution files (kept for backward compatibility)
+# ------------------------------------------------------------
+def display_solution_files(solution_paths):
+    """Display multiple solution files with tabs"""
+    display_multiple_files(solution_paths, "Solution")
+
+# ------------------------------------------------------------
+# Helper to display multiple problem files
+# ------------------------------------------------------------
+def display_problem_files(problem_paths):
+    """Display multiple problem files with tabs"""
+    display_multiple_files(problem_paths, "Problem")
 
 # ------------------------------------------------------------
 # Main title and intro
@@ -171,9 +185,14 @@ if st.session_state.selected_problem is not None:
     st.header(prob["title"])
     st.markdown(f"**Tags:** {', '.join(prob['tags'])}")
 
-    # Display problem full width
+    # Display problem (handle both single and multiple files)
     st.subheader("Problem")
-    display_file(prob["problem_file"], "Problem")
+    if "problem_files" in prob:
+        display_problem_files(prob["problem_files"])
+    elif "problem_file" in prob:
+        display_file(prob["problem_file"], "Problem")
+    else:
+        st.warning("No problem files found.")
 
     # Centered button to toggle solution
     col1, col2, col3 = st.columns([1, 2, 1])
