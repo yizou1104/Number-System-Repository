@@ -1,6 +1,6 @@
 import streamlit as st
 from ui import apply_global_styles
- 
+
 # --------------------------------------------------
 # Page config
 # --------------------------------------------------
@@ -8,9 +8,9 @@ st.set_page_config(
     page_title="The Number System Repository",
     layout="wide"
 )
- 
+
 apply_global_styles()
- 
+
 # --------------------------------------------------
 # Page-specific styles — Home only
 # --------------------------------------------------
@@ -26,8 +26,7 @@ st.markdown(
         border-bottom: 1px solid var(--rule);
         overflow: hidden;
     }
- 
-    /* Decorative large numeral watermark */
+
     .nsr-hero::before {
         content: "∑";
         position: absolute;
@@ -42,7 +41,7 @@ st.markdown(
         pointer-events: none;
         user-select: none;
     }
- 
+
     .nsr-hero-eyebrow {
         font-family: 'DM Sans', sans-serif;
         font-size: 0.72rem;
@@ -55,7 +54,7 @@ st.markdown(
         align-items: center;
         gap: 0.75rem;
     }
- 
+
     .nsr-hero-eyebrow::before {
         content: '';
         display: inline-block;
@@ -63,7 +62,7 @@ st.markdown(
         height: 1.5px;
         background: var(--accent);
     }
- 
+
     .nsr-hero-title {
         font-family: 'Crimson Pro', Georgia, serif;
         font-size: 4rem;
@@ -74,7 +73,7 @@ st.markdown(
         margin-bottom: 1.1rem;
         max-width: 720px;
     }
- 
+
     .nsr-hero-sub {
         font-family: 'Crimson Pro', Georgia, serif;
         font-size: 1.2rem;
@@ -84,26 +83,32 @@ st.markdown(
         max-width: 580px;
         margin-bottom: 1.75rem;
     }
- 
+
     .nsr-chips {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.45rem;
         flex-wrap: wrap;
     }
- 
+
+    /* ── TAGS ─────────────────────────────────────────
+       Flat filled chips — no border, no hover, no cursor.
+       Deliberately inert so they read as labels, not buttons. */
     .nsr-chip {
         font-family: 'DM Sans', sans-serif;
-        font-size: 0.75rem;
+        font-size: 0.68rem;
         font-weight: 600;
-        letter-spacing: 0.07em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        padding: 0.3rem 0.85rem;
-        border: 1.5px solid var(--rule-strong);
+        padding: 0.22rem 0.7rem;
         border-radius: 2px;
-        color: var(--ink-soft);
-        background: transparent;
+        color: var(--ink-muted);
+        background: var(--parchment-3);
+        border: none;
+        cursor: default;
+        user-select: none;
+        pointer-events: none;
     }
- 
+
     /* ── SECTION LABEL ────────────────────────────── */
     .nsr-section-label {
         font-family: 'DM Sans', sans-serif;
@@ -118,14 +123,14 @@ st.markdown(
         align-items: center;
         gap: 1rem;
     }
- 
+
     .nsr-section-label::after {
         content: '';
         flex: 1;
         height: 1px;
         background: var(--rule);
     }
- 
+
     /* ── FAMILY HEADER ────────────────────────────── */
     .nsr-family-header {
         display: flex;
@@ -135,7 +140,7 @@ st.markdown(
         padding-bottom: 0.65rem;
         border-bottom: 1px solid var(--rule);
     }
- 
+
     .nsr-family-title {
         font-family: 'Crimson Pro', Georgia, serif;
         font-size: 1.45rem;
@@ -144,7 +149,7 @@ st.markdown(
         letter-spacing: -0.02em;
         line-height: 1.2;
     }
- 
+
     .nsr-family-count {
         font-family: 'DM Sans', sans-serif;
         font-size: 0.72rem;
@@ -153,7 +158,7 @@ st.markdown(
         text-transform: uppercase;
         color: var(--ink-faint);
     }
- 
+
     /* ── LANGUAGE CARD ────────────────────────────── */
     .nsr-lang-card {
         display: flex;
@@ -171,8 +176,7 @@ st.markdown(
         position: relative;
         overflow: hidden;
     }
- 
-    /* Accent left bar that slides in on hover */
+
     .nsr-lang-card::before {
         content: '';
         position: absolute;
@@ -182,16 +186,16 @@ st.markdown(
         transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
         border-radius: 4px 0 0 4px;
     }
- 
+
     .nsr-lang-card:hover::before { width: 3px; }
- 
+
     .nsr-lang-card:hover {
         transform: translateY(-2px) translateX(2px);
         box-shadow: 0 6px 20px rgba(26,22,18,0.10);
         border-color: rgba(26,22,18,0.18);
         background: rgba(255,255,255,0.98);
     }
- 
+
     .nsr-lang-name {
         font-family: 'Crimson Pro', Georgia, serif;
         font-size: 1.1rem;
@@ -199,7 +203,7 @@ st.markdown(
         color: var(--ink);
         letter-spacing: -0.01em;
     }
- 
+
     .nsr-lang-arrow {
         font-family: 'DM Sans', sans-serif;
         font-size: 0.8rem;
@@ -208,12 +212,12 @@ st.markdown(
         transform: translateX(-6px);
         transition: all 0.2s ease;
     }
- 
+
     .nsr-lang-card:hover .nsr-lang-arrow {
         opacity: 1;
         transform: translateX(0);
     }
- 
+
     /* ── FAMILY CARD WRAPPER ──────────────────────── */
     .nsr-family-card {
         background: var(--parchment);
@@ -227,14 +231,14 @@ st.markdown(
         transition: box-shadow 0.25s ease;
         height: 100%;
     }
- 
+
     .nsr-family-card:hover {
         box-shadow:
             0 2px 6px rgba(26,22,18,0.07),
             0 10px 28px rgba(26,22,18,0.08),
             inset 0 1px 0 rgba(255,255,255,0.8);
     }
- 
+
     /* ── OLYMPIAD CARD ────────────────────────────── */
     .nsr-olympiad {
         position: relative;
@@ -247,13 +251,12 @@ st.markdown(
         box-shadow: 6px 6px 0 var(--accent);
         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
- 
+
     .nsr-olympiad:hover {
         box-shadow: 10px 10px 0 var(--accent);
         transform: translate(-2px, -2px);
     }
- 
-    /* Decorative rule-lines in background */
+
     .nsr-olympiad::before {
         content: '';
         position: absolute;
@@ -268,7 +271,7 @@ st.markdown(
             );
         pointer-events: none;
     }
- 
+
     .nsr-olympiad-eyebrow {
         font-family: 'DM Sans', sans-serif;
         font-size: 0.7rem;
@@ -278,7 +281,7 @@ st.markdown(
         color: var(--accent-light);
         margin-bottom: 0.85rem;
     }
- 
+
     .nsr-olympiad-title {
         font-family: 'Crimson Pro', Georgia, serif;
         font-size: 2.5rem;
@@ -288,7 +291,7 @@ st.markdown(
         letter-spacing: -0.03em;
         margin-bottom: 0.6rem;
     }
- 
+
     .nsr-olympiad-sub {
         font-family: 'Crimson Pro', Georgia, serif;
         font-size: 1.1rem;
@@ -297,19 +300,19 @@ st.markdown(
         margin-bottom: 1.75rem;
         max-width: 520px;
     }
- 
+
     .nsr-olympiad-stats {
         display: flex;
         gap: 2.5rem;
         flex-wrap: wrap;
     }
- 
+
     .nsr-stat {
         display: flex;
         flex-direction: column;
         gap: 0.15rem;
     }
- 
+
     .nsr-stat-num {
         font-family: 'Crimson Pro', Georgia, serif;
         font-size: 2rem;
@@ -318,7 +321,7 @@ st.markdown(
         line-height: 1;
         letter-spacing: -0.03em;
     }
- 
+
     .nsr-stat-label {
         font-family: 'DM Sans', sans-serif;
         font-size: 0.7rem;
@@ -327,7 +330,13 @@ st.markdown(
         text-transform: uppercase;
         color: rgba(250,247,242,0.5);
     }
- 
+
+    /* ── OLYMPIAD CTA BUTTON ──────────────────────────
+       Sits inside the dark ink card. Parchment fill with
+       an explicit 2px parchment border makes the outline
+       clearly visible against the dark background.
+       On hover: fills transparent, text inverts to parchment,
+       so it reads as an outlined ghost button. */
     .nsr-olympiad-cta {
         display: inline-flex;
         align-items: center;
@@ -342,19 +351,21 @@ st.markdown(
         background: var(--parchment);
         padding: 0.7rem 1.5rem;
         border-radius: 3px;
+        border: 2px solid var(--parchment);
         text-decoration: none;
-        transition: all 0.2s ease;
-        box-shadow: 2px 2px 0 var(--accent);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 3px 3px 0 var(--accent);
     }
- 
+
     .nsr-olympiad-cta:hover {
-        background: var(--accent-pale);
-        box-shadow: 4px 4px 0 var(--accent);
+        background: transparent;
+        color: var(--parchment) !important;
+        border-color: var(--parchment);
+        box-shadow: 5px 5px 0 var(--accent);
         transform: translate(-1px, -1px);
-        color: var(--ink) !important;
         text-decoration: none !important;
     }
- 
+
     /* ── PURPOSE BLOCK ────────────────────────────── */
     .nsr-purpose {
         display: flex;
@@ -366,14 +377,14 @@ st.markdown(
         border-radius: 4px;
         margin-bottom: 2.5rem;
     }
- 
+
     .nsr-purpose-icon {
         font-size: 2rem;
         line-height: 1;
         flex-shrink: 0;
         margin-top: 0.1rem;
     }
- 
+
     .nsr-purpose-text {
         font-family: 'Crimson Pro', Georgia, serif;
         font-size: 1.15rem;
@@ -381,28 +392,39 @@ st.markdown(
         color: var(--ink-soft);
         line-height: 1.7;
     }
- 
+
     .nsr-purpose-text strong {
         font-style: normal;
         font-weight: 600;
         color: var(--ink);
     }
- 
-    /* ── ISOLATE CARD ─────────────────────────────── */
+
+    /* ── BOTTOM-ROW CARD WRAPPER ──────────────────── */
     .nsr-isolate-wrapper {
         background: var(--parchment);
         border: 1px solid var(--card-border);
         border-radius: 6px;
         padding: 1.5rem 1.6rem;
-        box-shadow: 0 1px 3px rgba(26,22,18,0.05);
+        box-shadow:
+            0 1px 3px rgba(26,22,18,0.05),
+            0 4px 16px rgba(26,22,18,0.04),
+            inset 0 1px 0 rgba(255,255,255,0.6);
+        transition: box-shadow 0.25s ease;
         margin-bottom: 1rem;
     }
- 
+
+    .nsr-isolate-wrapper:hover {
+        box-shadow:
+            0 2px 6px rgba(26,22,18,0.07),
+            0 10px 28px rgba(26,22,18,0.08),
+            inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+
     </style>
     """,
     unsafe_allow_html=True,
 )
- 
+
 # ──────────────────────────────────────────────────────
 # HERO
 # ──────────────────────────────────────────────────────
@@ -419,14 +441,14 @@ st.markdown(
             <span class="nsr-chip">Converters</span>
             <span class="nsr-chip">Linguistics</span>
             <span class="nsr-chip">Olympiad Problems</span>
-            <span class="nsr-chip">11 Languages</span>
-            <span class="nsr-chip">5 Families</span>
+            <span class="nsr-chip">14 Languages</span>
+            <span class="nsr-chip">6 Families</span>
         </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
- 
+
 # ──────────────────────────────────────────────────────
 # PURPOSE
 # ──────────────────────────────────────────────────────
@@ -443,12 +465,14 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
- 
+
 # ──────────────────────────────────────────────────────
 # OLYMPIAD CARD
+# The CTA button is a plain HTML anchor styled via
+# .nsr-olympiad-cta — avoids the outline-less st.page_link.
 # ──────────────────────────────────────────────────────
 st.markdown('<div class="nsr-section-label">Featured</div>', unsafe_allow_html=True)
- 
+
 st.markdown(
     """
     <div class="nsr-olympiad">
@@ -472,67 +496,24 @@ st.markdown(
                 <div class="nsr-stat-label">Difficulty levels</div>
             </div>
         </div>
+        <a class="nsr-olympiad-cta" href="/Olympiad_Problems">
+            Enter the Problems Repository →
+        </a>
     </div>
     """,
     unsafe_allow_html=True,
 )
- 
-# CTA button via Streamlit (so routing works)
-col_l, col_m, col_r = st.columns([1, 2, 1])
-with col_m:
-    st.page_link(
-        "pages/Olympiad_Problems.py",
-        label="Enter the Problems Repository →",
-        use_container_width=True,
-    )
- 
+
 st.markdown("---")
- 
+
 # ──────────────────────────────────────────────────────
-# HELPERS — card rendering
-# ──────────────────────────────────────────────────────
- 
-def lang_card_html(label):
-    """Returns an HTML language card (visual only — link handled by page_link below)."""
-    return f"""
-    <div class="nsr-lang-card">
-        <span class="nsr-lang-name">{label}</span>
-        <span class="nsr-lang-arrow">→</span>
-    </div>
-    """
- 
-def language_entry(label, page):
-    """Renders the card visual + a hidden Streamlit page_link trigger."""
-    st.markdown(lang_card_html(label), unsafe_allow_html=True)
-    st.page_link(page, label=f"Open {label}")
- 
-def family_block(title, count, languages):
-    """Renders a full family card with header and language entries."""
-    st.markdown(
-        f"""
-        <div class="nsr-family-card">
-            <div class="nsr-family-header">
-                <span class="nsr-family-title">{title}</span>
-                <span class="nsr-family-count">{count} language{"s" if count != 1 else ""}</span>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    for lang_name, lang_page in languages:
-        language_entry(lang_name, lang_page)
-    st.write("")
- 
- 
-# ──────────────────────────────────────────────────────
-# LANGUAGE FAMILIES
+# LANGUAGE FAMILIES — main 2 × 2 grid
 # ──────────────────────────────────────────────────────
 st.markdown('<div class="nsr-section-label">Language Families</div>', unsafe_allow_html=True)
- 
+
 col1, col2 = st.columns(2, gap="large")
- 
+
 with col1:
-    # ── Family header
     st.markdown(
         """
         <div class="nsr-family-card">
@@ -548,7 +529,7 @@ with col1:
         st.page_link("pages/Chinese_Converter.py",  label="Chinese")
         st.page_link("pages/Tibetan_Converter.py",  label="Tibetan")
         st.page_link("pages/Thai_Converter.py",     label="Thai")
- 
+
     st.markdown(
         """
         <div class="nsr-family-card">
@@ -564,7 +545,7 @@ with col1:
         st.page_link("pages/Yoruba_Converter.py",  label="Yoruba")
         st.page_link("pages/Igbo_Converter.py",    label="Igbo")
         st.page_link("pages/Swahili_Converter.py", label="Swahili")
- 
+
 with col2:
     st.markdown(
         """
@@ -581,7 +562,7 @@ with col2:
         st.page_link("pages/Hindi_Converter.py",   label="Hindi")
         st.page_link("pages/Bengali_Converter.py", label="Bengali")
         st.page_link("pages/Tamil_Converter.py",   label="Tamil")
- 
+
     st.markdown(
         """
         <div class="nsr-family-card">
@@ -596,26 +577,60 @@ with col2:
     with st.container(border=True):
         st.page_link("pages/Roman_Converter.py", label="Roman")
         st.page_link("pages/Greek_Converter.py", label="Greek")
- 
- 
-# ── Language Isolates ─────────────────────────────────
-st.markdown('<div class="nsr-section-label">Language Isolates</div>', unsafe_allow_html=True)
- 
-st.markdown(
-    """
-    <div class="nsr-isolate-wrapper">
-        <div class="nsr-family-header">
-            <span class="nsr-family-title">Independent Systems</span>
-            <span class="nsr-family-count">1 language</span>
+
+
+# ──────────────────────────────────────────────────────
+# BOTTOM ROW — Independent Systems + Indigenous / Pacific
+# Placed side-by-side in a matching two-column grid.
+# ──────────────────────────────────────────────────────
+
+bot1, bot2 = st.columns(2, gap="large")
+
+with bot1:
+    st.markdown(
+        """
+        <div class="nsr-isolate-wrapper">
+            <div class="nsr-family-header">
+                <span class="nsr-family-title">Independent Systems</span>
+                <span class="nsr-family-count">1 language</span>
+            </div>
         </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-with st.container(border=True):
-    st.page_link("pages/Basque_Converter.py", label="Basque — Vigesimal isolate, Basque Country")
- 
- 
+        """,
+        unsafe_allow_html=True,
+    )
+    with st.container(border=True):
+        st.page_link(
+            "pages/Basque_Converter.py",
+            label="Basque",
+        )
+
+with bot2:
+    st.markdown(
+        """
+        <div class="nsr-isolate-wrapper">
+            <div class="nsr-family-header">
+                <span class="nsr-family-title">Indigenous — Pacific &amp; Americas</span>
+                <span class="nsr-family-count">3 languages</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    with st.container(border=True):
+        st.page_link(
+            "pages/Inuktitut_Converter.py",
+            label="Inuktitut",
+        )
+        st.page_link(
+            "pages/Yupik_Converter.py",
+            label="Yupik",
+        )
+        st.page_link(
+            "pages/Quechua_Converter.py",
+            label="Quechua",
+        )
+
+
 # ──────────────────────────────────────────────────────
 # FOOTER
 # ──────────────────────────────────────────────────────
