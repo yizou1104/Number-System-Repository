@@ -484,7 +484,7 @@ st.markdown(
         </div>
         <div class="nsr-olympiad-stats">
             <div class="nsr-stat">
-                <div class="nsr-stat-num">6</div>
+                <div class="nsr-stat-num">10</div>
                 <div class="nsr-stat-label">Problems</div>
             </div>
             <div class="nsr-stat">
