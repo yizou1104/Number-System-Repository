@@ -1,6 +1,6 @@
 import streamlit as st
 from ui import apply_global_styles, home_nav
-from numerals import number_to_yupik, yupik_to_number
+from Pacific import number_to_yupik, yupik_to_number
 
 # ============================================================
 # YUPIK NUMERAL SYSTEM
