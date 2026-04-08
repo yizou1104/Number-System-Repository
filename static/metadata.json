@@ -157,5 +157,58 @@
     "solution_files": [
       "static/solutions/Birom_Solution.png"
     ]
+  },
+  {
+    "id": 11,
+    "title": "Mountain_Arapesh: IOL 2018 Problem #4",
+    "tags": [
+      "Table",
+      "Hard",
+      "IOL",
+      "Special Format"
+    ],
+    "problem_files": [
+      "static/problems/Mountain_Arapesh.png"
+    ],
+    "solution_files": [
+      "static/solutions/Mountain_Arapesh_Solution_1.png",
+      "static/solutions/Mountain_Arapesh_Solution_2.png"
+    ]
+  },
+  {
+    "id": 12,
+    "title": "Ekari: IOL 2021 Problem #1",
+    "tags": [
+      "Table",
+      "Hard",
+      "IOL",
+      "Special Format",
+      "Overcounting"
+    ],
+    "problem_files": [
+      "static/problems/Ekari.png"
+    ],
+    "solution_files": [
+      "static/solutions/Ekari_Solution.png"
+    ]
+  },
+  {
+    "id": 13,
+    "title": "Dzongkha: IOL 2025 Problem #1",
+    "tags": [
+      "Table",
+      "Equations",
+      "Hard",
+      "IOL",
+      "Special Format",
+      "Overcounting"
+    ],
+    "problem_files": [
+      "static/problems/Dzongkha.png"
+    ],
+    "solution_files": [
+      "static/solutions/Dzongkha_Solution_1.png",
+      "static/solutions/Dzongkha_Solution_2.png"
+    ]
   }
 ]
