@@ -441,7 +441,7 @@ st.markdown(
             <span class="nsr-chip">Converters</span>
             <span class="nsr-chip">Linguistics</span>
             <span class="nsr-chip">Olympiad Problems</span>
-            <span class="nsr-chip">14 Languages</span>
+            <span class="nsr-chip">15 Languages</span>
             <span class="nsr-chip">6 Families</span>
         </div>
     </div>
