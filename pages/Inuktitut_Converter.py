@@ -143,21 +143,8 @@ else:
             st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                         unsafe_allow_html=True)
 
-# ── Caption & nav ─────────────────────────────────────────────────────────────
-st.markdown("""
-<div class="conv-caption">
-    South Baffin / Nunavut standard Inuktitut. Vigesimal (base-20) system.
-    Range 0–99 — forms above 99 are not implemented due to insufficient
-    cross-dialect consensus. Sources: Dorais (2010) <em>The Language of the Inuit</em>,
-    Spalding (1998) Nunavut Inuktitut dictionary. Algorithm by Yi Zou.
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class="conv-nav-footer">
-    <a class="conv-nav-btn active" href="/Inuktitut_Converter">Inuktitut Converter</a>
-    <a class="conv-nav-btn" href="/Yupik_Converter">Yupik →</a>
-    <a class="conv-nav-btn" href="/Quechua_Converter">Quechua →</a>
-</div>
-""", unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Inuktitut_Linguistics.py", label="← Inuktitut Linguistics")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

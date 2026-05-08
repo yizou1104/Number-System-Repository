@@ -400,13 +400,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ══════════════════════════════════════════════════════════════
-# NAVIGATION
-# ══════════════════════════════════════════════════════════════
-st.markdown("""
-<div class="ling-nav-footer">
-    <a class="ling-nav-btn" href="/Hindi_Converter">← Hindi Converter</a>
-    <a class="ling-nav-btn active" href="/Hindi_Linguistics">Hindi Linguistics</a>
-</div>
-""", unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Hindi_Converter.py", label="← Hindi Converter")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

@@ -291,21 +291,8 @@ else:
             st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                         unsafe_allow_html=True)
 
-# ── CAPTION & NAVIGATION ─────────────────────────────────────────────────────
-st.markdown("""
-<div class="conv-caption">
-    Implements Kiswahili Sanifu numerals. Digits 1–5 and 8 are Bantu-origin;
-    6, 7, 9 and tens are Arabic loanwords. The connector <em>na</em> joins all components.
-    Note: "elfu kumi na moja" is structurally ambiguous in Swahili (could be 11,000 or 10,001);
-    this converter resolves it as 11,000 (greedy multiplier convention).
-    Range: 0–999,999,999. Sources: Ashton (1944), omniglot. Converter algorithm by Yi Zou.
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class="conv-nav-footer">
-    <a class="conv-nav-btn active" href="/Swahili_Converter">Swahili Converter</a>
-    <a class="conv-nav-btn" href="/Swahili_Linguistics">Swahili Linguistics →</a>
-</div>
-""", unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Swahili_Linguistics.py", label="Swahili Linguistics →")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

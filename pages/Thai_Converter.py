@@ -230,18 +230,8 @@ else:
             st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                         unsafe_allow_html=True)
 
-# ── CAPTION & NAVIGATION ────────────────────────────────────────────────────
-st.markdown("""
-<div class="conv-caption">
-    Implements a rule-based Thai numeral system. Irregular forms (ยี่ for 20s, เอ็ด for final 1)
-    handled explicitly. Converter algorithm by Yi Zou. Grammar detail in the Linguistics section.
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class="conv-nav-footer">
-    <a class="conv-nav-btn active" href="/Thai_Converter">Thai Converter</a>
-    <a class="conv-nav-btn" href="/Thai_Linguistics">Thai Linguistics →</a>
-</div>
-""", unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Thai_Linguistics.py", label="Thai Linguistics →")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

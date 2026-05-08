@@ -190,19 +190,8 @@ if arabic_input:
         st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid non-negative integer.</p></div>',
                     unsafe_allow_html=True)
 
-# ── CAPTION & NAVIGATION ────────────────────────────────────────────────────
-st.markdown("""
-<div class="conv-caption">
-    Implements the Tibetan numeral system with script and romanization.
-    Data from <a href="https://www.omniglot.com/language/numbers/tibetan.htm" target="_blank">Omniglot</a>.
-    Converter algorithm by Yi Zou. Grammar detail in the Linguistics section.
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class="conv-nav-footer">
-    <a class="conv-nav-btn active" href="/Tibetan_Converter">Tibetan Converter</a>
-    <a class="conv-nav-btn" href="/Tibetan_Linguistics">Tibetan Linguistics →</a>
-</div>
-""", unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Tibetan_Linguistics.py", label="Tibetan Linguistics →")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

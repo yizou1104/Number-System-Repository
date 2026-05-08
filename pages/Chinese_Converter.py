@@ -275,20 +275,8 @@ else:
             st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                         unsafe_allow_html=True)
 
-# ── CAPTION & NAVIGATION ─────────────────────────────────────────────────────
-st.markdown("""
-<div class="conv-caption">
-    Implements the Simplified Chinese numeral system. Key rules: 两 replaces 二 before
-    百/千/万/亿; 零 appears once for any internal zero run; grouping follows 万 (10,000)
-    and 亿 (100,000,000). Range: 0–999,999,999. Converter algorithm by Yi Zou.
-    Grammar detail in the Linguistics section.
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class="conv-nav-footer">
-    <a class="conv-nav-btn active" href="/Chinese_Converter">Chinese Converter</a>
-    <a class="conv-nav-btn" href="/Chinese_Linguistics">Chinese Linguistics →</a>
-</div>
-""", unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Chinese_Linguistics.py", label="Chinese Linguistics →")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

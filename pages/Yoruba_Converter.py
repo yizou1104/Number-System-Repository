@@ -113,10 +113,8 @@ st.markdown('''
 <div class="conv-caption">Implements the traditional Yoruba vigesimal system with subtractive dominance. Algorithm by Yi Zou.</div>
 ''', unsafe_allow_html=True)
 
-st.markdown('''
-<div class="conv-nav-footer">
-    <a class="conv-nav-btn active" href="/Yoruba_Converter">Yoruba Numerals Converter</a>
-    <a class="conv-nav-btn" href="/Yoruba_Linguistics">Yoruba Linguistics →</a>
-</div>
-''', unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Yoruba_Linguistics.py", label="Yoruba Linguistics →")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

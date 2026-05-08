@@ -369,20 +369,8 @@ else:
             st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                         unsafe_allow_html=True)
 
-# ── CAPTION & NAVIGATION ────────────────────────────────────────────────────
-st.markdown("""
-<div class="conv-caption">
-    Implements the Tamil numeral system with morphophonemic stem alternations.
-    Supports Tamil script digits (including classical ௰ ௱ ௲), Tamil words, and romanized words.
-    Data from <a href="https://www.omniglot.com/language/numbers/tamil.htm" target="_blank">Omniglot</a>.
-    Converter algorithm by Yi Zou. Grammar detail in the Linguistics section.
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class="conv-nav-footer">
-    <a class="conv-nav-btn active" href="/Tamil_Converter">Tamil Converter</a>
-    <a class="conv-nav-btn" href="/Tamil_Linguistics">Tamil Linguistics →</a>
-</div>
-""", unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Tamil_Linguistics.py", label="Tamil Linguistics →")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

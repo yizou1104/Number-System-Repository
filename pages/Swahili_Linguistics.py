@@ -222,10 +222,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<div class="ling-nav-footer">
-    <a class="ling-nav-btn" href="/Swahili_Converter">← Swahili Converter</a>
-    <a class="ling-nav-btn active" href="/Swahili_Linguistics">Swahili Linguistics</a>
-</div>
-""", unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Swahili_Converter.py", label="← Swahili Converter")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

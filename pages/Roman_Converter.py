@@ -219,19 +219,8 @@ else:
             st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                         unsafe_allow_html=True)
 
-# ── CAPTION & NAVIGATION ────────────────────────────────────────────────────
-st.markdown("""
-<div class="conv-caption">
-    Implements the Roman numeral system with subtractive notation and overline extension.
-    Data from <a href="https://en.wikipedia.org/wiki/Roman_numerals" target="_blank">Wikipedia</a>.
-    Converter algorithm by Yi Zou. Grammar detail in the Linguistics section.
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class="conv-nav-footer">
-    <a class="conv-nav-btn active" href="/Roman_Converter">Roman Converter</a>
-    <a class="conv-nav-btn" href="/Roman_Linguistics">Roman Linguistics →</a>
-</div>
-""", unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Roman_Linguistics.py", label="Roman Linguistics →")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

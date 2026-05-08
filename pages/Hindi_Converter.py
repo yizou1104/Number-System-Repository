@@ -305,19 +305,8 @@ else:
             st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                         unsafe_allow_html=True)
 
-# ── CAPTION & NAVIGATION ────────────────────────────────────────────────────
-st.markdown("""
-<div class="conv-caption">
-    Implements the Indian numbering system (lakhs, crores) with standard Hindi number names.
-    Supports Devanagari digits, Devanagari words, and romanized words.
-    Converter algorithm by Yi Zou. Grammar detail in the Linguistics section.
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class="conv-nav-footer">
-    <a class="conv-nav-btn active" href="/Hindi_Converter">Hindi Converter</a>
-    <a class="conv-nav-btn" href="/Hindi_Linguistics">Hindi Linguistics →</a>
-</div>
-""", unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Hindi_Linguistics.py", label="Hindi Linguistics →")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

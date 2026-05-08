@@ -781,13 +781,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
  
-# ══════════════════════════════════════════════════════════════
-# NAVIGATION FOOTER
-# ══════════════════════════════════════════════════════════════
-st.markdown("""
-<div class="ling-nav-footer">
-    <a class="ling-nav-btn" href="/Basque_Converter">← Basque Converter</a>
-    <a class="ling-nav-btn active" href="/Basque_Linguistics">Basque Linguistics</a>
-</div>
-""", unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Basque_Converter.py", label="← Basque Converter")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

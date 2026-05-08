@@ -4,6 +4,36 @@ from ui import apply_global_styles, home_nav
 # ============================================================
 # BASQUE NUMERAL GENERATOR & PARSER (BATUA)
 # ============================================================
+NAV_LINK_CSS = """
+.nav-footer { display:flex; gap:.75rem; padding:1.4rem 0 .5rem 0;
+              border-top:1px solid var(--rule); margin-top:2.5rem;
+              flex-wrap:wrap; align-items:center; }
+/* Style the <a> that st.page_link renders */
+.nav-footer a[data-testid="stPageLink-NavLink"],
+.nav-footer div[data-testid="stPageLink"] a {
+    font-family:'DM Sans',sans-serif !important;
+    font-size:.78rem !important; font-weight:700 !important;
+    text-transform:uppercase !important; letter-spacing:.09em !important;
+    color:var(--ink) !important;
+    background:var(--parchment-2) !important;
+    border:1.5px solid var(--rule-strong) !important;
+    border-radius:3px !important;
+    padding:.55rem 1.1rem !important;
+    text-decoration:none !important;
+    display:inline-flex !important; align-items:center !important;
+    gap:.4rem !important; white-space:nowrap !important;
+    box-shadow:2px 2px 0 rgba(26,22,18,.08) !important;
+    transition:all .18s cubic-bezier(.4,0,.2,1) !important;
+}
+.nav-footer a[data-testid="stPageLink-NavLink"]:hover,
+.nav-footer div[data-testid="stPageLink"] a:hover {
+    background:var(--ink) !important; color:var(--parchment) !important;
+    border-color:var(--ink) !important;
+    box-shadow:3px 3px 0 var(--accent) !important;
+    transform:translate(-1px,-1px) !important;
+    text-decoration:none !important;
+}
+"""
 
 ATOMS = {
     0: "zero",  1: "bat",    2: "bi",       3: "hiru",
@@ -467,23 +497,8 @@ else:
             st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                         unsafe_allow_html=True)
 
-
-# ============================================================
-# CAPTION & NAVIGATION
-# ============================================================
-st.markdown("""
-<div class="conv-caption">
-    Implements standard Batua vigesimal structure with lexical blocking.
-    Source data from
-    <a href="https://www.omniglot.com/language/numbers/basque.html" target="_blank">Omniglot</a>.
-    Converter algorithm by Yi Zou. Grammar detail in the Linguistics section.
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class="conv-nav-footer">
-    <a class="conv-nav-btn active" href="/Basque_Converter">Basque Converter</a>
-    <a class="conv-nav-btn" href="/Basque_Linguistics">Basque Linguistics →</a>
-</div>
-""", unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Basque_Linguistics.py", label="Basque Linguistics →")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)
