@@ -182,10 +182,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<div class="conv-nav-footer">
-    <a class="conv-nav-btn active" href="/High_Valyrian_Converter">High Valyrian Converter</a>
-    <a class="conv-nav-btn" href="/High_Valyrian_Linguistics">High Valyrian Linguistics →</a>
-</div>
-""", unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/High_Valyrian_Linguistics.py", label="← High Valyrian Linguistics")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)
