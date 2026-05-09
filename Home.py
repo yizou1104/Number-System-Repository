@@ -484,7 +484,7 @@ st.markdown(
         </div>
         <div class="nsr-olympiad-stats">
             <div class="nsr-stat">
-                <div class="nsr-stat-num">6</div>
+                <div class="nsr-stat-num">13</div>
                 <div class="nsr-stat-label">Problems</div>
             </div>
             <div class="nsr-stat">
@@ -602,7 +602,7 @@ with bot1:
     with st.container(border=True):
         st.page_link(
             "pages/Basque_Converter.py",
-            label="Basque — Vigesimal isolate, Basque Country",
+            label="Basque",
         )
 
 with bot2:
@@ -610,7 +610,7 @@ with bot2:
         """
         <div class="nsr-isolate-wrapper">
             <div class="nsr-family-header">
-                <span class="nsr-family-title">Indigenous — Pacific &amp; Americas</span>
+                <span class="nsr-family-title">Pacific &amp; Americas</span>
                 <span class="nsr-family-count">3 languages</span>
             </div>
         </div>
@@ -620,15 +620,15 @@ with bot2:
     with st.container(border=True):
         st.page_link(
             "pages/Inuktitut_Converter.py",
-            label="Inuktitut — Vigesimal, Arctic Canada",
+            label="Inuktitut",
         )
         st.page_link(
             "pages/Yupik_Converter.py",
-            label="Yupik — Vigesimal, Alaska & Siberia",
+            label="Yupik",
         )
         st.page_link(
             "pages/Quechua_Converter.py",
-            label="Quechua — Decimal, Andean South America",
+            label="Quechua",
         )
 
 with bot3:
@@ -646,15 +646,15 @@ with bot3:
     with st.container(border=True):
         st.page_link(
             "pages/Esperanto_Converter.py",
-            label="Esperanto — Auxiliary, Zamenhof 1887",
+            label="Esperanto",
         )
         st.page_link(
             "pages/Klingon_Converter.py",
-            label="Klingon — Magnitude suffixes, Star Trek",
+            label="Klingon",
         )
         st.page_link(
             "pages/High_Valyrian_Converter.py",
-            label="High Valyrian — Limited canon, ASOIAF",
+            label="High Valyrian",
         )
 
 
