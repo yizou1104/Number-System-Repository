@@ -441,8 +441,8 @@ st.markdown(
             <span class="nsr-chip">Converters</span>
             <span class="nsr-chip">Linguistics</span>
             <span class="nsr-chip">Olympiad Problems</span>
-            <span class="nsr-chip">15 Languages</span>
-            <span class="nsr-chip">6 Families</span>
+            <span class="nsr-chip">17 Languages</span>
+            <span class="nsr-chip">7 Categories</span>
         </div>
     </div>
     """,
@@ -484,7 +484,7 @@ st.markdown(
         </div>
         <div class="nsr-olympiad-stats">
             <div class="nsr-stat">
-                <div class="nsr-stat-num">13</div>
+                <div class="nsr-stat-num">6</div>
                 <div class="nsr-stat-label">Problems</div>
             </div>
             <div class="nsr-stat">
@@ -580,11 +580,12 @@ with col2:
 
 
 # ──────────────────────────────────────────────────────
-# BOTTOM ROW — Independent Systems + Indigenous / Pacific
-# Placed side-by-side in a matching two-column grid.
+# BOTTOM ROW — Independent + Indigenous + Fictional
+# Three-column grid to accommodate the constructed languages.
 # ──────────────────────────────────────────────────────
+st.markdown('<div class="nsr-section-label">Other Systems</div>', unsafe_allow_html=True)
 
-bot1, bot2 = st.columns(2, gap="large")
+bot1, bot2, bot3 = st.columns(3, gap="large")
 
 with bot1:
     st.markdown(
@@ -601,7 +602,7 @@ with bot1:
     with st.container(border=True):
         st.page_link(
             "pages/Basque_Converter.py",
-            label="Basque",
+            label="Basque — Vigesimal isolate, Basque Country",
         )
 
 with bot2:
@@ -619,15 +620,41 @@ with bot2:
     with st.container(border=True):
         st.page_link(
             "pages/Inuktitut_Converter.py",
-            label="Inuktitut",
+            label="Inuktitut — Vigesimal, Arctic Canada",
         )
         st.page_link(
             "pages/Yupik_Converter.py",
-            label="Yupik",
+            label="Yupik — Vigesimal, Alaska & Siberia",
         )
         st.page_link(
             "pages/Quechua_Converter.py",
-            label="Quechua",
+            label="Quechua — Decimal, Andean South America",
+        )
+
+with bot3:
+    st.markdown(
+        """
+        <div class="nsr-isolate-wrapper">
+            <div class="nsr-family-header">
+                <span class="nsr-family-title">Fictional Languages</span>
+                <span class="nsr-family-count">3 languages</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    with st.container(border=True):
+        st.page_link(
+            "pages/Esperanto_Converter.py",
+            label="Esperanto — Auxiliary, Zamenhof 1887",
+        )
+        st.page_link(
+            "pages/Klingon_Converter.py",
+            label="Klingon — Magnitude suffixes, Star Trek",
+        )
+        st.page_link(
+            "pages/High_Valyrian_Converter.py",
+            label="High Valyrian — Limited canon, ASOIAF",
         )
 
 
