@@ -195,6 +195,9 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 .conv-result-card{background:rgba(46,107,122,.04);border:1px solid rgba(46,107,122,.18);border-left:3px solid var(--teal);border-radius:0 4px 4px 0;padding:.75rem 1.1rem;margin-top:.8rem}
 .conv-result-label{font-family:'DM Sans',sans-serif;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--teal);margin-bottom:.3rem}
 .conv-result-value{font-family:'Crimson Pro',Georgia,serif;font-size:1.05rem;font-weight:400;color:var(--ink);line-height:1.55;word-break:break-word}
+.conv-result-row{display:grid;grid-template-columns:6rem 1fr;gap:.35rem .9rem;align-items:baseline}
+.conv-result-sublabel{font-family:'DM Sans',sans-serif;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint)}
+.conv-result-subvalue{font-family:'Crimson Pro',Georgia,serif;font-size:1.05rem;font-weight:400;color:var(--ink);line-height:1.55;word-break:break-word}
 .conv-error-card{background:rgba(184,92,56,.05);border:1px solid rgba(184,92,56,.2);border-left:3px solid var(--accent);border-radius:0 4px 4px 0;padding:.75rem 1.1rem;margin-top:.8rem}
 .conv-error-text{font-family:'Crimson Pro',Georgia,serif;font-size:1rem;color:var(--accent);font-style:italic;margin:0}
 .conv-nav-footer{display:flex;gap:.75rem;padding:1.4rem 0 .5rem 0;border-top:1px solid var(--rule);margin-top:2.5rem;flex-wrap:wrap}
@@ -273,11 +276,21 @@ if direction == "Arabic → Bengali":
                 digits = number_to_bengali_digits(n)
                 beng   = number_to_bengali_words(n, romanized=False)
                 rom    = number_to_bengali_words(n, romanized=True)
-                result = f"{digits}\n{beng}\n{rom}"
                 st.markdown(f"""
                 <div class="conv-result-card">
-                    <div class="conv-result-label">Bengali digits · words · romanized</div>
-                    <div class="conv-result-value">{result}</div>
+                    <div class="conv-result-label">Bengali numeral</div>
+                    <div class="conv-result-row">
+                        <span class="conv-result-sublabel">Digits</span>
+                        <span class="conv-result-subvalue">{digits}</span>
+                    </div>
+                    <div class="conv-result-row">
+                        <span class="conv-result-sublabel">Words</span>
+                        <span class="conv-result-subvalue">{beng}</span>
+                    </div>
+                    <div class="conv-result-row">
+                        <span class="conv-result-sublabel">Romanized</span>
+                        <span class="conv-result-subvalue">{rom}</span>
+                    </div>
                 </div>
                 """, unsafe_allow_html=True)
             except Exception as e:
