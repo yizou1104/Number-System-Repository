@@ -224,14 +224,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ══════════════════════════════════════════════════════════════
-# NAVIGATION
-# ══════════════════════════════════════════════════════════════
-st.markdown("""
-<div class="ling-nav-footer">
-    <a class="ling-nav-btn" href="/Quechua_Converter">← Quechua Converter</a>
-    <a class="ling-nav-btn active" href="/Quechua_Linguistics">Quechua Linguistics</a>
-</div>
-""", unsafe_allow_html=True)
-
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Quechua_Converter.py", label="← Quechua Converter")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

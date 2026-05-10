@@ -155,11 +155,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<div class="conv-nav-footer">
-    <a class="conv-nav-btn" href="/Inuktitut_Converter">← Inuktitut</a>
-    <a class="conv-nav-btn active" href="/Yupik_Converter">Yupik Converter</a>
-    <a class="conv-nav-btn" href="/Quechua_Converter">Quechua →</a>
-</div>
-""", unsafe_allow_html=True)
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Yupik_Linguistics.py", label="← Yupik Linguistics")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

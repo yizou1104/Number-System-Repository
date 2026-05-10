@@ -246,14 +246,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ══════════════════════════════════════════════════════════════
-# NAVIGATION
-# ══════════════════════════════════════════════════════════════
-st.markdown("""
-<div class="ling-nav-footer">
-    <a class="ling-nav-btn" href="/Yupik_Converter">← Yup’ik Converter</a>
-    <a class="ling-nav-btn active" href="/Yupik_Linguistics">Yup’ik Linguistics</a>
-</div>
-""", unsafe_allow_html=True)
-
-home_nav()
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Yupik_Converter.py", label="← Yupik Converter")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)
