@@ -1,6 +1,6 @@
 import streamlit as st
 from ui import apply_global_styles, home_nav
-from pages.Basque_Linguistics import LING_CSS
+from ui import LING_CSS
 
 st.set_page_config(page_title="Yup’ik Numerals — Linguistics", layout="centered")
 

@@ -8,7 +8,7 @@ apply_global_styles()
 # ──────────────────────────────────────────────────────────────
 # CSS (same as baseline — reused)
 # ──────────────────────────────────────────────────────────────
-from pages.Basque_Linguistics import LING_CSS  # reuse exact stylesheet
+from ui import LING_CSS
 st.markdown(LING_CSS, unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════
