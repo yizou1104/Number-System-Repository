@@ -88,12 +88,11 @@ def number_to_bengali_words(n: int, romanized: bool = False) -> str:
     if n <= 99 and n in atom_map:
         return atom_map[n]
     if 100 <= n < 200:
-        if n == 100:
-            return "ækshô" if romanized else "একশ"
-        one     = "æk"   if romanized else "এক"
         hundred = "ækshô" if romanized else "একশ"
+        if n == 100:
+            return hundred
         rem = number_to_bengali_words(n - 100, romanized)
-        return f"{one} {hundred} {rem}" if rem else f"{one} {hundred}"
+        return f"{hundred} {rem}"
     for beng, roman, value in BASE_UNITS:
         if n >= value:
             q, r = n // value, n % value

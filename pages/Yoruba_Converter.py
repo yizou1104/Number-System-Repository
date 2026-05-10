@@ -31,6 +31,8 @@ def additive(x, base): return f"{x} lélọ́ {base}"
 def subtractive(x, base): return f"{x} dín lọ́ {base}"
 def select_base(n): return max(b for b in BASES if b < n)
 
+_LEX_HUNDREDS = sorted(k for k in {110, 120, 200, 300, 400, 500, 600, 700, 800, 900})
+
 def number_to_yoruba(n):
     if n < 0 or n >= 2000:
         raise ValueError("Supported range is 0–1999")
@@ -45,17 +47,33 @@ def number_to_yoruba(n):
         return LEXICAL[n]
     if n in ATOMS:
         return ATOMS[n]
-    base = select_base(n)
-    remainder = n - base
-    if remainder <= base / 2:
-        return additive(number_to_yoruba(remainder), BASES[base])
-    else:
+    if n in BASES:
+        return BASES[n]
+    if n <= 109:
+        base = select_base(n)
+        remainder = n - base
+        if remainder <= base / 2:
+            return additive(number_to_yoruba(remainder), BASES[base])
         higher_bases = [b for b in BASES if b > base]
         if not higher_bases:
             return additive(number_to_yoruba(remainder), BASES[base])
         next_base = min(higher_bases)
         diff = next_base - n
         return subtractive(number_to_yoruba(diff), BASES[next_base])
+    # 110-999: decompose against LEXICAL hundreds
+    below = [k for k in _LEX_HUNDREDS if k < n]
+    above = [k for k in _LEX_HUNDREDS if k > n]
+    if not below:
+        h = min(above)
+        return subtractive(number_to_yoruba(h - n), LEXICAL[h])
+    if not above:
+        h = max(below)
+        return additive(number_to_yoruba(n - h), LEXICAL[h])
+    prev_h, next_h = max(below), min(above)
+    rem_below, rem_above = n - prev_h, next_h - n
+    if rem_below <= (next_h - prev_h) / 2:
+        return additive(number_to_yoruba(rem_below), LEXICAL[prev_h])
+    return subtractive(number_to_yoruba(rem_above), LEXICAL[next_h])
 
 # ============================================================
 # PAGE CONFIG & STYLES

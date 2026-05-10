@@ -604,6 +604,22 @@ def apply_global_styles():
             text-decoration: none;
         }
 
+        /* ─────────────────────────────────────────
+           NAV ROW — shared bottom navigation wrapper
+           Used by converter + linguistics pages via
+           st.markdown('<div class="nav-row">') +
+           st.page_link(...) + st.markdown('</div>')
+        ───────────────────────────────────────── */
+        .nav-row {
+            display: flex;
+            gap: 0.75rem;
+            padding: 1.4rem 0 0.5rem 0;
+            border-top: 1px solid var(--rule);
+            margin-top: 2.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
         </style>
         """,
         unsafe_allow_html=True,

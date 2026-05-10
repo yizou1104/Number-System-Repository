@@ -457,7 +457,7 @@ st.markdown(
     <div class="nsr-purpose">
         <div class="nsr-purpose-icon">§</div>
         <div class="nsr-purpose-text">
-            Explore how different cultures represent numbers — through <strong>script, word, and rule</strong>.
+            Explore how different cultures represent numbers.
             Each entry pairs a working converter with an explanation of the numeral grammar,
             alongside problems drawn from real linguistics olympiads.
         </div>

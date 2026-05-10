@@ -135,7 +135,7 @@ def number_to_tamil_words(n: int, romanized: bool = False) -> str:
             quotient  = n // value
             remainder = n % value
             unit_name = roman if romanized else tam
-            prefix = number_to_tamil_words(quotient, romanized) + " " + unit_name
+            prefix = unit_name if quotient == 1 else number_to_tamil_words(quotient, romanized) + " " + unit_name
             return prefix if remainder == 0 else prefix + " " + number_to_tamil_words(remainder, romanized)
     return ""
 
