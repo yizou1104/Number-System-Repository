@@ -1,11 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, HOME_BTN
-
-"""
-Hebrew numeral converter: Arabic <-> Hebrew alphabetic (gematria) notation
-Also displays spoken Modern Hebrew word forms.
-Range: alphabetic 1-9,999  spoken 0-9,999
-"""
+from ui import apply_global_styles
 
 # ─────────────────────────────────────────────────────────────
 # UNICODE CONSTANTS
@@ -238,8 +232,7 @@ def arabic_to_spoken(n):
     if sub100 > 0:
         if sub100 in _SPOKEN:
             s_he, s_ro = _SPOKEN[sub100]
-            # ve- ("and") before 1-19 when following a larger constituent
-            if parts_he and sub100 <= 19:
+            if parts_he:
                 parts_he.append('וְ' + s_he)
                 parts_ro.append('ve-' + s_ro)
             else:
@@ -251,8 +244,12 @@ def arabic_to_spoken(n):
             unit_val = sub100 % 10
             t_he, t_ro = _SPOKEN[ten_val]
             u_he, u_ro = _SPOKEN[unit_val]
-            parts_he.append(t_he)
-            parts_ro.append(t_ro)
+            if parts_he:
+                parts_he.append('וְ' + t_he)
+                parts_ro.append('ve-' + t_ro)
+            else:
+                parts_he.append(t_he)
+                parts_ro.append(t_ro)
             parts_he.append('וְ' + u_he)
             parts_ro.append('ve-' + u_ro)
 
@@ -301,6 +298,8 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 .conv-nav-btn.active{background:var(--parchment-3);color:var(--ink-muted);cursor:default;box-shadow:none}
 .conv-nav-btn.active:hover{transform:none;background:var(--parchment-3);color:var(--ink-muted);border-color:var(--rule-strong);box-shadow:none}
 .conv-caption{font-family:'DM Sans',sans-serif;font-size:.75rem;color:var(--ink-faint);line-height:1.55;margin-top:1rem}
+.conv-caption a{color:var(--accent)!important;text-decoration:underline!important;text-decoration-color:rgba(184,92,56,.35)!important}
+.conv-caption a:hover{text-decoration-color:var(--accent)!important}
 </style>
 """
 st.markdown(CONV_CSS, unsafe_allow_html=True)
@@ -434,21 +433,20 @@ else:
                 unsafe_allow_html=True,
             )
 
+# ── CAPTION & NAVIGATION ────────────────────────────────────────────────────
 st.markdown("""
-<p class="conv-caption">
-    Alphabetic notation follows traditional gematria conventions.
-    Special exceptions: 15 &rarr; ט״ו &middot; 16 &rarr; ט״ז
-    (avoiding abbreviations יה / יו which spell divine names).
-    Spoken forms show the masculine abstract counting form; Hebrew number words
-    inflect for gender &mdash; see the Linguistics page for details.
-</p>
-""", unsafe_allow_html=True)
-
-# ── NAVIGATION ────────────────────────────────────────────────────────────────
-st.markdown(f"""
-<div class="conv-nav-footer">
-    {HOME_BTN}
-    <a class="conv-nav-btn active" href="/Hebrew_Converter">Hebrew Converter</a>
-    <a class="conv-nav-btn" href="/Hebrew_Linguistics">Hebrew Linguistics →</a>
+<div class="conv-caption">
+    Implements traditional Hebrew alphabetic (gematria) notation with standard
+    gershayim punctuation and the divine-name exceptions for 15 and 16.
+    Spoken forms use the masculine abstract counting form; gender inflection
+    and morphological phenomena are detailed in the Linguistics section.
+    Data from <a href="https://en.wikipedia.org/wiki/Hebrew_numerals" target="_blank">Wikipedia</a>.
+    Algorithm by Yi Zou.
 </div>
 """, unsafe_allow_html=True)
+
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Hebrew_Linguistics.py", label="Hebrew Linguistics →")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)

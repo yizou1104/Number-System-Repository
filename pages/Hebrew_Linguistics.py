@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, HOME_BTN, LING_CSS
+from ui import apply_global_styles, LING_CSS
 
 st.set_page_config(page_title="Hebrew Numerals — Linguistics", layout="centered")
 apply_global_styles()
@@ -524,10 +524,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── NAVIGATION ────────────────────────────────────────────────────────────────
-st.markdown(f"""
-<div class="ling-nav-footer">
-    <a class="ling-nav-btn" href="/Hebrew_Converter">← Hebrew Converter</a>
-    {HOME_BTN}
-</div>
-""", unsafe_allow_html=True)
+# ── NAVIGATION ──────────────────────────────────────────────
+st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+st.page_link("pages/Hebrew_Converter.py", label="← Hebrew Converter")
+st.page_link("Home.py", label="← Home")
+st.markdown('</div>', unsafe_allow_html=True)
