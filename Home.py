@@ -568,7 +568,7 @@ with col2:
         <div class="nsr-family-card">
             <div class="nsr-family-header">
                 <span class="nsr-family-title">Ancient &amp; Classical</span>
-                <span class="nsr-family-count">2 languages</span>
+                <span class="nsr-family-count">3 languages</span>
             </div>
         </div>
         """,
@@ -577,6 +577,7 @@ with col2:
     with st.container(border=True):
         st.page_link("pages/Roman_Converter.py", label="Roman")
         st.page_link("pages/Greek_Converter.py", label="Greek")
+        st.page_link("pages/Hebrew_Converter.py", label="Hebrew")
 
 
 # ──────────────────────────────────────────────────────
