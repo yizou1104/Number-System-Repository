@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 
 # ============================================================
 # BASQUE NUMERAL GENERATOR & PARSER (BATUA)
@@ -132,13 +132,11 @@ def basque_to_number(text):
 # ============================================================
 # PAGE CONFIG & STYLES
 # ============================================================
-st.set_page_config(page_title="Basque Numeral Converter", layout="centered")
+st.set_page_config(page_title="Basque Numeral Converter", layout="wide")
 apply_global_styles()
 
 # ============================================================
 # CONVERTER CSS
-# Template for all converter pages — copy CONV_CSS verbatim,
-# change only masthead content, presets, logic, and nav links.
 # ============================================================
 CONV_CSS = """
 <style>
@@ -374,6 +372,7 @@ div[data-testid="stRadio"] label p {
 </style>
 """
 st.markdown(CONV_CSS, unsafe_allow_html=True)
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
 
 
 # ============================================================
@@ -391,76 +390,119 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+language_nav("Basque", "converter")
 
 # ============================================================
-# DIRECTION SELECTOR
-# The st.radio drives all logic. CSS hides the native widget
-# but keeps it interactive. The HTML card below re-renders
-# the state visually on every rerun.
+# DIRECTION SELECTOR (full width)
 # ============================================================
-st.markdown('<div class="conv-section-label">Conversion Direction</div>', unsafe_allow_html=True)
-
-direction = st.radio(
-    "Conversion direction",
-    ["Arabic → Basque", "Basque → Arabic"],
-    horizontal=True,
-    label_visibility="collapsed",
-    key="basque_direction",
-)
-
-
 # ============================================================
-# PRESET EXAMPLES
-# Flex-wrap grid: buttons auto-wrap, widths fit their labels,
-# spacing stays consistent regardless of label length.
+# TWO-COLUMN LAYOUT
 # ============================================================
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
 
-arabic_presets  = [5, 12, 20, 25, 36, 100, 325, 1046]
-basque_presets  = [
-    "bost", "hamabi", "hogei", "hogei eta bost",
-    "hogei eta hamasei", "ehun",
-    "hirurehun eta hogeita bost", "mila berrogei eta sei",
-]
+# initialize so both are accessible across column boundaries
+_input_arabic = ""
+_input_lang = ""
 
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
-    if direction == "Arabic → Basque":
-        for i, num in enumerate(arabic_presets):
-            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-                st.session_state["arabic_input"] = str(num)
-    else:
-        for i, txt in enumerate(basque_presets):
-            if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
-                st.session_state["basque_input"] = txt
+left_col, right_col = st.columns([1, 1], gap="large")
 
+with right_col:
+    # ── DIRECTION SELECTOR ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label conv-direction-label">Conversion Direction</div>', unsafe_allow_html=True)
 
-# ============================================================
-# INPUT & CONVERSION
-# ============================================================
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
-
-if direction == "Arabic → Basque":
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Arabic numeral</div>
-        <div class="conv-input-hint">Type a whole number, or click a preset above to load it automatically.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    arabic_input = st.text_input(
-        "Arabic numeral",
-        key="arabic_input",
-        placeholder="e.g. 325",
+    direction = st.radio(
+        "Conversion direction",
+        ["Arabic → Basque", "Basque → Arabic"],
+        horizontal=True,
         label_visibility="collapsed",
+        key="basque_direction",
     )
-    if arabic_input:
-        if arabic_input.lstrip("-").isdigit():
+
+with left_col:
+    # ── PRESET EXAMPLES ──────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+
+    arabic_presets  = [5, 12, 20, 25, 36, 100, 325, 1046]
+    basque_presets  = [
+        "bost", "hamabi", "hogei", "hogei eta bost",
+        "hogei eta hamasei", "ehun",
+        "hirurehun eta hogeita bost", "mila berrogei eta sei",
+    ]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        if direction == "Arabic → Basque":
+            for i, num in enumerate(arabic_presets):
+                if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                    st.session_state["arabic_input"] = str(num)
+        else:
+            for i, txt in enumerate(basque_presets):
+                if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
+                    st.session_state["basque_input"] = txt
+
+    # ── INPUT & CONVERSION ────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+
+    if direction == "Arabic → Basque":
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Arabic numeral</div>
+            <div class="conv-input-hint">Type a whole number, or click a preset above to load it automatically.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        arabic_input = st.text_input(
+            "Arabic numeral",
+            key="arabic_input",
+            placeholder="e.g. 325",
+            label_visibility="collapsed",
+        )
+        _input_arabic = arabic_input
+    else:
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter a Basque numeral</div>
+            <div class="conv-input-hint">Standard Batua orthography, e.g. <em>hogei eta bost</em>. Click a preset above to load an example.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        basque_input = st.text_input(
+            "Basque numeral",
+            key="basque_input",
+            placeholder="e.g. hogei eta bost",
+            label_visibility="collapsed",
+        )
+        _input_lang = basque_input
+
+with right_col:
+    if direction == "Arabic → Basque":
+        if _input_arabic:
+            if _input_arabic.lstrip("-").isdigit():
+                try:
+                    result = number_to_basque(int(_input_arabic))
+                    st.markdown(f"""
+                    <div class="conv-result-card">
+                        <div class="conv-result-label">Basque (Batua)</div>
+                        <div class="conv-result-value">{result}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                                unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        if _input_lang:
             try:
-                result = number_to_basque(int(arabic_input))
+                result = basque_to_number(_input_lang)
                 st.markdown(f"""
                 <div class="conv-result-card">
-                    <div class="conv-result-label">Basque (Batua)</div>
+                    <div class="conv-result-label">Arabic numeral</div>
                     <div class="conv-result-value">{result}</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -468,37 +510,12 @@ if direction == "Arabic → Basque":
                 st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                             unsafe_allow_html=True)
         else:
-            st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                        unsafe_allow_html=True)
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
 
-else:
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter a Basque numeral</div>
-        <div class="conv-input-hint">Standard Batua orthography, e.g. <em>hogei eta bost</em>. Click a preset above to load an example.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    basque_input = st.text_input(
-        "Basque numeral",
-        key="basque_input",
-        placeholder="e.g. hogei eta bost",
-        label_visibility="collapsed",
-    )
-    if basque_input:
-        try:
-            result = basque_to_number(basque_input)
-            st.markdown(f"""
-            <div class="conv-result-card">
-                <div class="conv-result-label">Arabic numeral</div>
-                <div class="conv-result-value">{result}</div>
-            </div>
-            """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                        unsafe_allow_html=True)
 
-# ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Basque_Linguistics.py", label="Basque Linguistics →")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+# ── NAVIGATION (full width) ──────────────────────────────────
+footer_nav("Basque", "converter")

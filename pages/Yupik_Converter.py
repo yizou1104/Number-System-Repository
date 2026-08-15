@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 from Pacific import number_to_yupik, yupik_to_number
 
 # ============================================================
@@ -9,7 +9,7 @@ from Pacific import number_to_yupik, yupik_to_number
 # Sources: Jacobson (1984/2012 ANLC), Miyaoka (2012)
 # ============================================================
 
-st.set_page_config(page_title="Yupik Numeral Converter", layout="centered")
+st.set_page_config(page_title="Yupik Numeral Converter", layout="wide")
 apply_global_styles()
 
 CONV_CSS = """<style>
@@ -46,6 +46,7 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 .conv-caption a{color:var(--accent)!important;text-decoration:underline!important;text-decoration-color:rgba(184,92,56,.35)!important}
 </style>"""
 st.markdown(CONV_CSS, unsafe_allow_html=True)
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
 
 # ── Masthead ─────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -60,92 +61,119 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+language_nav("Yupik", "converter")
+
 # ── Direction ─────────────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Conversion Direction</div>', unsafe_allow_html=True)
+# Initialize input vars before columns
+arabic_input = ""
+yu_input = ""
 
-direction = st.radio(
-    "Direction", ["Arabic → Yupik", "Yupik → Arabic"],
-    horizontal=True, label_visibility="collapsed", key="yu_direction",
-)
+left_col, right_col = st.columns([1, 1], gap="large")
 
-# ── Presets ───────────────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+with right_col:
+    # ── DIRECTION SELECTOR ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label conv-direction-label">Conversion Direction</div>', unsafe_allow_html=True)
 
-arabic_presets = [1, 9, 15, 20, 40, 50, 100, 400]
-yu_presets = [
-    "atauciq", "qulngunritaraan", "akimiaq", "yuinaq",
-    "yuinaak malruk", "yuinaak malruk qula",
-    "yuinaak talliman", "yuinaak yuinaq",
-]
+    direction = st.radio(
+        "Direction", ["Arabic → Yupik", "Yupik → Arabic"],
+        horizontal=True, label_visibility="collapsed", key="yu_direction",
+    )
 
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
+with left_col:
+    # ── Presets ───────────────────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+
+    arabic_presets = [1, 9, 15, 20, 40, 50, 100, 400]
+    yu_presets = [
+        "atauciq", "qulngunritaraan", "akimiaq", "yuinaq",
+        "yuinaak malruk", "yuinaak malruk qula",
+        "yuinaak talliman", "yuinaak yuinaq",
+    ]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        if direction == "Arabic → Yupik":
+            for i, num in enumerate(arabic_presets):
+                if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                    st.session_state["arabic_input"] = str(num)
+        else:
+            for i, txt in enumerate(yu_presets):
+                if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
+                    st.session_state["yu_input"] = txt
+
+    # ── Conversion ────────────────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+
     if direction == "Arabic → Yupik":
-        for i, num in enumerate(arabic_presets):
-            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-                st.session_state["arabic_input"] = str(num)
-    else:
-        for i, txt in enumerate(yu_presets):
-            if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
-                st.session_state["yu_input"] = txt
-
-# ── Conversion ────────────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
-
-if direction == "Arabic → Yupik":
-    st.markdown("""
+        st.markdown("""
     <div class="conv-input-card">
         <div class="conv-input-title">Enter an Arabic numeral</div>
         <div class="conv-input-hint">Whole number in range 0–400.</div>
     </div>
     """, unsafe_allow_html=True)
-    arabic_input = st.text_input(
-        "Arabic numeral", key="arabic_input",
-        placeholder="e.g. 15", label_visibility="collapsed",
-    )
-    if arabic_input:
-        if arabic_input.strip().lstrip("-").isdigit():
-            try:
-                result = number_to_yupik(int(arabic_input.strip()))
-                st.markdown(f"""
-                <div class="conv-result-card">
-                    <div class="conv-result-label">Yupik numeral</div>
-                    <div class="conv-result-value">{result}</div>
-                </div>
-                """, unsafe_allow_html=True)
-            except Exception as e:
-                st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                            unsafe_allow_html=True)
-        else:
-            st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                        unsafe_allow_html=True)
-else:
-    st.markdown("""
+        arabic_input = st.text_input(
+            "Arabic numeral", key="arabic_input",
+            placeholder="e.g. 15", label_visibility="collapsed",
+        )
+    else:
+        st.markdown("""
     <div class="conv-input-card">
         <div class="conv-input-title">Enter a Yupik numeral</div>
         <div class="conv-input-hint">Use the forms produced by this converter, or click a preset above.</div>
     </div>
     """, unsafe_allow_html=True)
-    yu_input = st.text_input(
-        "Yupik numeral", key="yu_input",
-        placeholder="e.g. yuinaak malruk", label_visibility="collapsed",
-    )
-    if yu_input:
-        try:
-            result = str(yupik_to_number(yu_input.strip()))
-            st.markdown(f"""
+        yu_input = st.text_input(
+            "Yupik numeral", key="yu_input",
+            placeholder="e.g. yuinaak malruk", label_visibility="collapsed",
+        )
+
+with right_col:
+    if direction == "Arabic → Yupik":
+        if arabic_input:
+            if arabic_input.strip().lstrip("-").isdigit():
+                try:
+                    result = number_to_yupik(int(arabic_input.strip()))
+                    st.markdown(f"""
+                <div class="conv-result-card">
+                    <div class="conv-result-label">Yupik numeral</div>
+                    <div class="conv-result-value">{result}</div>
+                </div>
+                """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                                unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        if yu_input:
+            try:
+                result = str(yupik_to_number(yu_input.strip()))
+                st.markdown(f"""
             <div class="conv-result-card">
                 <div class="conv-result-label">Arabic numeral</div>
                 <div class="conv-result-value">{result}</div>
             </div>
             """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                        unsafe_allow_html=True)
+            except Exception as e:
+                st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
 
-# ── Caption & nav ─────────────────────────────────────────────────────────────
-st.markdown("""
+
+    st.markdown("""
 <div class="conv-caption">
     Central Alaskan Yup'ik (Yugtun). Vigesimal (base-20) with 5, 10, and 15 as
     lexicalized sub-pivots. The form for 9 is subtractive
@@ -156,7 +184,4 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Yupik_Linguistics.py", label="← Yupik Linguistics")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Yupik", "converter")

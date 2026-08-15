@@ -1,15 +1,13 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
+from ui import apply_global_styles, LING_CSS, LING_WIDTH_CSS, language_nav, footer_nav
 
-st.set_page_config(page_title="Inuktitut Numerals — Linguistics", layout="centered")
+st.set_page_config(page_title="Inuktitut Numerals — Linguistics", layout="wide")
 
 apply_global_styles()
 
-# ──────────────────────────────────────────────────────────────
-# CSS (same as baseline — reused)
-# ──────────────────────────────────────────────────────────────
-from ui import LING_CSS
 st.markdown(LING_CSS, unsafe_allow_html=True)
+st.markdown(LING_WIDTH_CSS, unsafe_allow_html=True)
+language_nav("Inuktitut", "linguistics")
 
 # ══════════════════════════════════════════════════════════════
 # PAGE MASTHEAD
@@ -144,7 +142,7 @@ st.markdown("""
 
 st.markdown("""
 <div class="ling-card">
-    <p>Multiples of 20 correspond conceptually to multiple “persons,” reflecting the body-based counting origin.</p>
+    <p>Multiples of 20 correspond conceptually to multiple "persons," reflecting the body-based counting origin.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -205,7 +203,7 @@ st.markdown("""
     </div>
     <div class="ling-card">
         <div class="ling-subsection-title" style="font-size:1.05rem;">Dual Category</div>
-        <p>The numeral “2” aligns structurally with a grammatical dual system present in the language.</p>
+        <p>The numeral "2" aligns structurally with a grammatical dual system present in the language.</p>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -222,7 +220,4 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Inuktitut_Converter.py", label="← Inuktitut Converter")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Inuktitut", "linguistics")

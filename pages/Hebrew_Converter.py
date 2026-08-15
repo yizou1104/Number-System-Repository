@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 
 # ─────────────────────────────────────────────────────────────
 # UNICODE CONSTANTS
@@ -154,8 +154,8 @@ _SPOKEN = {
     2:  ('שְנַיִם',  'shnayim'),
     3:  ('שְלֹשָה',  'shlosha'),
     4:  ('אַרְבָעָה',  "arba'a"),
-    5:  ('חֲמִשָּה',  'chamisha'),
-    6:  ('שִשָּה',  'shisha'),
+    5:  ('חֲמִשָּה',  'chamisha'),
+    6:  ('שִשָּה',  'shisha'),
     7:  ('שִבְעָה',  "shiv'a"),
     8:  ('שְמֹנָה',  'shmonah'),
     9:  ('תִשְעָה',  "tish'a"),
@@ -164,16 +164,16 @@ _SPOKEN = {
     12: ('שְנֵים עָשָר',  'shneym asar'),
     13: ('שְלֹשָה עָשָר',  'shlosha asar'),
     14: ('אַרְבָעָה עָשָר',  "arba'a asar"),
-    15: ('חֲמִשָּה עָשָר',  'chamisha asar'),
-    16: ('שִשָּה עָשָר',  'shisha asar'),
+    15: ('חֲמִשָּה עָשָר',  'chamisha asar'),
+    16: ('שִשָּה עָשָר',  'shisha asar'),
     17: ('שִבְעָה עָשָר',  "shiv'a asar"),
     18: ('שְמֹנָה עָשָר',  'shmonah asar'),
     19: ('תִשְעָה עָשָר',  "tish'a asar"),
     20: ('עֶשְרִים',  'esrim'),
     30: ('שְלֹשִים',  'shloshim'),
     40: ('אַרְבָעִים',  "arba'im"),
-    50: ('חֲמִשִּים',  'chamishim'),
-    60: ('שִשִּים',  'shishim'),
+    50: ('חֲמִשִּים',  'chamishim'),
+    60: ('שִשִּים',  'shishim'),
     70: ('שִבְעִים',  "shiv'im"),
     80: ('שְמֹנִים',  'shmonim'),
     90: ('תִשְעִים',  "tish'im"),
@@ -193,7 +193,7 @@ _HUNDREDS = {
 
 _THOUSANDS = {
     1000: ('אֶלֶף',  'elef'),
-    2000: ('אַלְפַּיִם',  'alpayim'),
+    2000: ('אַלְפַּיִם',  'alpayim'),
     3000: ('שְלֹשֶת אֲלָפִים',  'shloshet alafim'),
     4000: ('אַרְבַעַת אֲלָפִים',  "arba'at alafim"),
     5000: ('חֲמֵשֶת אֲלָפִים',  'chameshet alafim'),
@@ -259,7 +259,7 @@ def arabic_to_spoken(n):
 # ════════════════════════════════════════════════════════════
 # PAGE CONFIG & STYLES
 # ════════════════════════════════════════════════════════════
-st.set_page_config(page_title="Hebrew Numeral Converter", layout="centered")
+st.set_page_config(page_title="Hebrew Numeral Converter", layout="wide")
 apply_global_styles()
 
 CONV_CSS = """
@@ -303,6 +303,7 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 </style>
 """
 st.markdown(CONV_CSS, unsafe_allow_html=True)
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
 
 # ── MASTHEAD ──────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -316,79 +317,135 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── DIRECTION SELECTOR ────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Conversion Direction</div>', unsafe_allow_html=True)
+language_nav("Hebrew", "converter")
 
-direction = st.radio(
-    "Conversion direction",
-    ["Arabic → Hebrew", "Hebrew → Arabic"],
-    horizontal=True,
-    label_visibility="collapsed",
-    key="hebrew_direction",
-)
+# ── INITIALIZE INPUT VARS ─────────────────────────────────────────────────────
+arabic_input = ""
+hebrew_input = ""
 
-# ── PRESET EXAMPLES ───────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+# ── TWO COLUMN LAYOUT ─────────────────────────────────────────────────────────
+left_col, right_col = st.columns([1, 1], gap="large")
 
-arabic_presets = [7, 15, 16, 18, 100, 248, 613, 5785]
-hebrew_presets = [
-    'ז׳',                               # zayin-geresh = 7
-    'ט״ו',                         # tet-gershayim-vav = 15
-    'ט״ז',                         # tet-gershayim-zayin = 16
-    'י״ח',                         # yod-gershayim-chet = 18
-    'ק׳',                               # qof-geresh = 100
-    'רמ״ח',                   # resh-mem-gershayim-chet = 248
-    'תרי״ג',             # tav-resh-yod-gershayim-gimel = 613
-    'ה׳תשפ״ה', # he-geresh-tav-shin-pe-gershayim-he = 5785
-]
+with right_col:
+    # ── DIRECTION SELECTOR ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label conv-direction-label">Conversion Direction</div>', unsafe_allow_html=True)
 
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
-    if direction == "Arabic → Hebrew":
-        for i, num in enumerate(arabic_presets):
-            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-                st.session_state["arabic_input_heb"] = str(num)
-    else:
-        for i, txt in enumerate(hebrew_presets):
-            if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
-                st.session_state["hebrew_input"] = txt
-
-# ── INPUT & CONVERSION ────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
-
-if direction == "Arabic → Hebrew":
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Arabic numeral</div>
-        <div class="conv-input-hint">A whole number from 1 to 9,999, or click a preset above.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    arabic_input = st.text_input(
-        "Arabic numeral", key="arabic_input_heb",
-        placeholder="e.g. 613", label_visibility="collapsed",
+    direction = st.radio(
+        "Conversion direction",
+        ["Arabic → Hebrew", "Hebrew → Arabic"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="hebrew_direction",
     )
-    if arabic_input:
-        if arabic_input.lstrip("-").isdigit():
+
+with left_col:
+    # ── PRESET EXAMPLES ───────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+
+    arabic_presets = [7, 15, 16, 18, 100, 248, 613, 5785]
+    hebrew_presets = [
+        'ז׳',                               # zayin-geresh = 7
+        'ט״ו',                         # tet-gershayim-vav = 15
+        'ט״ז',                         # tet-gershayim-zayin = 16
+        'י״ח',                         # yod-gershayim-chet = 18
+        'ק׳',                               # qof-geresh = 100
+        'רמ״ח',                   # resh-mem-gershayim-chet = 248
+        'תרי״ג',             # tav-resh-yod-gershayim-gimel = 613
+        'ה׳תשפ״ה', # he-geresh-tav-shin-pe-gershayim-he = 5785
+    ]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        if direction == "Arabic → Hebrew":
+            for i, num in enumerate(arabic_presets):
+                if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                    st.session_state["arabic_input_heb"] = str(num)
+        else:
+            for i, txt in enumerate(hebrew_presets):
+                if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
+                    st.session_state["hebrew_input"] = txt
+
+    # ── INPUT & CONVERSION ────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+
+    if direction == "Arabic → Hebrew":
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Arabic numeral</div>
+            <div class="conv-input-hint">A whole number from 1 to 9,999, or click a preset above.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        arabic_input = st.text_input(
+            "Arabic numeral", key="arabic_input_heb",
+            placeholder="e.g. 613", label_visibility="collapsed",
+        )
+    else:
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter a Hebrew alphabetic numeral</div>
+            <div class="conv-input-hint">
+                Hebrew letters with or without gershayim punctuation, e.g.
+                <span style="direction:rtl;unicode-bidi:embed">רמ״ח</span> (248) or
+                <span style="direction:rtl;unicode-bidi:embed">ה׳תשפ״ה</span> (5,785).
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        hebrew_input = st.text_input(
+            "Hebrew numeral", key="hebrew_input",
+            placeholder="רמ״ח",
+            label_visibility="collapsed",
+        )
+
+with right_col:
+    if direction == "Arabic → Hebrew":
+        if arabic_input:
+            if arabic_input.lstrip("-").isdigit():
+                try:
+                    n = int(arabic_input)
+                    alpha        = arabic_to_hebrew_alpha(n)
+                    sp_he, sp_ro = arabic_to_spoken(n)
+                    st.markdown(f"""
+                    <div class="conv-result-card">
+                        <div class="conv-result-label">Hebrew numeral</div>
+                        <div class="conv-result-row">
+                            <span class="conv-result-sublabel">Alphabetic</span>
+                            <span class="conv-result-subvalue conv-hebrew">{alpha}</span>
+                        </div>
+                        <div class="conv-result-row">
+                            <span class="conv-result-sublabel">Spoken (Script)</span>
+                            <span class="conv-result-subvalue conv-hebrew">{sp_he}</span>
+                        </div>
+                        <div class="conv-result-row">
+                            <span class="conv-result-sublabel">Romanized</span>
+                            <span class="conv-result-subvalue">{sp_ro}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.markdown(
+                        f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                        unsafe_allow_html=True,
+                    )
+            else:
+                st.markdown(
+                    '<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
+                    unsafe_allow_html=True,
+                )
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        if hebrew_input:
             try:
-                n = int(arabic_input)
-                alpha        = arabic_to_hebrew_alpha(n)
-                sp_he, sp_ro = arabic_to_spoken(n)
+                result = hebrew_alpha_to_arabic(hebrew_input)
                 st.markdown(f"""
                 <div class="conv-result-card">
-                    <div class="conv-result-label">Hebrew numeral</div>
-                    <div class="conv-result-row">
-                        <span class="conv-result-sublabel">Alphabetic</span>
-                        <span class="conv-result-subvalue conv-hebrew">{alpha}</span>
-                    </div>
-                    <div class="conv-result-row">
-                        <span class="conv-result-sublabel">Spoken (Script)</span>
-                        <span class="conv-result-subvalue conv-hebrew">{sp_he}</span>
-                    </div>
-                    <div class="conv-result-row">
-                        <span class="conv-result-sublabel">Romanized</span>
-                        <span class="conv-result-subvalue">{sp_ro}</span>
-                    </div>
+                    <div class="conv-result-label">Arabic numeral</div>
+                    <div class="conv-result-value">{result:,}</div>
                 </div>
                 """, unsafe_allow_html=True)
             except Exception as e:
@@ -397,44 +454,15 @@ if direction == "Arabic → Hebrew":
                     unsafe_allow_html=True,
                 )
         else:
-            st.markdown(
-                '<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                unsafe_allow_html=True,
-            )
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
 
-else:
+
+    # ── CAPTION ───────────────────────────────────────────────────────────────
     st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter a Hebrew alphabetic numeral</div>
-        <div class="conv-input-hint">
-            Hebrew letters with or without gershayim punctuation, e.g.
-            <span style="direction:rtl;unicode-bidi:embed">רמ״ח</span> (248) or
-            <span style="direction:rtl;unicode-bidi:embed">ה׳תשפ״ה</span> (5,785).
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    hebrew_input = st.text_input(
-        "Hebrew numeral", key="hebrew_input",
-        placeholder="רמ״ח",
-        label_visibility="collapsed",
-    )
-    if hebrew_input:
-        try:
-            result = hebrew_alpha_to_arabic(hebrew_input)
-            st.markdown(f"""
-            <div class="conv-result-card">
-                <div class="conv-result-label">Arabic numeral</div>
-                <div class="conv-result-value">{result:,}</div>
-            </div>
-            """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(
-                f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                unsafe_allow_html=True,
-            )
-
-# ── CAPTION & NAVIGATION ────────────────────────────────────────────────────
-st.markdown("""
 <div class="conv-caption">
     Implements traditional Hebrew alphabetic (gematria) notation with standard
     gershayim punctuation and the divine-name exceptions for 15 and 16.
@@ -446,7 +474,4 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Hebrew_Linguistics.py", label="Hebrew Linguistics →")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Hebrew", "converter")

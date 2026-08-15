@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 
 # ============================================================
 # ESPERANTO NUMERAL SYSTEM
@@ -105,7 +105,7 @@ def esperanto_to_number(text):
 # ============================================================
 # PAGE
 # ============================================================
-st.set_page_config(page_title="Esperanto Numeral Converter", layout="centered")
+st.set_page_config(page_title="Esperanto Numeral Converter", layout="wide")
 apply_global_styles()
 
 CONV_CSS = """<style>
@@ -141,6 +141,7 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 .conv-caption a{color:var(--accent)!important;text-decoration:underline!important}
 </style>"""
 st.markdown(CONV_CSS, unsafe_allow_html=True)
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
 
 st.markdown("""
 <div class="conv-masthead">
@@ -153,69 +154,101 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="conv-section-label">Conversion Direction</div>', unsafe_allow_html=True)
-direction = st.radio("Direction", ["Arabic → Esperanto", "Esperanto → Arabic"],
-                     horizontal=True, label_visibility="collapsed", key="eo_dir")
+language_nav("Esperanto", "converter")
 
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
-arabic_presets = [0, 11, 21, 100, 234, 1000, 1234, 1000000]
-eo_presets = ["nul", "dek unu", "dudek unu", "cent",
-              "ducent tridek kvar", "mil",
-              "mil ducent tridek kvar", "unu miliono"]
+# ── TWO-COLUMN LAYOUT ────────────────────────────────────────────────────────
 
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
+# initialize so both are accessible across column boundaries
+_input_arabic = ""
+_input_lang = ""
+
+left_col, right_col = st.columns([1, 1], gap="large")
+
+with right_col:
+    # ── DIRECTION SELECTOR ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label conv-direction-label">Conversion Direction</div>', unsafe_allow_html=True)
+    direction = st.radio("Direction", ["Arabic → Esperanto", "Esperanto → Arabic"],
+                         horizontal=True, label_visibility="collapsed", key="eo_dir")
+
+with left_col:
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+    arabic_presets = [0, 11, 21, 100, 234, 1000, 1234, 1000000]
+    eo_presets = ["nul", "dek unu", "dudek unu", "cent",
+                  "ducent tridek kvar", "mil",
+                  "mil ducent tridek kvar", "unu miliono"]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        if direction == "Arabic → Esperanto":
+            for i, num in enumerate(arabic_presets):
+                if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                    st.session_state["arabic_input"] = str(num)
+        else:
+            for i, txt in enumerate(eo_presets):
+                if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
+                    st.session_state["eo_input"] = txt
+
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
     if direction == "Arabic → Esperanto":
-        for i, num in enumerate(arabic_presets):
-            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-                st.session_state["arabic_input"] = str(num)
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Arabic numeral</div>
+            <div class="conv-input-hint">Whole number from 0 to 999,999,999.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        arabic_input = st.text_input("Arabic numeral", key="arabic_input",
+                                     placeholder="e.g. 1234", label_visibility="collapsed")
+        _input_arabic = arabic_input
     else:
-        for i, txt in enumerate(eo_presets):
-            if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
-                st.session_state["eo_input"] = txt
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Esperanto numeral</div>
+            <div class="conv-input-hint">e.g. <em>ducent tridek kvar</em>.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        eo_input = st.text_input("Esperanto numeral", key="eo_input",
+                                 placeholder="e.g. ducent tridek kvar", label_visibility="collapsed")
+        _input_lang = eo_input
 
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
-if direction == "Arabic → Esperanto":
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Arabic numeral</div>
-        <div class="conv-input-hint">Whole number from 0 to 999,999,999.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    arabic_input = st.text_input("Arabic numeral", key="arabic_input",
-                                 placeholder="e.g. 1234", label_visibility="collapsed")
-    if arabic_input:
-        if arabic_input.isdigit():
+with right_col:
+    if direction == "Arabic → Esperanto":
+        if _input_arabic:
+            if _input_arabic.isdigit():
+                try:
+                    result = number_to_esperanto(int(_input_arabic))
+                    st.markdown(f'<div class="conv-result-card"><div class="conv-result-label">Esperanto numeral</div><div class="conv-result-value">{result}</div></div>',
+                                unsafe_allow_html=True)
+                except Exception as e:
+                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                                unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        if _input_lang:
             try:
-                result = number_to_esperanto(int(arabic_input))
-                st.markdown(f'<div class="conv-result-card"><div class="conv-result-label">Esperanto numeral</div><div class="conv-result-value">{result}</div></div>',
+                result = str(esperanto_to_number(_input_lang))
+                st.markdown(f'<div class="conv-result-card"><div class="conv-result-label">Arabic numeral</div><div class="conv-result-value">{result}</div></div>',
                             unsafe_allow_html=True)
             except Exception as e:
                 st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                             unsafe_allow_html=True)
         else:
-            st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                        unsafe_allow_html=True)
-else:
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Esperanto numeral</div>
-        <div class="conv-input-hint">e.g. <em>ducent tridek kvar</em>.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    eo_input = st.text_input("Esperanto numeral", key="eo_input",
-                             placeholder="e.g. ducent tridek kvar", label_visibility="collapsed")
-    if eo_input:
-        try:
-            result = str(esperanto_to_number(eo_input))
-            st.markdown(f'<div class="conv-result-card"><div class="conv-result-label">Arabic numeral</div><div class="conv-result-value">{result}</div></div>',
-                        unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                        unsafe_allow_html=True)
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown("""
+
+    st.markdown("""
 <div class="conv-caption">
     Esperanto, created by L. L. Zamenhof in 1887, is fully regular by design.
     Tens 20–90 are written as one word (dudek, tridek …); compound numbers
@@ -224,8 +257,5 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Esperanto_Linguistics.py", label="← Esperanto Linguistics")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+# ── NAVIGATION (full width) ──────────────────────────────────
+footer_nav("Esperanto", "converter")

@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 from Pacific import number_to_quechua, quechua_to_number
 
 # ============================================================
@@ -9,7 +9,7 @@ from Pacific import number_to_quechua, quechua_to_number
 # Sources: Parker (1969), Cerrón-Palomino (1987)
 # ============================================================
 
-st.set_page_config(page_title="Quechua Numeral Converter", layout="centered")
+st.set_page_config(page_title="Quechua Numeral Converter", layout="wide")
 apply_global_styles()
 
 CONV_CSS = """<style>
@@ -46,6 +46,7 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 .conv-caption a{color:var(--accent)!important;text-decoration:underline!important;text-decoration-color:rgba(184,92,56,.35)!important}
 </style>"""
 st.markdown(CONV_CSS, unsafe_allow_html=True)
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
 
 # ── Masthead ─────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -60,59 +61,107 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+language_nav("Quechua", "converter")
+
 # ── Direction ─────────────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Conversion Direction</div>', unsafe_allow_html=True)
+arabic_input = ""
+qu_input = ""
 
-direction = st.radio(
-    "Direction", ["Arabic → Quechua", "Quechua → Arabic"],
-    horizontal=True, label_visibility="collapsed", key="qu_direction",
-)
+left_col, right_col = st.columns([1, 1], gap="large")
 
-# ── Presets ───────────────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+with right_col:
+    # ── DIRECTION SELECTOR ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label conv-direction-label">Conversion Direction</div>', unsafe_allow_html=True)
 
-arabic_presets = [1, 10, 21, 100, 111, 1000, 1234, 9999]
-qu_presets = [
-    "huk", "chunka", "iskay chunka hukniyuq",
-    "huk pachak", "huk pachak chunka hukniyuq",
-    "huk waranqa",
-    "huk waranqa iskay pachak kimsa chunka tawayuq",
-    "isqun waranqa isqun pachak isqun chunka isqunniyuq",
-]
-
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
-    if direction == "Arabic → Quechua":
-        for i, num in enumerate(arabic_presets):
-            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-                st.session_state["arabic_input"] = str(num)
-    else:
-        for i, txt in enumerate(qu_presets):
-            if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
-                st.session_state["qu_input"] = txt
-
-# ── Conversion ────────────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
-
-if direction == "Arabic → Quechua":
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Arabic numeral</div>
-        <div class="conv-input-hint">Whole number in range 0–9,999.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    arabic_input = st.text_input(
-        "Arabic numeral", key="arabic_input",
-        placeholder="e.g. 1234", label_visibility="collapsed",
+    direction = st.radio(
+        "Direction", ["Arabic → Quechua", "Quechua → Arabic"],
+        horizontal=True, label_visibility="collapsed", key="qu_direction",
     )
-    if arabic_input:
-        if arabic_input.strip().lstrip("-").isdigit():
+
+with left_col:
+    # ── Presets ───────────────────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+
+    arabic_presets = [1, 10, 21, 100, 111, 1000, 1234, 9999]
+    qu_presets = [
+        "huk", "chunka", "iskay chunka hukniyuq",
+        "huk pachak", "huk pachak chunka hukniyuq",
+        "huk waranqa",
+        "huk waranqa iskay pachak kimsa chunka tawayuq",
+        "isqun waranqa isqun pachak isqun chunka isqunniyuq",
+    ]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        if direction == "Arabic → Quechua":
+            for i, num in enumerate(arabic_presets):
+                if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                    st.session_state["arabic_input"] = str(num)
+        else:
+            for i, txt in enumerate(qu_presets):
+                if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
+                    st.session_state["qu_input"] = txt
+
+    # ── Conversion ────────────────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+
+    if direction == "Arabic → Quechua":
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Arabic numeral</div>
+            <div class="conv-input-hint">Whole number in range 0–9,999.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        arabic_input = st.text_input(
+            "Arabic numeral", key="arabic_input",
+            placeholder="e.g. 1234", label_visibility="collapsed",
+        )
+    else:
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter a Quechua numeral</div>
+            <div class="conv-input-hint">
+                e.g. <em>iskay chunka hukniyuq</em> (21) or <em>huk waranqa</em> (1000).
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        qu_input = st.text_input(
+            "Quechua numeral", key="qu_input",
+            placeholder="e.g. iskay chunka hukniyuq", label_visibility="collapsed",
+        )
+
+with right_col:
+    if direction == "Arabic → Quechua":
+        if arabic_input:
+            if arabic_input.strip().lstrip("-").isdigit():
+                try:
+                    result = number_to_quechua(int(arabic_input.strip()))
+                    st.markdown(f"""
+                    <div class="conv-result-card">
+                        <div class="conv-result-label">Quechua numeral</div>
+                        <div class="conv-result-single">{result}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                                unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        if qu_input:
             try:
-                result = number_to_quechua(int(arabic_input.strip()))
+                result = str(quechua_to_number(qu_input.strip()))
                 st.markdown(f"""
                 <div class="conv-result-card">
-                    <div class="conv-result-label">Quechua numeral</div>
+                    <div class="conv-result-label">Arabic numeral</div>
                     <div class="conv-result-single">{result}</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -120,36 +169,15 @@ if direction == "Arabic → Quechua":
                 st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                             unsafe_allow_html=True)
         else:
-            st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                        unsafe_allow_html=True)
-else:
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter a Quechua numeral</div>
-        <div class="conv-input-hint">
-            e.g. <em>iskay chunka hukniyuq</em> (21) or <em>huk waranqa</em> (1000).
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    qu_input = st.text_input(
-        "Quechua numeral", key="qu_input",
-        placeholder="e.g. iskay chunka hukniyuq", label_visibility="collapsed",
-    )
-    if qu_input:
-        try:
-            result = str(quechua_to_number(qu_input.strip()))
-            st.markdown(f"""
-            <div class="conv-result-card">
-                <div class="conv-result-label">Arabic numeral</div>
-                <div class="conv-result-single">{result}</div>
-            </div>
-            """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                        unsafe_allow_html=True)
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
 
-# ── Caption & nav ─────────────────────────────────────────────────────────────
-st.markdown("""
+
+    # ── Caption ─────────────────────────────────────────────────────────────────
+    st.markdown("""
 <div class="conv-caption">
     Ayacucho Quechua (Chanka). Decimal, agglutinative. Units in compound position
     take the suffix <em>-niyuq</em> (Parker's primary productive form).
@@ -160,7 +188,4 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Quechua_Linguistics.py", label="← Quechua Linguistics")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Quechua", "converter")

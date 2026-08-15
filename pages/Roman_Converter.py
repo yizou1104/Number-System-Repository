@@ -1,12 +1,12 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 import unicodedata
 
 # ============================================================
 # ROMAN NUMERAL CONVERTER (BIDIRECTIONAL, WITH OVERLINES)
 # ============================================================
 
-OVERLINE = "\u0305"  # Unicode combining overline (×1000)
+OVERLINE = "̅"  # Unicode combining overline (×1000)
 
 ROMAN_PAIRS = [
     (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"),
@@ -82,7 +82,7 @@ def roman_to_arabic(s):
 # ============================================================
 # PAGE CONFIG & STYLES
 # ============================================================
-st.set_page_config(page_title="Roman Numeral Converter", layout="centered")
+st.set_page_config(page_title="Roman Numeral Converter", layout="wide")
 apply_global_styles()
 
 CONV_CSS = """
@@ -122,6 +122,7 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 </style>
 """
 st.markdown(CONV_CSS, unsafe_allow_html=True)
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
 
 # ── MASTHEAD ────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -135,56 +136,101 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── DIRECTION SELECTOR ──────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Conversion Direction</div>', unsafe_allow_html=True)
+language_nav("Roman", "converter")
 
-direction = st.radio(
-    "Conversion direction",
-    ["Arabic → Roman", "Roman → Arabic"],
-    horizontal=True,
-    label_visibility="collapsed",
-    key="roman_direction",
-)
+arabic_input = ""
+roman_input = ""
 
-# ── PRESET EXAMPLES ─────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+left_col, right_col = st.columns([1, 1], gap="large")
 
-arabic_presets = [4, 9, 44, 99, 399, 944, 2024, 4032]
-roman_presets  = ["IV", "IX", "XLIV", "XCIX", "CCCXCIX", "CMXLIV", "MMXXIV", "MMMCMXCIX"]
+with right_col:
+    # ── DIRECTION SELECTOR ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label conv-direction-label">Conversion Direction</div>', unsafe_allow_html=True)
 
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
-    if direction == "Arabic → Roman":
-        for i, num in enumerate(arabic_presets):
-            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-                st.session_state["arabic_input"] = str(num)
-    else:
-        for i, txt in enumerate(roman_presets):
-            if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
-                st.session_state["roman_input"] = txt
-
-# ── INPUT & CONVERSION ──────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
-
-if direction == "Arabic → Roman":
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Arabic numeral</div>
-        <div class="conv-input-hint">A positive whole number, or click a preset above.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    arabic_input = st.text_input(
-        "Arabic numeral", key="arabic_input",
-        placeholder="e.g. 2024", label_visibility="collapsed",
+    direction = st.radio(
+        "Conversion direction",
+        ["Arabic → Roman", "Roman → Arabic"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="roman_direction",
     )
-    if arabic_input:
-        if arabic_input.isdigit() and int(arabic_input) > 0:
+
+with left_col:
+    # ── PRESET EXAMPLES ─────────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+
+    arabic_presets = [4, 9, 44, 99, 399, 944, 2024, 4032]
+    roman_presets  = ["IV", "IX", "XLIV", "XCIX", "CCCXCIX", "CMXLIV", "MMXXIV", "MMMCMXCIX"]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        if direction == "Arabic → Roman":
+            for i, num in enumerate(arabic_presets):
+                if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                    st.session_state["arabic_input"] = str(num)
+        else:
+            for i, txt in enumerate(roman_presets):
+                if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
+                    st.session_state["roman_input"] = txt
+
+    # ── INPUT & CONVERSION ──────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+
+    if direction == "Arabic → Roman":
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Arabic numeral</div>
+            <div class="conv-input-hint">A positive whole number, or click a preset above.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        arabic_input = st.text_input(
+            "Arabic numeral", key="arabic_input",
+            placeholder="e.g. 2024", label_visibility="collapsed",
+        )
+    else:
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter a Roman numeral</div>
+            <div class="conv-input-hint">Standard Roman notation, e.g. <em>MMXXIV</em>.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        roman_input = st.text_input(
+            "Roman numeral", key="roman_input",
+            placeholder="e.g. MMXXIV", label_visibility="collapsed",
+        )
+
+with right_col:
+    if direction == "Arabic → Roman":
+        if arabic_input:
+            if arabic_input.isdigit() and int(arabic_input) > 0:
+                try:
+                    result = arabic_to_roman(int(arabic_input))
+                    st.markdown(f"""
+                    <div class="conv-result-card">
+                        <div class="conv-result-label">Roman numeral</div>
+                        <div class="conv-result-value">{result}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                                unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a positive integer.</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        if roman_input:
             try:
-                result = arabic_to_roman(int(arabic_input))
+                result = str(roman_to_arabic(roman_input))
                 st.markdown(f"""
                 <div class="conv-result-card">
-                    <div class="conv-result-label">Roman numeral</div>
+                    <div class="conv-result-label">Arabic numeral</div>
                     <div class="conv-result-value">{result}</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -192,35 +238,12 @@ if direction == "Arabic → Roman":
                 st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                             unsafe_allow_html=True)
         else:
-            st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a positive integer.</p></div>',
-                        unsafe_allow_html=True)
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
 
-else:
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter a Roman numeral</div>
-        <div class="conv-input-hint">Standard Roman notation, e.g. <em>MMXXIV</em>.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    roman_input = st.text_input(
-        "Roman numeral", key="roman_input",
-        placeholder="e.g. MMXXIV", label_visibility="collapsed",
-    )
-    if roman_input:
-        try:
-            result = str(roman_to_arabic(roman_input))
-            st.markdown(f"""
-            <div class="conv-result-card">
-                <div class="conv-result-label">Arabic numeral</div>
-                <div class="conv-result-value">{result}</div>
-            </div>
-            """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                        unsafe_allow_html=True)
 
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Roman_Linguistics.py", label="Roman Linguistics →")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Roman", "converter")

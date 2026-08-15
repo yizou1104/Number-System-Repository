@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 
 # ============================================================
 # HINDI NUMERAL SYSTEM
@@ -155,7 +155,7 @@ def hindi_to_number(text: str) -> int:
         raise ValueError("Empty input")
     if all(ch in "०१२३४५६७८९" or ch.isspace() for ch in text):
         return hindi_digits_to_number(text)
-    if any('\u0900' <= ch <= '\u097F' for ch in text):
+    if any('ऀ' <= ch <= 'ॿ' for ch in text):
         return hindi_words_to_number(text)
     return romanized_words_to_number(text)
 
@@ -163,7 +163,7 @@ def hindi_to_number(text: str) -> int:
 # ============================================================
 # PAGE CONFIG & STYLES
 # ============================================================
-st.set_page_config(page_title="Hindi Numeral Converter", layout="centered")
+st.set_page_config(page_title="Hindi Numeral Converter", layout="wide")
 apply_global_styles()
 
 CONV_CSS = """<style>
@@ -204,6 +204,7 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 .conv-caption a:hover{text-decoration-color:var(--accent)!important}
 </style>"""
 st.markdown(CONV_CSS, unsafe_allow_html=True)
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
 
 # ── MASTHEAD ────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -217,109 +218,133 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── DIRECTION SELECTOR ──────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Conversion Direction</div>', unsafe_allow_html=True)
+language_nav("Hindi", "converter")
 
-direction = st.radio(
-    "Conversion direction",
-    ["Arabic → Hindi", "Hindi → Arabic"],
-    horizontal=True,
-    label_visibility="collapsed",
-    key="hindi_direction",
-)
+# ── INITIALIZE INPUT VARS ─────────────────────────────────────────────────────
+arabic_input = ""
+hindi_input = ""
 
-# ── PRESET EXAMPLES ─────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+# ── TWO COLUMN LAYOUT ─────────────────────────────────────────────────────────
+left_col, right_col = st.columns([1, 1], gap="large")
 
-arabic_presets = [0, 5, 12, 21, 100, 325, 12345, 10000000]
-hindi_presets  = [
-    "शून्य", "पाँच", "बारह", "इक्कीस",
-    "सौ", "तीन सौ पच्चीस", "बारह हज़ार तीन सौ पैंतालीस", "एक करोड़",
-]
+with right_col:
+    # ── DIRECTION SELECTOR ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label conv-direction-label">Conversion Direction</div>', unsafe_allow_html=True)
 
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
-    if direction == "Arabic → Hindi":
-        for i, num in enumerate(arabic_presets):
-            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-                st.session_state["arabic_input"] = str(num)
-    else:
-        for i, txt in enumerate(hindi_presets):
-            if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
-                st.session_state["hindi_input"] = txt
-
-# ── INPUT & CONVERSION ──────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
-
-if direction == "Arabic → Hindi":
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Arabic numeral</div>
-        <div class="conv-input-hint">Type a whole number, or click a preset above.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    arabic_input = st.text_input(
-        "Arabic numeral", key="arabic_input",
-        placeholder="e.g. 325", label_visibility="collapsed",
+    direction = st.radio(
+        "Conversion direction",
+        ["Arabic → Hindi", "Hindi → Arabic"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="hindi_direction",
     )
-    if arabic_input:
-        if arabic_input.lstrip("-").isdigit():
+
+with left_col:
+    # ── PRESET EXAMPLES ─────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+
+    arabic_presets = [0, 5, 12, 21, 100, 325, 12345, 10000000]
+    hindi_presets  = [
+        "शून्य", "पाँच", "बारह", "इक्कीस",
+        "सौ", "तीन सौ पच्चीस", "बारह हज़ार तीन सौ पैंतालीस", "एक करोड़",
+    ]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        if direction == "Arabic → Hindi":
+            for i, num in enumerate(arabic_presets):
+                if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                    st.session_state["arabic_input"] = str(num)
+        else:
+            for i, txt in enumerate(hindi_presets):
+                if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
+                    st.session_state["hindi_input"] = txt
+
+    # ── INPUT & CONVERSION ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+
+    if direction == "Arabic → Hindi":
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Arabic numeral</div>
+            <div class="conv-input-hint">Type a whole number, or click a preset above.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        arabic_input = st.text_input(
+            "Arabic numeral", key="arabic_input",
+            placeholder="e.g. 325", label_visibility="collapsed",
+        )
+    else:
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter a Hindi numeral</div>
+            <div class="conv-input-hint">Devanagari digits (०-९), Devanagari words, or romanized words.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        hindi_input = st.text_input(
+            "Hindi numeral", key="hindi_input",
+            placeholder="e.g. तीन सौ पच्चीस", label_visibility="collapsed",
+        )
+
+with right_col:
+    if direction == "Arabic → Hindi":
+        if arabic_input:
+            if arabic_input.lstrip("-").isdigit():
+                try:
+                    n      = int(arabic_input)
+                    digits = number_to_hindi_digits(n)
+                    deva   = number_to_hindi_words(n, romanized=False)
+                    rom    = number_to_hindi_words(n, romanized=True)
+                    st.markdown(f"""
+                    <div class="conv-result-card">
+                        <div class="conv-result-label">Hindi numeral</div>
+                        <div class="conv-result-row">
+                            <span class="conv-result-sublabel">Digits</span>
+                            <span class="conv-result-subvalue">{digits}</span>
+                        </div>
+                        <div class="conv-result-row">
+                            <span class="conv-result-sublabel">Words</span>
+                            <span class="conv-result-subvalue">{deva}</span>
+                        </div>
+                        <div class="conv-result-row">
+                            <span class="conv-result-sublabel">Romanized</span>
+                            <span class="conv-result-subvalue">{rom}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                                unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        if hindi_input:
             try:
-                n      = int(arabic_input)
-                digits = number_to_hindi_digits(n)
-                deva   = number_to_hindi_words(n, romanized=False)
-                rom    = number_to_hindi_words(n, romanized=True)
+                result = str(hindi_to_number(hindi_input))
                 st.markdown(f"""
                 <div class="conv-result-card">
-                    <div class="conv-result-label">Hindi numeral</div>
-                    <div class="conv-result-row">
-                        <span class="conv-result-sublabel">Digits</span>
-                        <span class="conv-result-subvalue">{digits}</span>
-                    </div>
-                    <div class="conv-result-row">
-                        <span class="conv-result-sublabel">Words</span>
-                        <span class="conv-result-subvalue">{deva}</span>
-                    </div>
-                    <div class="conv-result-row">
-                        <span class="conv-result-sublabel">Romanized</span>
-                        <span class="conv-result-subvalue">{rom}</span>
-                    </div>
+                    <div class="conv-result-label">Arabic numeral</div>
+                    <div class="conv-result-value">{result}</div>
                 </div>
                 """, unsafe_allow_html=True)
             except Exception as e:
                 st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                             unsafe_allow_html=True)
         else:
-            st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                        unsafe_allow_html=True)
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
 
-else:
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter a Hindi numeral</div>
-        <div class="conv-input-hint">Devanagari digits (०-९), Devanagari words, or romanized words.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    hindi_input = st.text_input(
-        "Hindi numeral", key="hindi_input",
-        placeholder="e.g. तीन सौ पच्चीस", label_visibility="collapsed",
-    )
-    if hindi_input:
-        try:
-            result = str(hindi_to_number(hindi_input))
-            st.markdown(f"""
-            <div class="conv-result-card">
-                <div class="conv-result-label">Arabic numeral</div>
-                <div class="conv-result-value">{result}</div>
-            </div>
-            """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                        unsafe_allow_html=True)
 
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Hindi_Linguistics.py", label="Hindi Linguistics →")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Hindi", "converter")

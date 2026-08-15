@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 
 # ============================================================
 # BENGALI NUMERAL SYSTEM
@@ -160,7 +160,7 @@ def bengali_to_number(text: str) -> int:
         raise ValueError("Empty input")
     if all(ch in "০১২৩৪৫৬৭৮৯" or ch.isspace() for ch in text):
         return bengali_digits_to_number(text)
-    if any('\u0980' <= ch <= '\u09FF' for ch in text):
+    if any('ঀ' <= ch <= '৿' for ch in text):
         return bengali_words_to_number(text)
     return romanized_words_to_number(text)
 
@@ -168,7 +168,7 @@ def bengali_to_number(text: str) -> int:
 # ============================================================
 # PAGE CONFIG & STYLES
 # ============================================================
-st.set_page_config(page_title="Bengali Numeral Converter", layout="centered")
+st.set_page_config(page_title="Bengali Numeral Converter", layout="wide")
 apply_global_styles()
 
 CONV_CSS = """<style>
@@ -209,6 +209,7 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 .conv-caption a:hover{text-decoration-color:var(--accent)!important}
 </style>"""
 st.markdown(CONV_CSS, unsafe_allow_html=True)
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
 
 # ── MASTHEAD ────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -222,109 +223,138 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── DIRECTION SELECTOR ──────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Conversion Direction</div>', unsafe_allow_html=True)
+language_nav("Bengali", "converter")
 
-direction = st.radio(
-    "Conversion direction",
-    ["Arabic → Bengali", "Bengali → Arabic"],
-    horizontal=True,
-    label_visibility="collapsed",
-    key="bengali_direction",
-)
+# ── TWO-COLUMN LAYOUT ───────────────────────────────────────────────────────
 
-# ── PRESET EXAMPLES ─────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+# initialize so both are accessible across column boundaries
+_input_arabic = ""
+_input_lang = ""
 
-arabic_presets  = [0, 5, 12, 21, 100, 325, 12345, 10000000]
-bengali_presets = [
-    "শূন্য", "পাঁচ", "বারো", "একুশ",
-    "একশ", "তিন শত পঁচিশ", "বারো হাজার তিন শত পঁয়তাল্লিশ", "এক কোটি",
-]
+left_col, right_col = st.columns([1, 1], gap="large")
 
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
-    if direction == "Arabic → Bengali":
-        for i, num in enumerate(arabic_presets):
-            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-                st.session_state["arabic_input"] = str(num)
-    else:
-        for i, txt in enumerate(bengali_presets):
-            if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
-                st.session_state["bengali_input"] = txt
+with right_col:
+    # ── DIRECTION SELECTOR ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label conv-direction-label">Conversion Direction</div>', unsafe_allow_html=True)
 
-# ── INPUT & CONVERSION ──────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
-
-if direction == "Arabic → Bengali":
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Arabic numeral</div>
-        <div class="conv-input-hint">Type a whole number, or click a preset above.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    arabic_input = st.text_input(
-        "Arabic numeral", key="arabic_input",
-        placeholder="e.g. 325", label_visibility="collapsed",
+    direction = st.radio(
+        "Conversion direction",
+        ["Arabic → Bengali", "Bengali → Arabic"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="bengali_direction",
     )
-    if arabic_input:
-        if arabic_input.lstrip("-").isdigit():
+
+with left_col:
+    # ── PRESET EXAMPLES ─────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+
+    arabic_presets  = [0, 5, 12, 21, 100, 325, 12345, 10000000]
+    bengali_presets = [
+        "শূন্য", "পাঁচ", "বারো", "একুশ",
+        "একশ", "তিন শত পঁচিশ", "বারো হাজার তিন শত পঁয়তাল্লিশ", "এক কোটি",
+    ]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        if direction == "Arabic → Bengali":
+            for i, num in enumerate(arabic_presets):
+                if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                    st.session_state["arabic_input"] = str(num)
+        else:
+            for i, txt in enumerate(bengali_presets):
+                if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
+                    st.session_state["bengali_input"] = txt
+
+    # ── INPUT & CONVERSION ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+
+    if direction == "Arabic → Bengali":
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Arabic numeral</div>
+            <div class="conv-input-hint">Type a whole number, or click a preset above.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        arabic_input = st.text_input(
+            "Arabic numeral", key="arabic_input",
+            placeholder="e.g. 325", label_visibility="collapsed",
+        )
+        _input_arabic = arabic_input
+    else:
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter a Bengali numeral</div>
+            <div class="conv-input-hint">Bengali digits (০-৯), Bengali words, or romanized words.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        bengali_input = st.text_input(
+            "Bengali numeral", key="bengali_input",
+            placeholder="e.g. তিন শত পঁচিশ", label_visibility="collapsed",
+        )
+        _input_lang = bengali_input
+
+with right_col:
+    if direction == "Arabic → Bengali":
+        if _input_arabic:
+            if _input_arabic.lstrip("-").isdigit():
+                try:
+                    n      = int(_input_arabic)
+                    digits = number_to_bengali_digits(n)
+                    beng   = number_to_bengali_words(n, romanized=False)
+                    rom    = number_to_bengali_words(n, romanized=True)
+                    st.markdown(f"""
+                    <div class="conv-result-card">
+                        <div class="conv-result-label">Bengali numeral</div>
+                        <div class="conv-result-row">
+                            <span class="conv-result-sublabel">Digits</span>
+                            <span class="conv-result-subvalue">{digits}</span>
+                        </div>
+                        <div class="conv-result-row">
+                            <span class="conv-result-sublabel">Words</span>
+                            <span class="conv-result-subvalue">{beng}</span>
+                        </div>
+                        <div class="conv-result-row">
+                            <span class="conv-result-sublabel">Romanized</span>
+                            <span class="conv-result-subvalue">{rom}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                                unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        if _input_lang:
             try:
-                n      = int(arabic_input)
-                digits = number_to_bengali_digits(n)
-                beng   = number_to_bengali_words(n, romanized=False)
-                rom    = number_to_bengali_words(n, romanized=True)
+                result = str(bengali_to_number(_input_lang))
                 st.markdown(f"""
                 <div class="conv-result-card">
-                    <div class="conv-result-label">Bengali numeral</div>
-                    <div class="conv-result-row">
-                        <span class="conv-result-sublabel">Digits</span>
-                        <span class="conv-result-subvalue">{digits}</span>
-                    </div>
-                    <div class="conv-result-row">
-                        <span class="conv-result-sublabel">Words</span>
-                        <span class="conv-result-subvalue">{beng}</span>
-                    </div>
-                    <div class="conv-result-row">
-                        <span class="conv-result-sublabel">Romanized</span>
-                        <span class="conv-result-subvalue">{rom}</span>
-                    </div>
+                    <div class="conv-result-label">Arabic numeral</div>
+                    <div class="conv-result-value">{result}</div>
                 </div>
                 """, unsafe_allow_html=True)
             except Exception as e:
                 st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                             unsafe_allow_html=True)
         else:
-            st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                        unsafe_allow_html=True)
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
 
-else:
+
     st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter a Bengali numeral</div>
-        <div class="conv-input-hint">Bengali digits (০-৯), Bengali words, or romanized words.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    bengali_input = st.text_input(
-        "Bengali numeral", key="bengali_input",
-        placeholder="e.g. তিন শত পঁচিশ", label_visibility="collapsed",
-    )
-    if bengali_input:
-        try:
-            result = str(bengali_to_number(bengali_input))
-            st.markdown(f"""
-            <div class="conv-result-card">
-                <div class="conv-result-label">Arabic numeral</div>
-                <div class="conv-result-value">{result}</div>
-            </div>
-            """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                        unsafe_allow_html=True)
-
-# ── CAPTION & NAVIGATION ────────────────────────────────────────────────────
-st.markdown("""
 <div class="conv-caption">
     Implements the Indian numbering system (lakhs, crores) with standard Bengali number names.
     Data from <a href="https://en.wikipedia.org/wiki/Bengali_numerals" target="_blank">Wikipedia</a>.
@@ -332,8 +362,5 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Bengali_Linguistics.py", label="Bengali Linguistics →")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+# ── NAVIGATION (full width) ──────────────────────────────────
+footer_nav("Bengali", "converter")

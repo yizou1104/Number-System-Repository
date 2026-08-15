@@ -1,12 +1,14 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav, LING_CSS
+from ui import apply_global_styles, LING_CSS, LING_WIDTH_CSS, language_nav, footer_nav
 
-st.set_page_config(page_title="Basque Numerals — Linguistics", layout="centered")
+st.set_page_config(page_title="Basque Numerals — Linguistics", layout="wide")
 
 apply_global_styles()
- 
+
 st.markdown(LING_CSS, unsafe_allow_html=True)
- 
+st.markdown(LING_WIDTH_CSS, unsafe_allow_html=True)
+language_nav("Basque", "linguistics")
+
 # ══════════════════════════════════════════════════════════════
 # PAGE MASTHEAD
 # ══════════════════════════════════════════════════════════════
@@ -27,20 +29,20 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ══════════════════════════════════════════════════════════════
 # SECTION 1 — SYSTEM OVERVIEW
 # ══════════════════════════════════════════════════════════════
 st.markdown('<div class="ling-section-label">System Overview</div>', unsafe_allow_html=True)
 st.markdown('<div class="ling-section-title">Structural Properties</div>', unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-callout">
     <div class="ling-callout-label">Key Fact</div>
     <p>Basque is one of the few fully productive vigesimal numeral systems surviving in modern Europe, structurally unrelated to any Indo-European language.</p>
 </div>
 """, unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-card">
     <div class="ling-props">
@@ -59,33 +61,33 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ══════════════════════════════════════════════════════════════
 # SECTION 2 — BASIC DIGITS
 # ══════════════════════════════════════════════════════════════
 st.markdown('<div class="ling-section-label">Digits &amp; Bases</div>', unsafe_allow_html=True)
 st.markdown('<div class="ling-section-title">Basic Digits (0–10)</div>', unsafe_allow_html=True)
- 
+
 st.table({
     "Number": ["0","1","2","3","4","5","6","7","8","9","10"],
     "Form":   ["zero","bat","bi","hiru","lau","bost","sei","zazpi","zortzi","bederatzi","hamar"]
 })
- 
+
 st.markdown("""
 <div class="ling-info">
     <p>Basque uses the Latin script throughout. Zero is a Latin loanword (<em>zero</em>); the remaining digits are native Basque roots with no documented external etymology.</p>
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ── Teens ────────────────────────────────────────────────────
 st.markdown('<div class="ling-subsection-title" style="margin-top:1.75rem">11–19 (Teens)</div>', unsafe_allow_html=True)
- 
+
 st.table({
     "Number": ["11","12","13","14","15","16","17","18","19"],
     "Form":   ["hamaika","hamabi","hamahiru","hamalau","hamabost",
                "hamasei","hamazazpi","hemezortzi","hemeretzi"]
 })
- 
+
 st.markdown("""
 <div style="display:flex; gap:0.75rem; margin-bottom:0.85rem; align-items:flex-start; flex-wrap:wrap;">
     <div class="ling-formula" style="margin-bottom:0; flex:0 0 auto; min-width:0;">
@@ -97,39 +99,39 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ── Vigesimal Bases ──────────────────────────────────────────
 st.markdown('<div class="ling-subsection-title" style="margin-top:1.75rem">Core Vigesimal Bases</div>', unsafe_allow_html=True)
- 
+
 st.table({
     "Value":     ["20","40","60","80","100"],
     "Form":      ["hogei","berrogei","hirurogei","laurogei","ehun"],
     "Structure": ["Base unit","2 × 20","3 × 20","4 × 20","Decimal pivot"]
 })
- 
+
 st.markdown("""
 <div class="ling-callout">
     <div class="ling-callout-label">Vigesimal Structure</div>
     <p>40, 60, and 80 are formed multiplicatively: a modified digit stem fuses with <em>-rogei</em> (from <em>hogei</em>, 20). The base itself, <em>hogei</em>, is the sole undecomposed score.</p>
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ══════════════════════════════════════════════════════════════
 # SECTION 3 — COMPOSITIONAL RULES
 # ══════════════════════════════════════════════════════════════
 st.markdown('<div class="ling-section-label">Compositional Rules</div>', unsafe_allow_html=True)
 st.markdown('<div class="ling-section-title">How Numbers Are Built</div>', unsafe_allow_html=True)
- 
+
 # ── Vigesimal Multiplication ─────────────────────────────────
 st.markdown('<div class="ling-subsection-title">Vigesimal Multiplication</div>', unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-formula">
     <span class="ling-formula-label">Form</span>
     <span class="ling-formula-rule">[Multiplier stem] + <em>rogei</em></span>
 </div>
 """, unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-card">
     <div class="ling-subsection-title" style="font-size:1.05rem;margin-bottom:0.6rem">Morphophonemic Alternations</div>
@@ -156,17 +158,17 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ── Additive Structure ───────────────────────────────────────
 st.markdown('<div class="ling-subsection-title" style="margin-top:1.75rem">Additive Structure — Within Scores</div>', unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-formula">
     <span class="ling-formula-label">Form</span>
     <span class="ling-formula-rule"><em>hogei</em> + <em>ta</em> + unit</span>
 </div>
 """, unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-examples">
     <div class="ling-examples-label">Examples — 21 to 40 range</div>
@@ -175,23 +177,23 @@ st.markdown("""
     <div class="ling-ex-line"><span class="num">37</span><span class="word">hogeita hamazazpi</span><span class="gloss">twenty + connector + seventeen</span></div>
 </div>
 """, unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-info">
     <p>The connector <strong>-ta</strong> is a phonologically reduced form of <em>eta</em> ("and"), clitised directly to the vigesimal base when the remainder is a teen or small unit.</p>
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ── Structure Above 40 ───────────────────────────────────────
 st.markdown('<div class="ling-subsection-title" style="margin-top:1.75rem">Structure Above 40</div>', unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-formula">
     <span class="ling-formula-label">Form</span>
     <span class="ling-formula-rule">[Score multiple] + <em>ta</em> + [remainder]</span>
 </div>
 """, unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-examples">
     <div class="ling-examples-label">Examples — higher scores</div>
@@ -200,23 +202,23 @@ st.markdown("""
     <div class="ling-ex-line"><span class="num">90</span><span class="word">laurogeita hamar</span><span class="gloss">80 + ten</span></div>
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ── Decimal Layer ────────────────────────────────────────────
 st.markdown('<div class="ling-subsection-title" style="margin-top:1.75rem">Hundreds and Above — Decimal Layer</div>', unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-formula">
     <span class="ling-formula-label">Form</span>
     <span class="ling-formula-rule">[Digit stem] + <em>-ehun</em> · · · <em>eta</em> · · · [remainder]</span>
 </div>
 """, unsafe_allow_html=True)
- 
+
 st.table({
     "Value": ["100","200","300","400"],
     "Form":  ["ehun","berrehun","hirurehun","laurehun"],
     "Analysis": ["base","2 × ehun","3 × ehun","4 × ehun"]
 })
- 
+
 st.markdown("""
 <div class="ling-examples">
     <div class="ling-examples-label">Extended Example</div>
@@ -224,20 +226,20 @@ st.markdown("""
     <div class="ling-ex-line" style="padding-left:5rem;font-size:0.88rem;color:var(--ink-muted);font-style:italic">200 + and + 40 + 16</div>
 </div>
 """, unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-callout">
     <div class="ling-callout-label">System Shift</div>
     <p>At 100, Basque switches from vigesimal to decimal organisation. The hundreds layer is strictly multiplicative-decimal; the vigesimal structure re-appears only within each hundred's remainder.</p>
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ══════════════════════════════════════════════════════════════
 # SECTION 4 — CONNECTORS & SPECIAL FORMS
 # ══════════════════════════════════════════════════════════════
 st.markdown('<div class="ling-section-label">Connectors &amp; Special Forms</div>', unsafe_allow_html=True)
 st.markdown('<div class="ling-section-title">Special Characters &amp; Connectors</div>', unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-grid-2">
     <div class="ling-card">
@@ -252,19 +254,19 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-info">
     <p><strong>Zero</strong> is expressed as <em>zero</em> — a Latin loanword with no native Basque equivalent in the traditional counting system.</p>
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ══════════════════════════════════════════════════════════════
 # SECTION 5 — SYNTAX & MORPHOLOGY
 # ══════════════════════════════════════════════════════════════
 st.markdown('<div class="ling-section-label">Syntax &amp; Morphology</div>', unsafe_allow_html=True)
 st.markdown('<div class="ling-section-title">Grammatical Integration</div>', unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-grid-2">
     <div class="ling-card">
@@ -279,7 +281,7 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-card">
     <div class="ling-subsection-title" style="font-size:1.05rem;margin-bottom:0.55rem">Case Marking — Ergative–Absolutive</div>
@@ -292,10 +294,10 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ── Ordinals ─────────────────────────────────────────────────
 st.markdown('<div class="ling-subsection-title" style="margin-top:1.75rem">Ordinal Formation</div>', unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-card">
     <p>Ordinals are formed by suffixing <strong>-garren</strong> to the cardinal stem. The first three ordinals have irregular or suppletive forms.</p>
@@ -333,10 +335,10 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ── Inflection Summary ───────────────────────────────────────
 st.markdown('<div class="ling-subsection-title" style="margin-top:1.75rem">Morphological Summary</div>', unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-grid-2">
     <div class="ling-card">
@@ -359,15 +361,12 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
- 
+
 st.markdown("""
 <div class="ling-info">
     <p>The collective loanform <em>dozena</em> (dozen) has entered colloquial Basque from Romance. It does not participate in the native vigesimal compositional system.</p>
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Basque_Converter.py", label="← Basque Converter")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Basque", "linguistics")

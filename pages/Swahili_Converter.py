@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 
 # ============================================================
 # SWAHILI NUMERAL SYSTEM (Kiswahili Sanifu)
@@ -153,7 +153,7 @@ def swahili_to_number(text: str) -> int:
 # ============================================================
 # PAGE CONFIG & STYLES
 # ============================================================
-st.set_page_config(page_title="Swahili Numeral Converter", layout="centered")
+st.set_page_config(page_title="Swahili Numeral Converter", layout="wide")
 apply_global_styles()
 
 CONV_CSS = """<style>
@@ -191,6 +191,7 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 .conv-caption a:hover{text-decoration-color:var(--accent)!important}
 </style>"""
 st.markdown(CONV_CSS, unsafe_allow_html=True)
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
 
 # ── MASTHEAD ─────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -204,60 +205,105 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── DIRECTION SELECTOR ───────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Conversion Direction</div>', unsafe_allow_html=True)
+language_nav("Swahili", "converter")
 
-direction = st.radio(
-    "Conversion direction",
-    ["Arabic → Swahili", "Swahili → Arabic"],
-    horizontal=True,
-    label_visibility="collapsed",
-    key="swahili_direction",
-)
+arabic_input = ""
+swahili_input = ""
 
-# ── PRESET EXAMPLES ──────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+left_col, right_col = st.columns([1, 1], gap="large")
 
-arabic_presets  = [0, 11, 35, 100, 321, 1000, 11000, 1000000]
-swahili_presets = [
-    "sifuri", "kumi na moja", "thelathini na tano",
-    "mia moja", "mia tatu na ishirini na moja",
-    "elfu moja", "elfu kumi na moja", "milioni moja",
-]
+with right_col:
+    # ── DIRECTION SELECTOR ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label conv-direction-label">Conversion Direction</div>', unsafe_allow_html=True)
 
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
-    if direction == "Arabic → Swahili":
-        for i, num in enumerate(arabic_presets):
-            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-                st.session_state["arabic_input"] = str(num)
-    else:
-        for i, txt in enumerate(swahili_presets):
-            if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
-                st.session_state["swahili_input"] = txt
-
-# ── INPUT & CONVERSION ───────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
-
-if direction == "Arabic → Swahili":
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Arabic numeral</div>
-        <div class="conv-input-hint">Whole number from 0 to 999,999,999.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    arabic_input = st.text_input(
-        "Arabic numeral", key="arabic_input",
-        placeholder="e.g. 321", label_visibility="collapsed",
+    direction = st.radio(
+        "Conversion direction",
+        ["Arabic → Swahili", "Swahili → Arabic"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="swahili_direction",
     )
-    if arabic_input:
-        if arabic_input.isdigit():
+
+with left_col:
+    # ── PRESET EXAMPLES ──────────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+
+    arabic_presets  = [0, 11, 35, 100, 321, 1000, 11000, 1000000]
+    swahili_presets = [
+        "sifuri", "kumi na moja", "thelathini na tano",
+        "mia moja", "mia tatu na ishirini na moja",
+        "elfu moja", "elfu kumi na moja", "milioni moja",
+    ]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        if direction == "Arabic → Swahili":
+            for i, num in enumerate(arabic_presets):
+                if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                    st.session_state["arabic_input"] = str(num)
+        else:
+            for i, txt in enumerate(swahili_presets):
+                if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
+                    st.session_state["swahili_input"] = txt
+
+    # ── INPUT & CONVERSION ───────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+
+    if direction == "Arabic → Swahili":
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Arabic numeral</div>
+            <div class="conv-input-hint">Whole number from 0 to 999,999,999.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        arabic_input = st.text_input(
+            "Arabic numeral", key="arabic_input",
+            placeholder="e.g. 321", label_visibility="collapsed",
+        )
+    else:
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter a Swahili numeral</div>
+            <div class="conv-input-hint">Standard Swahili, e.g. <em>mia tatu na ishirini na moja</em>.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        swahili_input = st.text_input(
+            "Swahili numeral", key="swahili_input",
+            placeholder="e.g. mia tatu na ishirini na moja", label_visibility="collapsed",
+        )
+
+with right_col:
+    if direction == "Arabic → Swahili":
+        if arabic_input:
+            if arabic_input.isdigit():
+                try:
+                    result = number_to_swahili(int(arabic_input))
+                    st.markdown(f"""
+                    <div class="conv-result-card">
+                        <div class="conv-result-label">Swahili numeral</div>
+                        <div class="conv-result-value">{result}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                                unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        if swahili_input:
             try:
-                result = number_to_swahili(int(arabic_input))
+                result = str(swahili_to_number(swahili_input))
                 st.markdown(f"""
                 <div class="conv-result-card">
-                    <div class="conv-result-label">Swahili numeral</div>
+                    <div class="conv-result-label">Arabic numeral</div>
                     <div class="conv-result-value">{result}</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -265,34 +311,12 @@ if direction == "Arabic → Swahili":
                 st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                             unsafe_allow_html=True)
         else:
-            st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                        unsafe_allow_html=True)
-else:
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter a Swahili numeral</div>
-        <div class="conv-input-hint">Standard Swahili, e.g. <em>mia tatu na ishirini na moja</em>.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    swahili_input = st.text_input(
-        "Swahili numeral", key="swahili_input",
-        placeholder="e.g. mia tatu na ishirini na moja", label_visibility="collapsed",
-    )
-    if swahili_input:
-        try:
-            result = str(swahili_to_number(swahili_input))
-            st.markdown(f"""
-            <div class="conv-result-card">
-                <div class="conv-result-label">Arabic numeral</div>
-                <div class="conv-result-value">{result}</div>
-            </div>
-            """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                        unsafe_allow_html=True)
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+
 
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Swahili_Linguistics.py", label="Swahili Linguistics →")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Swahili", "converter")

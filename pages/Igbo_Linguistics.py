@@ -1,10 +1,12 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav, LING_CSS
+from ui import apply_global_styles, LING_CSS, LING_WIDTH_CSS, language_nav, footer_nav
 
-st.set_page_config(page_title="Igbo Numerals — Linguistics", layout="centered")
+st.set_page_config(page_title="Igbo Numerals — Linguistics", layout="wide")
 apply_global_styles()
 
 st.markdown(LING_CSS, unsafe_allow_html=True)
+st.markdown(LING_WIDTH_CSS, unsafe_allow_html=True)
+language_nav("Igbo", "linguistics")
 
 # ══════════════════════════════════════════════════════════════
 # MASTHEAD
@@ -191,7 +193,4 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Igbo_Converter.py", label="← Igbo Converter")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Igbo", "linguistics")

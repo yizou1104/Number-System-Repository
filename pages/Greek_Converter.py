@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 import unicodedata
 
 """
@@ -202,7 +202,7 @@ def greek_to_number(text: str) -> int:
 # ============================================================
 # PAGE CONFIG & STYLES
 # ============================================================
-st.set_page_config(page_title="Greek Numeral Converter", layout="centered")
+st.set_page_config(page_title="Greek Numeral Converter", layout="wide")
 
 CONV_CSS = """
 <style>
@@ -244,6 +244,7 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 </style>
 """
 st.markdown(CONV_CSS, unsafe_allow_html=True)
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
 
 # ── MASTHEAD ────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -257,105 +258,132 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── DIRECTION SELECTOR ──────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Conversion Direction</div>', unsafe_allow_html=True)
+language_nav("Greek", "converter")
 
-direction = st.radio(
-    "Conversion direction",
-    ["Arabic → Greek", "Greek → Arabic"],
-    horizontal=True,
-    label_visibility="collapsed",
-    key="greek_direction",
-)
+# ── TWO-COLUMN LAYOUT ────────────────────────────────────────────────────────
 
-# ── PRESET EXAMPLES ─────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+# initialize so both are accessible across column boundaries
+_input_arabic = ""
+_input_lang = ""
 
-arabic_presets = [0, 1, 5, 12, 21, 100, 325, 1234]
-greek_presets  = [
-    "μηδέν", "ένα", "πέντε", "δώδεκα",
-    "είκοσι ένα", "εκατό",
-    "τριακόσια είκοσι πέντε", "χίλια διακόσια τριάντα τέσσερα",
-]
+left_col, right_col = st.columns([1, 1], gap="large")
 
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
-    if direction == "Arabic → Greek":
-        for i, num in enumerate(arabic_presets):
-            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-                st.session_state["arabic_input"] = str(num)
-    else:
-        for i, txt in enumerate(greek_presets):
-            if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
-                st.session_state["greek_input"] = txt
+with right_col:
+    # ── DIRECTION SELECTOR ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label conv-direction-label">Conversion Direction</div>', unsafe_allow_html=True)
 
-# ── INPUT & CONVERSION ──────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
-
-if direction == "Arabic → Greek":
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Arabic numeral</div>
-        <div class="conv-input-hint">Type a whole number, or click a preset above.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    arabic_input = st.text_input(
-        "Arabic numeral", key="arabic_input",
-        placeholder="e.g. 325", label_visibility="collapsed",
+    direction = st.radio(
+        "Conversion direction",
+        ["Arabic → Greek", "Greek → Arabic"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="greek_direction",
     )
-    if arabic_input:
-        if arabic_input.lstrip("-").isdigit():
+
+with left_col:
+    # ── PRESET EXAMPLES ─────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+
+    arabic_presets = [0, 1, 5, 12, 21, 100, 325, 1234]
+    greek_presets  = [
+        "μηδέν", "ένα", "πέντε", "δώδεκα",
+        "είκοσι ένα", "εκατό",
+        "τριακόσια είκοσι πέντε", "χίλια διακόσια τριάντα τέσσερα",
+    ]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        if direction == "Arabic → Greek":
+            for i, num in enumerate(arabic_presets):
+                if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                    st.session_state["arabic_input"] = str(num)
+        else:
+            for i, txt in enumerate(greek_presets):
+                if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
+                    st.session_state["greek_input"] = txt
+
+    # ── INPUT & CONVERSION ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+
+    if direction == "Arabic → Greek":
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Arabic numeral</div>
+            <div class="conv-input-hint">Type a whole number, or click a preset above.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        arabic_input = st.text_input(
+            "Arabic numeral", key="arabic_input",
+            placeholder="e.g. 325", label_visibility="collapsed",
+        )
+        _input_arabic = arabic_input
+    else:
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter a Greek numeral</div>
+            <div class="conv-input-hint">Greek script or romanized form, e.g. <em>τριακόσια είκοσι πέντε</em> or <em>triakósia eíkosi pénte</em>.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        greek_input = st.text_input(
+            "Greek numeral", key="greek_input",
+            placeholder="e.g. τριακόσια είκοσι πέντε", label_visibility="collapsed",
+        )
+        _input_lang = greek_input
+
+with right_col:
+    if direction == "Arabic → Greek":
+        if _input_arabic:
+            if _input_arabic.lstrip("-").isdigit():
+                try:
+                    n = int(_input_arabic)
+                    gw = number_to_greek_words(n, romanized=False)
+                    rw = number_to_greek_words(n, romanized=True)
+                    st.markdown(f"""
+                    <div class="conv-result-card">
+                        <div class="conv-result-label">Greek numeral</div>
+                        <div class="conv-result-row">
+                            <span class="conv-result-sublabel">Script</span>
+                            <span class="conv-result-subvalue">{gw}</span>
+                        </div>
+                        <div class="conv-result-row">
+                            <span class="conv-result-sublabel">Romanized</span>
+                            <span class="conv-result-subvalue">{rw}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                                unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        if _input_lang:
             try:
-                n = int(arabic_input)
-                gw = number_to_greek_words(n, romanized=False)
-                rw = number_to_greek_words(n, romanized=True)
+                result = str(greek_to_number(_input_lang))
                 st.markdown(f"""
                 <div class="conv-result-card">
-                    <div class="conv-result-label">Greek numeral</div>
-                    <div class="conv-result-row">
-                        <span class="conv-result-sublabel">Script</span>
-                        <span class="conv-result-subvalue">{gw}</span>
-                    </div>
-                    <div class="conv-result-row">
-                        <span class="conv-result-sublabel">Romanized</span>
-                        <span class="conv-result-subvalue">{rw}</span>
-                    </div>
+                    <div class="conv-result-label">Arabic numeral</div>
+                    <div class="conv-result-value">{result}</div>
                 </div>
                 """, unsafe_allow_html=True)
             except Exception as e:
                 st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                             unsafe_allow_html=True)
         else:
-            st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                        unsafe_allow_html=True)
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
 
-else:
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter a Greek numeral</div>
-        <div class="conv-input-hint">Greek script or romanized form, e.g. <em>τριακόσια είκοσι πέντε</em> or <em>triakósia eíkosi pénte</em>.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    greek_input = st.text_input(
-        "Greek numeral", key="greek_input",
-        placeholder="e.g. τριακόσια είκοσι πέντε", label_visibility="collapsed",
-    )
-    if greek_input:
-        try:
-            result = str(greek_to_number(greek_input))
-            st.markdown(f"""
-            <div class="conv-result-card">
-                <div class="conv-result-label">Arabic numeral</div>
-                <div class="conv-result-value">{result}</div>
-            </div>
-            """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                        unsafe_allow_html=True)
 
-# ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Greek_Linguistics.py", label="Greek Linguistics →")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+# ── NAVIGATION (full width) ──────────────────────────────────
+footer_nav("Greek", "converter")

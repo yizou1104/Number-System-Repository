@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 from Pacific import number_to_inuktitut, inuktitut_to_number
 
 # ============================================================
@@ -9,7 +9,7 @@ from Pacific import number_to_inuktitut, inuktitut_to_number
 # Sources: Dorais (2010), Spalding (1998)
 # ============================================================
 
-st.set_page_config(page_title="Inuktitut Numeral Converter", layout="centered")
+st.set_page_config(page_title="Inuktitut Numeral Converter", layout="wide")
 apply_global_styles()
 
 CONV_CSS = """<style>
@@ -46,6 +46,7 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 .conv-caption a{color:var(--accent)!important;text-decoration:underline!important;text-decoration-color:rgba(184,92,56,.35)!important}
 </style>"""
 st.markdown(CONV_CSS, unsafe_allow_html=True)
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
 
 # ── Masthead ─────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -59,57 +60,105 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+language_nav("Inuktitut", "converter")
+
 # ── Direction ─────────────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Conversion Direction</div>', unsafe_allow_html=True)
+# ── INITIALIZE INPUT VARS ─────────────────────────────────────────────────────
+arabic_input = ""
+iu_input = ""
 
-direction = st.radio(
-    "Direction", ["Arabic → Inuktitut", "Inuktitut → Arabic"],
-    horizontal=True, label_visibility="collapsed", key="iu_direction",
-)
+# ── TWO COLUMN LAYOUT ─────────────────────────────────────────────────────────
+left_col, right_col = st.columns([1, 1], gap="large")
 
-# ── Presets ───────────────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+with right_col:
+    # ── DIRECTION SELECTOR ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label conv-direction-label">Conversion Direction</div>', unsafe_allow_html=True)
 
-arabic_presets = [1, 5, 10, 20, 21, 40, 60, 80]
-iu_presets = [
-    "atausiq", "tallimat", "qulit", "avatit",
-    "avatit atausirmik", "arvinik",
-    "pingasuujunik avatittik", "sisamat avatittik",
-]
-
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
-    if direction == "Arabic → Inuktitut":
-        for i, num in enumerate(arabic_presets):
-            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-                st.session_state["arabic_input"] = str(num)
-    else:
-        for i, txt in enumerate(iu_presets):
-            if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
-                st.session_state["iu_input"] = txt
-
-# ── Conversion ────────────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
-
-if direction == "Arabic → Inuktitut":
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Arabic numeral</div>
-        <div class="conv-input-hint">Whole number in range 0–99.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    arabic_input = st.text_input(
-        "Arabic numeral", key="arabic_input",
-        placeholder="e.g. 20", label_visibility="collapsed",
+    direction = st.radio(
+        "Direction", ["Arabic → Inuktitut", "Inuktitut → Arabic"],
+        horizontal=True, label_visibility="collapsed", key="iu_direction",
     )
-    if arabic_input:
-        if arabic_input.strip().lstrip("-").isdigit():
+
+with left_col:
+    # ── Presets ───────────────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+
+    arabic_presets = [1, 5, 10, 20, 21, 40, 60, 80]
+    iu_presets = [
+        "atausiq", "tallimat", "qulit", "avatit",
+        "avatit atausirmik", "arvinik",
+        "pingasuujunik avatittik", "sisamat avatittik",
+    ]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        if direction == "Arabic → Inuktitut":
+            for i, num in enumerate(arabic_presets):
+                if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                    st.session_state["arabic_input"] = str(num)
+        else:
+            for i, txt in enumerate(iu_presets):
+                if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
+                    st.session_state["iu_input"] = txt
+
+    # ── Conversion ────────────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+
+    if direction == "Arabic → Inuktitut":
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Arabic numeral</div>
+            <div class="conv-input-hint">Whole number in range 0–99.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        arabic_input = st.text_input(
+            "Arabic numeral", key="arabic_input",
+            placeholder="e.g. 20", label_visibility="collapsed",
+        )
+    else:
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Inuktitut numeral</div>
+            <div class="conv-input-hint">Use the forms produced by this converter, or click a preset above.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        iu_input = st.text_input(
+            "Inuktitut numeral", key="iu_input",
+            placeholder="e.g. avatit atausirmik", label_visibility="collapsed",
+        )
+
+with right_col:
+    if direction == "Arabic → Inuktitut":
+        if arabic_input:
+            if arabic_input.strip().lstrip("-").isdigit():
+                try:
+                    result = number_to_inuktitut(int(arabic_input.strip()))
+                    st.markdown(f"""
+                    <div class="conv-result-card">
+                        <div class="conv-result-label">Inuktitut numeral</div>
+                        <div class="conv-result-value">{result}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                                unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        if iu_input:
             try:
-                result = number_to_inuktitut(int(arabic_input.strip()))
+                result = str(inuktitut_to_number(iu_input.strip()))
                 st.markdown(f"""
                 <div class="conv-result-card">
-                    <div class="conv-result-label">Inuktitut numeral</div>
+                    <div class="conv-result-label">Arabic numeral</div>
                     <div class="conv-result-value">{result}</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -117,34 +166,12 @@ if direction == "Arabic → Inuktitut":
                 st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                             unsafe_allow_html=True)
         else:
-            st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                        unsafe_allow_html=True)
-else:
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Inuktitut numeral</div>
-        <div class="conv-input-hint">Use the forms produced by this converter, or click a preset above.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    iu_input = st.text_input(
-        "Inuktitut numeral", key="iu_input",
-        placeholder="e.g. avatit atausirmik", label_visibility="collapsed",
-    )
-    if iu_input:
-        try:
-            result = str(inuktitut_to_number(iu_input.strip()))
-            st.markdown(f"""
-            <div class="conv-result-card">
-                <div class="conv-result-label">Arabic numeral</div>
-                <div class="conv-result-value">{result}</div>
-            </div>
-            """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                        unsafe_allow_html=True)
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+
 
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Inuktitut_Linguistics.py", label="← Inuktitut Linguistics")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Inuktitut", "converter")

@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 
 # ============================================================
 # TIBETAN NUMERAL SYSTEM
@@ -102,7 +102,7 @@ def number_to_tibetan(n):
 # ============================================================
 # PAGE CONFIG & STYLES
 # ============================================================
-st.set_page_config(page_title="Tibetan Numeral Converter", layout="centered")
+st.set_page_config(page_title="Tibetan Numeral Converter", layout="wide")
 apply_global_styles()
 
 CONV_CSS = """<style>
@@ -136,6 +136,7 @@ CONV_CSS = """<style>
 .conv-caption a:hover{text-decoration-color:var(--accent)!important}
 </style>"""
 st.markdown(CONV_CSS, unsafe_allow_html=True)
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
 
 # ── MASTHEAD ────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -148,38 +149,47 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── PRESET EXAMPLES ─────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+language_nav("Tibetan", "converter")
 
-arabic_presets = [3, 10, 21, 45, 108, 256, 1000, 4032]
+# Initialize input vars before columns
+arabic_input = ""
 
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
-    for i, num in enumerate(arabic_presets):
-        if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-            st.session_state["arabic_input"] = str(num)
+left_col, right_col = st.columns([1, 1], gap="large")
 
-# ── INPUT & CONVERSION ──────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+with left_col:
+    # ── PRESET EXAMPLES ─────────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
 
-st.markdown("""
+    arabic_presets = [3, 10, 21, 45, 108, 256, 1000, 4032]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        for i, num in enumerate(arabic_presets):
+            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                st.session_state["arabic_input"] = str(num)
+
+    # ── INPUT & CONVERSION ──────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+
+    st.markdown("""
 <div class="conv-input-card">
     <div class="conv-input-title">Enter an Arabic numeral</div>
     <div class="conv-input-hint">Type a whole number, or click a preset above.</div>
 </div>
 """, unsafe_allow_html=True)
 
-arabic_input = st.text_input(
-    "Arabic numeral", key="arabic_input",
-    placeholder="e.g. 256", label_visibility="collapsed",
-)
+    arabic_input = st.text_input(
+        "Arabic numeral", key="arabic_input",
+        placeholder="e.g. 256", label_visibility="collapsed",
+    )
 
-if arabic_input:
-    if arabic_input.isdigit():
-        try:
-            tib, rom = number_to_tibetan(int(arabic_input))
-            st.markdown(f"""
+with right_col:
+    if arabic_input:
+        if arabic_input.isdigit():
+            try:
+                tib, rom = number_to_tibetan(int(arabic_input))
+                st.markdown(f"""
             <div class="conv-result-card">
                 <div class="conv-result-label">Tibetan numeral</div>
                 <div class="conv-result-row">
@@ -192,15 +202,21 @@ if arabic_input:
                 </div>
             </div>
             """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+            except Exception as e:
+                st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid non-negative integer.</p></div>',
                         unsafe_allow_html=True)
     else:
-        st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid non-negative integer.</p></div>',
-                    unsafe_allow_html=True)
+        st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+
+
+    st.markdown('<div class="conv-caption"></div>', unsafe_allow_html=True)
 
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Tibetan_Linguistics.py", label="Tibetan Linguistics →")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Tibetan", "converter")

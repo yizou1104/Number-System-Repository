@@ -1,11 +1,12 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
-from ui import LING_CSS
+from ui import apply_global_styles, LING_CSS, LING_WIDTH_CSS, language_nav, footer_nav
 
-st.set_page_config(page_title="Quechua Numerals — Linguistics", layout="centered")
+st.set_page_config(page_title="Quechua Numerals — Linguistics", layout="wide")
 
 apply_global_styles()
 st.markdown(LING_CSS, unsafe_allow_html=True)
+st.markdown(LING_WIDTH_CSS, unsafe_allow_html=True)
+language_nav("Quechua", "linguistics")
 
 # ══════════════════════════════════════════════════════════════
 # MASTHEAD
@@ -94,7 +95,7 @@ st.markdown("""
 
 st.markdown("""
 <div class="ling-card">
-    <p>The suffix <strong>-yuq / -niyuq</strong> encodes possession: “having X more”.</p>
+    <p>The suffix <strong>-yuq / -niyuq</strong> encodes possession: "having X more".</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -225,7 +226,4 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Quechua_Converter.py", label="← Quechua Converter")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Quechua", "linguistics")

@@ -1,25 +1,25 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
- 
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
+
 # ============================================================
 # IGBO NUMERAL SYSTEM
 # Bidirectional: Arabic ↔ Igbo
 # Two output systems: modern decimal + traditional vigesimal
 # ============================================================
- 
+
 IGBO_DIGITS = {
     0: "efu",    1: "otu",    2: "abụọ",  3: "atọ",
     4: "anọ",    5: "ise",    6: "isii",  7: "asaa",
     8: "asatọ",  9: "itoolu", 10: "iri",
 }
- 
+
 # Reverse lookup for parser
 ATOMS = {v: k for k, v in IGBO_DIGITS.items()}
- 
+
 VIG_BASE  = "ọgụ"   # one score = 20
 VIG_SUPER = "nnu"   # superbase = 400
 CONNECTOR = "na"
- 
+
 # ── Arabic → Igbo (decimal) ────────────────────────────────────────────────
 def number_to_igbo_decimal(n: int) -> str:
     if n < 0:
@@ -45,8 +45,8 @@ def number_to_igbo_decimal(n: int) -> str:
     if rem:
         result += f" na {number_to_igbo_decimal(rem)}"
     return result
- 
- 
+
+
 # ── Arabic → Igbo (vigesimal) ──────────────────────────────────────────────
 def _multiplier_word(m: int) -> str:
     """Express a score-multiplier (1–19) in Igbo words."""
@@ -55,7 +55,7 @@ def _multiplier_word(m: int) -> str:
     if 11 <= m <= 19:
         return f"iri na {IGBO_DIGITS[m - 10]}"
     raise ValueError(f"Multiplier {m} out of expected range (1–19)")
- 
+
 def number_to_igbo_vigesimal(n: int) -> str:
     """
     Convert n to traditional Igbo vigesimal form.
@@ -101,17 +101,17 @@ def number_to_igbo_vigesimal(n: int) -> str:
     multiple, remainder = n // 400, n % 400
     head = f"{VIG_SUPER} {IGBO_DIGITS[multiple]}"
     return head if remainder == 0 else f"{head} na {number_to_igbo_vigesimal(remainder)}"
- 
- 
+
+
 # ── Igbo → Arabic (parser) ─────────────────────────────────────────────────
 def igbo_to_number(text: str) -> int:
     """
     Parse an Igbo numeral string (decimal or vigesimal) into an integer.
- 
+
     Decimal uses: iri (×10 as tens), narị (×100), puku (×1000)
     Vigesimal uses: ọgụ (×20), nnu (×400)
     Connector: na
- 
+
     Subtractive patterns detected:
       X na iri abụọ  → 20 − X  (vigesimal teens 11–19)
       X na ọgụ N    → N×20 − X (vigesimal proximity 30–39 and others)
@@ -121,17 +121,17 @@ def igbo_to_number(text: str) -> int:
     if not text:
         raise ValueError("Empty input")
     tokens = text.split()
- 
+
     # Detect subtractive teen (X na iri abụọ) — vigesimal but no ọgụ/nnu token
     if len(tokens) >= 4 and tokens[-2:] == ["iri", "abụọ"] and tokens[-3] == CONNECTOR:
         pre = tokens[:-3]
         if pre and all(t in ATOMS for t in pre):
             return 20 - ATOMS[pre[0]]
- 
+
     is_vigesimal = VIG_BASE in tokens or VIG_SUPER in tokens
     return _parse_vigesimal(tokens) if is_vigesimal else _parse_decimal(tokens)
- 
- 
+
+
 def _parse_vigesimal(tokens: list) -> int:
     if not tokens:
         raise ValueError("Empty")
@@ -141,32 +141,32 @@ def _parse_vigesimal(tokens: list) -> int:
         if t == VIG_BASE: return 20
         if t == VIG_SUPER: return 400
         raise ValueError(f"Unknown token: {t!r}")
- 
+
     # Subtractive teen: X na iri abụọ
     if tokens[-2:] == ["iri", "abụọ"] and CONNECTOR in tokens:
         na_i = next(i for i, t in enumerate(tokens) if t == CONNECTOR)
         left = tokens[:na_i]
         if left and left[0] in ATOMS:
             return 20 - ATOMS[left[0]]
- 
+
     # Subtractive to ọgụ/nnu: X na [VIG_BASE or VIG_SUPER] ...
     if len(tokens) >= 3 and tokens[1] == CONNECTOR and tokens[2] in (VIG_BASE, VIG_SUPER):
         sub = ATOMS.get(tokens[0])
         if sub is not None:
             return _parse_vigesimal(tokens[2:]) - sub
- 
+
     if tokens[0] == VIG_SUPER:
         return _parse_vig_base(tokens, VIG_SUPER, 400)
     if tokens[0] == VIG_BASE:
         return _parse_vig_base(tokens, VIG_BASE, 20)
- 
+
     if CONNECTOR in tokens:
         i = tokens.index(CONNECTOR)
         return _parse_vigesimal(tokens[:i]) + _parse_vigesimal(tokens[i + 1:])
- 
+
     raise ValueError(f"Cannot parse vigesimal: {' '.join(tokens)!r}")
- 
- 
+
+
 def _parse_vig_base(tokens: list, base_word: str, base_value: int) -> int:
     """
     tokens[0] == base_word.
@@ -177,24 +177,24 @@ def _parse_vig_base(tokens: list, base_word: str, base_value: int) -> int:
     rest = tokens[1:]
     if not rest:
         return base_value
- 
+
     # Find the additive separator: first 'na' NOT preceded by 'iri'
     split_at = len(rest)
     for i, t in enumerate(rest):
         if t == CONNECTOR and not (i > 0 and rest[i - 1] == "iri"):
             split_at = i
             break
- 
+
     mult_tokens = rest[:split_at]
     rem_tokens  = rest[split_at + 1:]  # skip the 'na'
- 
+
     mult  = _parse_vigesimal(mult_tokens) if mult_tokens else 1
     total = mult * base_value
     if rem_tokens:
         total += _parse_vigesimal(rem_tokens)
     return total
- 
- 
+
+
 def _parse_decimal(tokens: list) -> int:
     if not tokens:
         raise ValueError("Empty")
@@ -202,7 +202,7 @@ def _parse_decimal(tokens: list) -> int:
         t = tokens[0]
         if t in ATOMS: return ATOMS[t]
         raise ValueError(f"Unknown token: {t!r}")
- 
+
     if "puku" in tokens:
         i = tokens.index("puku")
         lt, rt = tokens[:i], tokens[i + 1:]
@@ -211,7 +211,7 @@ def _parse_decimal(tokens: list) -> int:
             if rt[0] == CONNECTOR: rt = rt[1:]
             total += _parse_decimal(rt)
         return total
- 
+
     if "narị" in tokens:
         i = tokens.index("narị")
         lt, rt = tokens[:i], tokens[i + 1:]
@@ -220,7 +220,7 @@ def _parse_decimal(tokens: list) -> int:
             if rt[0] == CONNECTOR: rt = rt[1:]
             total += _parse_decimal(rt)
         return total
- 
+
     if "iri" in tokens:
         i = tokens.index("iri")
         rt = tokens[i + 1:]
@@ -238,20 +238,20 @@ def _parse_decimal(tokens: list) -> int:
             if rt[0] == CONNECTOR: rt = rt[1:]
             if rt: total += _parse_decimal(rt)
         return total
- 
+
     if CONNECTOR in tokens:
         i = tokens.index(CONNECTOR)
         return _parse_decimal(tokens[:i]) + _parse_decimal(tokens[i + 1:])
- 
+
     raise ValueError(f"Cannot parse decimal: {' '.join(tokens)!r}")
- 
- 
+
+
 # ============================================================
 # PAGE CONFIG & STYLES
 # ============================================================
-st.set_page_config(page_title="Igbo Numeral Converter", layout="centered")
+st.set_page_config(page_title="Igbo Numeral Converter", layout="wide")
 apply_global_styles()
- 
+
 CONV_CSS = """<style>
 .conv-masthead{border-top:3px solid var(--ink);border-bottom:1px solid var(--rule);padding:1.75rem 0 1.4rem 0;margin-bottom:1.75rem}
 .conv-masthead-eyebrow{font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:var(--accent);display:flex;align-items:center;gap:.65rem;margin-bottom:.65rem}
@@ -290,7 +290,8 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 .conv-caption a:hover{text-decoration-color:var(--accent)!important}
 </style>"""
 st.markdown(CONV_CSS, unsafe_allow_html=True)
- 
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
+
 # ── MASTHEAD ────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="conv-masthead">
@@ -303,122 +304,149 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
- 
-# ── DIRECTION SELECTOR ──────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Conversion Direction</div>', unsafe_allow_html=True)
- 
-direction = st.radio(
-    "Conversion direction",
-    ["Arabic → Igbo", "Igbo → Arabic"],
-    horizontal=True,
-    label_visibility="collapsed",
-    key="igbo_direction",
-)
- 
-# ── PRESET EXAMPLES ─────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
- 
-# Arabic presets cover: atom, subtractive teen, exact score, additive, subtractive-to-next,
-# exact double-score, large decimal, 400-range
-arabic_presets = [5, 11, 20, 30, 40, 59, 100, 400]
- 
-# Igbo presets: mix of decimal and vigesimal forms
-igbo_presets = [
-    "ise",               # 5
-    "itoolu na iri abụọ", # 11 (vigesimal teen)
-    "ọgụ",              # 20
-    "iri na ọgụ abụọ",  # 30 (vigesimal subtractive)
-    "ọgụ abụọ",         # 40
-    "otu na ọgụ atọ",   # 59 (vigesimal proximity subtractive)
-    "otu narị",          # 100 (decimal)
-    "nnu",              # 400
-]
- 
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
-    if direction == "Arabic → Igbo":
-        for i, num in enumerate(arabic_presets):
-            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-                st.session_state["arabic_input"] = str(num)
-    else:
-        for i, txt in enumerate(igbo_presets):
-            if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
-                st.session_state["igbo_input"] = txt
- 
-# ── INPUT & CONVERSION ──────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
- 
-if direction == "Arabic → Igbo":
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Arabic numeral</div>
-        <div class="conv-input-hint">
-            Returns both decimal and vigesimal forms.
-            Vigesimal range is 0–1999.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    arabic_input = st.text_input(
-        "Arabic numeral", key="arabic_input",
-        placeholder="e.g. 59", label_visibility="collapsed",
+
+language_nav("Igbo", "converter")
+
+# ── INITIALIZE INPUT VARS ─────────────────────────────────────────────────────
+arabic_input = ""
+igbo_input = ""
+
+# ── TWO COLUMN LAYOUT ─────────────────────────────────────────────────────────
+left_col, right_col = st.columns([1, 1], gap="large")
+
+with right_col:
+    # ── DIRECTION SELECTOR ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label conv-direction-label">Conversion Direction</div>', unsafe_allow_html=True)
+
+    direction = st.radio(
+        "Conversion direction",
+        ["Arabic → Igbo", "Igbo → Arabic"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="igbo_direction",
     )
-    if arabic_input:
-        if arabic_input.lstrip("-").isdigit():
+
+with left_col:
+    # ── PRESET EXAMPLES ─────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+
+    # Arabic presets cover: atom, subtractive teen, exact score, additive, subtractive-to-next,
+    # exact double-score, large decimal, 400-range
+    arabic_presets = [5, 11, 20, 30, 40, 59, 100, 400]
+
+    # Igbo presets: mix of decimal and vigesimal forms
+    igbo_presets = [
+        "ise",               # 5
+        "itoolu na iri abụọ", # 11 (vigesimal teen)
+        "ọgụ",              # 20
+        "iri na ọgụ abụọ",  # 30 (vigesimal subtractive)
+        "ọgụ abụọ",         # 40
+        "otu na ọgụ atọ",   # 59 (vigesimal proximity subtractive)
+        "otu narị",          # 100 (decimal)
+        "nnu",              # 400
+    ]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        if direction == "Arabic → Igbo":
+            for i, num in enumerate(arabic_presets):
+                if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                    st.session_state["arabic_input"] = str(num)
+        else:
+            for i, txt in enumerate(igbo_presets):
+                if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
+                    st.session_state["igbo_input"] = txt
+
+    # ── INPUT & CONVERSION ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+
+    if direction == "Arabic → Igbo":
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Arabic numeral</div>
+            <div class="conv-input-hint">
+                Returns both decimal and vigesimal forms.
+                Vigesimal range is 0–1999.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        arabic_input = st.text_input(
+            "Arabic numeral", key="arabic_input",
+            placeholder="e.g. 59", label_visibility="collapsed",
+        )
+    else:  # Igbo → Arabic
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Igbo numeral</div>
+            <div class="conv-input-hint">
+                Accepts both decimal forms (<em>iri, narị, puku</em>) and vigesimal forms
+                (<em>ọgụ, nnu</em>), including subtractive constructions.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        igbo_input = st.text_input(
+            "Igbo numeral", key="igbo_input",
+            placeholder="e.g. ọgụ abụọ na iri",
+            label_visibility="collapsed",
+        )
+
+with right_col:
+    if direction == "Arabic → Igbo":
+        if arabic_input:
+            if arabic_input.lstrip("-").isdigit():
+                try:
+                    n   = int(arabic_input)
+                    dec = number_to_igbo_decimal(n)
+                    vig = number_to_igbo_vigesimal(n)
+                    st.markdown(f"""
+                    <div class="conv-result-card">
+                        <div class="conv-result-label">Igbo numeral</div>
+                        <div class="conv-result-row">
+                            <span class="conv-result-sublabel">Decimal</span>
+                            <span class="conv-result-subvalue">{dec}</span>
+                        </div>
+                        <div class="conv-result-row">
+                            <span class="conv-result-sublabel">Vigesimal</span>
+                            <span class="conv-result-subvalue">{vig}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                                unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        if igbo_input:
             try:
-                n   = int(arabic_input)
-                dec = number_to_igbo_decimal(n)
-                vig = number_to_igbo_vigesimal(n)
+                result = str(igbo_to_number(igbo_input))
                 st.markdown(f"""
                 <div class="conv-result-card">
-                    <div class="conv-result-label">Igbo numeral</div>
-                    <div class="conv-result-row">
-                        <span class="conv-result-sublabel">Decimal</span>
-                        <span class="conv-result-subvalue">{dec}</span>
-                    </div>
-                    <div class="conv-result-row">
-                        <span class="conv-result-sublabel">Vigesimal</span>
-                        <span class="conv-result-subvalue">{vig}</span>
-                    </div>
+                    <div class="conv-result-label">Arabic numeral</div>
+                    <div class="conv-result-single">{result}</div>
                 </div>
                 """, unsafe_allow_html=True)
             except Exception as e:
                 st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                             unsafe_allow_html=True)
         else:
-            st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                        unsafe_allow_html=True)
- 
-else:  # Igbo → Arabic
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+
+
+    # ── CAPTION ───────────────────────────────────────────────────────────────
     st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Igbo numeral</div>
-        <div class="conv-input-hint">
-            Accepts both decimal forms (<em>iri, narị, puku</em>) and vigesimal forms
-            (<em>ọgụ, nnu</em>), including subtractive constructions.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    igbo_input = st.text_input(
-        "Igbo numeral", key="igbo_input",
-        placeholder="e.g. ọgụ abụọ na iri",
-        label_visibility="collapsed",
-    )
-    if igbo_input:
-        try:
-            result = str(igbo_to_number(igbo_input))
-            st.markdown(f"""
-            <div class="conv-result-card">
-                <div class="conv-result-label">Arabic numeral</div>
-                <div class="conv-result-single">{result}</div>
-            </div>
-            """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                        unsafe_allow_html=True)
- 
-# ── CAPTION & NAVIGATION ────────────────────────────────────────────────────
-st.markdown("""
 <div class="conv-caption">
     Implements both modern decimal Igbo and the traditional vigesimal system
     (<em>ọgụ</em> = 20, <em>nnu</em> = 400). Vigesimal uses subtractive construction
@@ -428,9 +456,6 @@ st.markdown("""
     Algorithm by Yi Zou.
 </div>
 """, unsafe_allow_html=True)
- 
+
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Igbo_Linguistics.py", label="Igbo Linguistics →")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Igbo", "converter")

@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 
 # ============================================================
 # CHINESE NUMERAL SYSTEM (Simplified / Mandarin)
@@ -141,7 +141,7 @@ def chinese_to_number(text: str) -> int:
 # ============================================================
 # PAGE CONFIG & STYLES
 # ============================================================
-st.set_page_config(page_title="Chinese Numeral Converter", layout="centered")
+st.set_page_config(page_title="Chinese Numeral Converter", layout="wide")
 apply_global_styles()
 
 CONV_CSS = """<style>
@@ -179,6 +179,7 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 .conv-caption a:hover{text-decoration-color:var(--accent)!important}
 </style>"""
 st.markdown(CONV_CSS, unsafe_allow_html=True)
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
 
 # ── MASTHEAD ─────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -192,56 +193,106 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── DIRECTION SELECTOR ───────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Conversion Direction</div>', unsafe_allow_html=True)
+language_nav("Chinese", "converter")
 
-direction = st.radio(
-    "Conversion direction",
-    ["Arabic → Chinese", "Chinese → Arabic"],
-    horizontal=True,
-    label_visibility="collapsed",
-    key="chinese_direction",
-)
+# ── TWO-COLUMN LAYOUT ─────────────────────────────────────────────────────────
 
-# ── PRESET EXAMPLES ──────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+# initialize so both are accessible across column boundaries
+_input_arabic = ""
+_input_lang = ""
 
-arabic_presets  = [0, 10, 101, 200, 1010, 10000, 100000, 12345678]
-chinese_presets = ["零", "十", "一百零一", "两百", "一千零一十", "一万", "十万", "一千两百三十四万五千六百七十八"]
+left_col, right_col = st.columns([1, 1], gap="large")
 
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
-    if direction == "Arabic → Chinese":
-        for i, num in enumerate(arabic_presets):
-            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-                st.session_state["arabic_input"] = str(num)
-    else:
-        for i, txt in enumerate(chinese_presets):
-            if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
-                st.session_state["chinese_input"] = txt
+with right_col:
+    # ── DIRECTION SELECTOR ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label conv-direction-label">Conversion Direction</div>', unsafe_allow_html=True)
 
-# ── INPUT & CONVERSION ───────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
-
-if direction == "Arabic → Chinese":
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Arabic numeral</div>
-        <div class="conv-input-hint">Whole number from 0 to 999,999,999.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    arabic_input = st.text_input(
-        "Arabic numeral", key="arabic_input",
-        placeholder="e.g. 10100", label_visibility="collapsed",
+    direction = st.radio(
+        "Conversion direction",
+        ["Arabic → Chinese", "Chinese → Arabic"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="chinese_direction",
     )
-    if arabic_input:
-        if arabic_input.isdigit():
+
+with left_col:
+    # ── PRESET EXAMPLES ──────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+
+    arabic_presets  = [0, 10, 101, 200, 1010, 10000, 100000, 12345678]
+    chinese_presets = ["零", "十", "一百零一", "两百", "一千零一十", "一万", "十万", "一千两百三十四万五千六百七十八"]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        if direction == "Arabic → Chinese":
+            for i, num in enumerate(arabic_presets):
+                if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                    st.session_state["arabic_input"] = str(num)
+        else:
+            for i, txt in enumerate(chinese_presets):
+                if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
+                    st.session_state["chinese_input"] = txt
+
+    # ── INPUT & CONVERSION ───────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+
+    if direction == "Arabic → Chinese":
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Arabic numeral</div>
+            <div class="conv-input-hint">Whole number from 0 to 999,999,999.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        arabic_input = st.text_input(
+            "Arabic numeral", key="arabic_input",
+            placeholder="e.g. 10100", label_visibility="collapsed",
+        )
+        _input_arabic = arabic_input
+    else:
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter a Chinese numeral</div>
+            <div class="conv-input-hint">Simplified Chinese characters, e.g. <em>一千零一十</em>.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        chinese_input = st.text_input(
+            "Chinese numeral", key="chinese_input",
+            placeholder="e.g. 一千零一十", label_visibility="collapsed",
+        )
+        _input_lang = chinese_input
+
+with right_col:
+    if direction == "Arabic → Chinese":
+        if _input_arabic:
+            if _input_arabic.isdigit():
+                try:
+                    result = number_to_chinese(int(_input_arabic))
+                    st.markdown(f"""
+                    <div class="conv-result-card">
+                        <div class="conv-result-label">Chinese numeral</div>
+                        <div class="conv-result-value">{result}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                                unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        if _input_lang:
             try:
-                result = number_to_chinese(int(arabic_input))
+                result = str(chinese_to_number(_input_lang))
                 st.markdown(f"""
                 <div class="conv-result-card">
-                    <div class="conv-result-label">Chinese numeral</div>
+                    <div class="conv-result-label">Arabic numeral</div>
                     <div class="conv-result-value">{result}</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -249,34 +300,12 @@ if direction == "Arabic → Chinese":
                 st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                             unsafe_allow_html=True)
         else:
-            st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                        unsafe_allow_html=True)
-else:
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter a Chinese numeral</div>
-        <div class="conv-input-hint">Simplified Chinese characters, e.g. <em>一千零一十</em>.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    chinese_input = st.text_input(
-        "Chinese numeral", key="chinese_input",
-        placeholder="e.g. 一千零一十", label_visibility="collapsed",
-    )
-    if chinese_input:
-        try:
-            result = str(chinese_to_number(chinese_input))
-            st.markdown(f"""
-            <div class="conv-result-card">
-                <div class="conv-result-label">Arabic numeral</div>
-                <div class="conv-result-value">{result}</div>
-            </div>
-            """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                        unsafe_allow_html=True)
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
 
-# ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Chinese_Linguistics.py", label="Chinese Linguistics →")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+
+# ── NAVIGATION (full width) ──────────────────────────────────
+footer_nav("Chinese", "converter")

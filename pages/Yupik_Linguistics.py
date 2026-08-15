@@ -1,11 +1,12 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
-from ui import LING_CSS
+from ui import apply_global_styles, LING_CSS, LING_WIDTH_CSS, language_nav, footer_nav
 
-st.set_page_config(page_title="Yup’ik Numerals — Linguistics", layout="centered")
+st.set_page_config(page_title="Yup'ik Numerals — Linguistics", layout="wide")
 
 apply_global_styles()
 st.markdown(LING_CSS, unsafe_allow_html=True)
+st.markdown(LING_WIDTH_CSS, unsafe_allow_html=True)
+language_nav("Yupik", "linguistics")
 
 # ══════════════════════════════════════════════════════════════
 # MASTHEAD
@@ -13,7 +14,7 @@ st.markdown(LING_CSS, unsafe_allow_html=True)
 st.markdown("""
 <div class="ling-masthead">
     <div class="ling-masthead-eyebrow">Linguistic Structure</div>
-    <div class="ling-masthead-title">Yup’ik Numerals</div>
+    <div class="ling-masthead-title">Yup'ik Numerals</div>
     <div class="ling-tags">
         <span class="ling-tag">Vigesimal</span>
         <span class="ling-tag">Quinary Sub-base</span>
@@ -33,7 +34,7 @@ st.markdown('<div class="ling-section-title">Structural Properties</div>', unsaf
 st.markdown("""
 <div class="ling-callout">
     <div class="ling-callout-label">Key Fact</div>
-    <p>Yup’ik numerals exhibit a hierarchical base system combining 5, 10, and 20, reflecting a body-based counting model integrated into a polysynthetic grammar.</p>
+    <p>Yup'ik numerals exhibit a hierarchical base system combining 5, 10, and 20, reflecting a body-based counting model integrated into a polysynthetic grammar.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -100,7 +101,7 @@ st.markdown('<div class="ling-subsection-title" style="margin-top:1.75rem">Base 
 
 st.markdown("""
 <div class="ling-card">
-    <p>20 is expressed as <em>yuinaq</em> (“one person”), reflecting a full-body counting system (fingers + toes).</p>
+    <p>20 is expressed as <em>yuinaq</em> ("one person"), reflecting a full-body counting system (fingers + toes).</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -189,7 +190,7 @@ st.markdown("""
 <div class="ling-grid-2">
     <div class="ling-card">
         <div class="ling-subsection-title">Writing System</div>
-        <p>Yup’ik uses the Latin alphabet in standardized orthography.</p>
+        <p>Yup'ik uses the Latin alphabet in standardized orthography.</p>
     </div>
     <div class="ling-card">
         <div class="ling-subsection-title">Numeral Representation</div>
@@ -200,7 +201,7 @@ st.markdown("""
 
 st.markdown("""
 <div class="ling-info">
-    <p><strong>Zero</strong> is not part of traditional Yup’ik numeration and is a modern borrowed concept.</p>
+    <p><strong>Zero</strong> is not part of traditional Yup'ik numeration and is a modern borrowed concept.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -218,7 +219,7 @@ st.markdown("""
     </div>
     <div class="ling-card">
         <div class="ling-subsection-title">Dual Interaction</div>
-        <p>The numeral “2” aligns structurally with the grammatical dual category.</p>
+        <p>The numeral "2" aligns structurally with the grammatical dual category.</p>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -247,7 +248,4 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Yupik_Converter.py", label="← Yupik Converter")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Yupik", "linguistics")

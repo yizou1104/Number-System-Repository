@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, home_nav
+from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 
 # ============================================================
 # THAI NUMERAL SYSTEM
@@ -92,7 +92,7 @@ def thai_to_number(text: str) -> int:
 # ============================================================
 # PAGE CONFIG & STYLES
 # ============================================================
-st.set_page_config(page_title="Thai Numeral Converter", layout="centered")
+st.set_page_config(page_title="Thai Numeral Converter", layout="wide")
 apply_global_styles()
 
 CONV_CSS = """<style>
@@ -130,6 +130,7 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 .conv-caption a:hover{text-decoration-color:var(--accent)!important}
 </style>"""
 st.markdown(CONV_CSS, unsafe_allow_html=True)
+st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
 
 # ── MASTHEAD ────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -143,59 +144,105 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── DIRECTION SELECTOR ──────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Conversion Direction</div>', unsafe_allow_html=True)
+language_nav("Thai", "converter")
 
-direction = st.radio(
-    "Conversion direction",
-    ["Arabic → Thai", "Thai → Arabic"],
-    horizontal=True,
-    label_visibility="collapsed",
-    key="thai_direction",
-)
+# Initialize input vars before columns
+arabic_input = ""
+thai_input = ""
 
-# ── PRESET EXAMPLES ─────────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+left_col, right_col = st.columns([1, 1], gap="large")
 
-arabic_presets = [0, 5, 11, 21, 45, 100, 256, 2024]
-thai_presets   = [
-    "ศูนย์", "ห้า", "สิบเอ็ด", "ยี่สิบเอ็ด",
-    "สี่สิบห้า", "หนึ่งร้อย", "สองร้อยห้าสิบหก", "สองพันยี่สิบสี่",
-]
+with right_col:
+    # ── DIRECTION SELECTOR ──────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label conv-direction-label">Conversion Direction</div>', unsafe_allow_html=True)
 
-with st.container(border=True):
-    st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
-    cols = st.columns(4)
-    if direction == "Arabic → Thai":
-        for i, num in enumerate(arabic_presets):
-            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
-                st.session_state["arabic_input"] = str(num)
-    else:
-        for i, txt in enumerate(thai_presets):
-            if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
-                st.session_state["thai_input"] = txt
-
-# ── INPUT & CONVERSION ──────────────────────────────────────────────────────
-st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
-
-if direction == "Arabic → Thai":
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter an Arabic numeral</div>
-        <div class="conv-input-hint">Type a whole number, or click a preset above.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    arabic_input = st.text_input(
-        "Arabic numeral", key="arabic_input",
-        placeholder="e.g. 256", label_visibility="collapsed",
+    direction = st.radio(
+        "Conversion direction",
+        ["Arabic → Thai", "Thai → Arabic"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="thai_direction",
     )
-    if arabic_input:
-        if arabic_input.isdigit():
+
+with left_col:
+    # ── PRESET EXAMPLES ─────────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
+
+    arabic_presets = [0, 5, 11, 21, 45, 100, 256, 2024]
+    thai_presets   = [
+        "ศูนย์", "ห้า", "สิบเอ็ด", "ยี่สิบเอ็ด",
+        "สี่สิบห้า", "หนึ่งร้อย", "สองร้อยห้าสิบหก", "สองพันยี่สิบสี่",
+    ]
+
+    with st.container(border=True):
+        st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
+        cols = st.columns(4)
+        if direction == "Arabic → Thai":
+            for i, num in enumerate(arabic_presets):
+                if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
+                    st.session_state["arabic_input"] = str(num)
+        else:
+            for i, txt in enumerate(thai_presets):
+                if cols[i % 4].button(txt, key=f"p_b_{i}", use_container_width=True):
+                    st.session_state["thai_input"] = txt
+
+    # ── INPUT & CONVERSION ──────────────────────────────────────────────────────
+    st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
+
+    if direction == "Arabic → Thai":
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter an Arabic numeral</div>
+            <div class="conv-input-hint">Type a whole number, or click a preset above.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        arabic_input = st.text_input(
+            "Arabic numeral", key="arabic_input",
+            placeholder="e.g. 256", label_visibility="collapsed",
+        )
+    else:
+        st.markdown("""
+        <div class="conv-input-card">
+            <div class="conv-input-title">Enter a Thai numeral</div>
+            <div class="conv-input-hint">Standard Thai script, e.g. <em>สองร้อยห้าสิบหก</em>.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        thai_input = st.text_input(
+            "Thai numeral", key="thai_input",
+            placeholder="e.g. สองร้อยห้าสิบหก", label_visibility="collapsed",
+        )
+
+with right_col:
+    if direction == "Arabic → Thai":
+        if arabic_input:
+            if arabic_input.isdigit():
+                try:
+                    result = number_to_thai(int(arabic_input))
+                    st.markdown(f"""
+                    <div class="conv-result-card">
+                        <div class="conv-result-label">Thai numeral</div>
+                        <div class="conv-result-value">{result}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
+                                unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
+                            unsafe_allow_html=True)
+        else:
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        if thai_input:
             try:
-                result = number_to_thai(int(arabic_input))
+                result = str(thai_to_number(thai_input))
                 st.markdown(f"""
                 <div class="conv-result-card">
-                    <div class="conv-result-label">Thai numeral</div>
+                    <div class="conv-result-label">Arabic numeral</div>
                     <div class="conv-result-value">{result}</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -203,35 +250,14 @@ if direction == "Arabic → Thai":
                 st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
                             unsafe_allow_html=True)
         else:
-            st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                        unsafe_allow_html=True)
+            st.markdown("""
+<div class="conv-empty-state">
+    <p>Enter a value on the left to see the result.</p>
+</div>
+""", unsafe_allow_html=True)
 
-else:
-    st.markdown("""
-    <div class="conv-input-card">
-        <div class="conv-input-title">Enter a Thai numeral</div>
-        <div class="conv-input-hint">Standard Thai script, e.g. <em>สองร้อยห้าสิบหก</em>.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    thai_input = st.text_input(
-        "Thai numeral", key="thai_input",
-        placeholder="e.g. สองร้อยห้าสิบหก", label_visibility="collapsed",
-    )
-    if thai_input:
-        try:
-            result = str(thai_to_number(thai_input))
-            st.markdown(f"""
-            <div class="conv-result-card">
-                <div class="conv-result-label">Arabic numeral</div>
-                <div class="conv-result-value">{result}</div>
-            </div>
-            """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                        unsafe_allow_html=True)
+
+    st.markdown('<div class="conv-caption"></div>', unsafe_allow_html=True)
 
 # ── NAVIGATION ──────────────────────────────────────────────
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
-st.page_link("pages/Thai_Linguistics.py", label="Thai Linguistics →")
-st.page_link("Home.py", label="← Home")
-st.markdown('</div>', unsafe_allow_html=True)
+footer_nav("Thai", "converter")
