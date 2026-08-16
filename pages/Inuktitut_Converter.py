@@ -90,7 +90,7 @@ with left_col:
         "pingasuujunik avatittik", "sisamat avatittik",
     ]
 
-    with st.container(border=True):
+    with st.container(border=False):
         st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
         cols = st.columns(4)
         if direction == "Arabic → Inuktitut":

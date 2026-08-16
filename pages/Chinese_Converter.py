@@ -222,7 +222,7 @@ with left_col:
     arabic_presets  = [0, 10, 101, 200, 1010, 10000, 100000, 12345678]
     chinese_presets = ["零", "十", "一百零一", "两百", "一千零一十", "一万", "十万", "一千两百三十四万五千六百七十八"]
 
-    with st.container(border=True):
+    with st.container(border=False):
         st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
         cols = st.columns(4)
         if direction == "Arabic → Chinese":

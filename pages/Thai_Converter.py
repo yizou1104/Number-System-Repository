@@ -174,7 +174,7 @@ with left_col:
         "สี่สิบห้า", "หนึ่งร้อย", "สองร้อยห้าสิบหก", "สองพันยี่สิบสี่",
     ]
 
-    with st.container(border=True):
+    with st.container(border=False):
         st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
         cols = st.columns(4)
         if direction == "Arabic → Thai":

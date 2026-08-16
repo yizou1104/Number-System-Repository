@@ -451,6 +451,44 @@ def home_nav():
     )
 
 
+# ── SHARED SECTION HEADER BAR ─────────────────────────────────
+# Section labels on converter and linguistics pages render as a solid header
+# band rather than flat text. The band reuses the same off-white card recipe
+# as .nav-card / .nsr-tile (--card-bg, --card-border, layered shadow) so it
+# reads as one tier of the site's existing card family, not a separate,
+# louder accent block. Appended to both LING_CSS and CONV_CSS_ADDITIONS below.
+SECTION_BAR_CSS = """
+<style>
+.conv-section-label,
+.ling-section-label {
+    display: block;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    padding: .6rem 1.1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .88rem;
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: .02em;
+    color: var(--ink);
+    box-shadow: 0 1px 3px var(--card-shadow), 0 4px 16px rgba(26,22,18,.05), inset 0 1px 0 rgba(255,255,255,.65);
+}
+/* The card band replaces the old leading-tick/rule divider look */
+.conv-section-label::before, .conv-section-label::after,
+.ling-section-label::before, .ling-section-label::after { content: none; }
+
+.conv-section-label { margin: 2rem 0 1rem 0; }
+.ling-section-label {
+    margin: 2.25rem 0 1rem 0;
+    /* A touch lighter than the --card-bg used by the content cards beneath
+       it, so the label band reads as its own tier instead of blending in. */
+    background: rgba(255, 255, 255, .95);
+    font-size: 1.05rem;
+}
+</style>
+"""
+
 # ── SHARED LINGUISTICS CSS ────────────────────────────────────
 LING_CSS = """
 <style>
@@ -470,7 +508,8 @@ LING_CSS = """
 .ling-section-label::after  { content: ''; flex: 1; height: 1px; background: var(--rule); }
 
 /* ── SECTION TITLE ── */
-.ling-section-title { font-family: 'Crimson Pro', Georgia, serif; font-size: 1.85rem; font-weight: 600; color: var(--ink); letter-spacing: -.025em; line-height: 1.15; margin-bottom: 1.1rem; padding-bottom: .45rem; border-bottom: 1px solid var(--rule); }
+/* No bottom rule — the section bar above already carries the divider */
+.ling-section-title { font-family: 'Crimson Pro', Georgia, serif; font-size: 1.5rem; font-weight: 600; color: var(--ink); letter-spacing: -.025em; line-height: 1.15; margin-top: .35rem; margin-bottom: 1.1rem; }
 .ling-subsection-title { font-family: 'Crimson Pro', Georgia, serif; font-size: 1.25rem; font-weight: 600; color: var(--ink-soft); letter-spacing: -.01em; margin-bottom: .7rem; margin-top: 0; }
 
 /* ── CONTENT CARD ── */
@@ -525,7 +564,7 @@ LING_CSS = """
 .ling-morph-gloss  { font-family: 'Crimson Pro', Georgia, serif; font-style: italic; font-size: .92rem; color: var(--ink-muted); }
 
 </style>
-"""
+""" + SECTION_BAR_CSS
 
 # ── SHARED FOOTER NAV CARDS (converter + linguistics pages) ───
 NAV_CARD_CSS = """
@@ -665,8 +704,73 @@ CONV_CSS_ADDITIONS = """
 }
 .conv-error-card { min-height: 340px; display: flex; align-items: center; justify-content: center; }
 .conv-error-text { font-size: 1.2rem !important; text-align: center; }
+
+/* ── PRESET VALUE TILES ──
+   Preset buttons carry numeral *values*, not UI verbs, so they drop the dark
+   uppercase chip styling for the card treatment used elsewhere on the site.
+   Streamlit 1.57 stamps `st-key-<key>` on the element container, and every
+   converter keys its presets p_a_<i> / p_b_<i> — a stable central hook. */
+div[class*="st-key-p_a_"] .stButton > button,
+div[class*="st-key-p_b_"] .stButton > button {
+    position: relative;
+    overflow: hidden;
+    min-height: 62px;
+    padding: .85rem .6rem !important;
+    background: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 6px !important;
+    box-shadow:
+        0 1px 3px rgba(26,22,18,.05),
+        0 4px 14px rgba(26,22,18,.04),
+        inset 0 1px 0 rgba(255,255,255,.7) !important;
+    transition: all .22s cubic-bezier(.4,0,.2,1) !important;
+}
+/* The label is wrapped in a <p>, which picks up the global body-text rule */
+div[class*="st-key-p_a_"] .stButton > button,
+div[class*="st-key-p_b_"] .stButton > button,
+div[class*="st-key-p_a_"] .stButton > button p,
+div[class*="st-key-p_b_"] .stButton > button p {
+    font-family: 'Crimson Pro', Georgia, serif !important;
+    font-size: 1.35rem !important;
+    font-weight: 600 !important;
+    color: var(--ink) !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    line-height: 1.25 !important;
+    word-break: break-word;
+    margin: 0 !important;
+}
+div[class*="st-key-p_a_"] .stButton > button::before,
+div[class*="st-key-p_b_"] .stButton > button::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 0;
+    background: var(--accent);
+    border-radius: 6px 0 0 6px;
+    transition: width .22s cubic-bezier(.4,0,.2,1);
+}
+div[class*="st-key-p_a_"] .stButton > button:hover::before,
+div[class*="st-key-p_b_"] .stButton > button:hover::before { width: 3px; }
+div[class*="st-key-p_a_"] .stButton > button:hover,
+div[class*="st-key-p_b_"] .stButton > button:hover {
+    transform: translateY(-2px) !important;
+    background: rgba(255,255,255,.98) !important;
+    border-color: rgba(26,22,18,.17) !important;
+    box-shadow: 0 6px 20px rgba(26,22,18,.10) !important;
+}
+div[class*="st-key-p_a_"] .stButton > button:active,
+div[class*="st-key-p_b_"] .stButton > button:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 1px 3px rgba(26,22,18,.06), inset 0 1px 2px rgba(26,22,18,.05) !important;
+}
+div[class*="st-key-p_a_"] .stButton > button:focus-visible,
+div[class*="st-key-p_b_"] .stButton > button:focus-visible {
+    border-color: var(--accent) !important;
+    box-shadow: 0 1px 3px rgba(26,22,18,.05), 0 0 0 3px var(--accent-glow) !important;
+    outline: none !important;
+}
 </style>
-"""
+""" + SECTION_BAR_CSS
 
 # ── LINGUISTICS PAGE WIDTH CSS ────────────────────────────────
 LING_WIDTH_CSS = """

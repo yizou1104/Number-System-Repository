@@ -235,7 +235,7 @@ with left_col:
         "elfu moja", "elfu kumi na moja", "milioni moja",
     ]
 
-    with st.container(border=True):
+    with st.container(border=False):
         st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
         cols = st.columns(4)
         if direction == "Arabic → Swahili":
