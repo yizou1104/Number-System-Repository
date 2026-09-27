@@ -263,6 +263,7 @@ st.markdown("""
         <span class="nsr-chip">Converters</span>
         <span class="nsr-chip">Linguistics</span>
         <span class="nsr-chip">Olympiad Problems</span>
+        <span class="nsr-chip">Comparative</span>
         <span class="nsr-chip">19 Languages</span>
         <span class="nsr-chip">7 Families</span>
     </div>
@@ -297,6 +298,28 @@ st.markdown("""
         <div class="nsr-stat"><div class="nsr-stat-num">3</div><div class="nsr-stat-label">Difficulty levels</div></div>
     </div>
     <a class="nsr-olympiad-cta" href="/Olympiad_Problems" target="_self">Enter the Problems Repository →</a>
+</div>
+""", unsafe_allow_html=True)
+
+# ── CROSS-LINGUISTIC ──────────────────────────────────────────
+st.markdown('<div class="nsr-section-label">Cross-Linguistic</div>', unsafe_allow_html=True)
+
+st.markdown("""
+<div class="nsr-family-heading">
+    <span class="nsr-family-name">Comparative Studies</span>
+    <span class="nsr-family-count">2 topics</span>
+</div>
+<div class="nsr-lang-tiles">
+    <a class="nsr-tile" href="/Large_Numbers" target="_self">
+        <div class="nsr-tile-name">Naming Large Numbers</div>
+        <div class="nsr-tile-meta">Comparative · 3–3 vs 3–2–2–2 vs 4–4</div>
+        <div class="nsr-tile-arrow">→</div>
+    </a>
+    <a class="nsr-tile" href="/Numeral_Contact" target="_self">
+        <div class="nsr-tile-name">Contact &amp; Transmission</div>
+        <div class="nsr-tile-meta">Comparative · Borrowing &amp; areal diffusion</div>
+        <div class="nsr-tile-arrow">→</div>
+    </a>
 </div>
 """, unsafe_allow_html=True)
 
