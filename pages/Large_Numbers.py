@@ -47,6 +47,18 @@ EAST_ASIAN_SCRIPT = {
     "wan":  ("萬", "man", "man"),
 }
 
+# Classical Nahuatl: a PURE vigesimal series, every pivot a true power of 20.
+# Stems are given bare; the prefix cem- / cen- means "one", so cempohualli = 20.
+# Compare the Mayan Long Count below, which bends the same base for the calendar.
+NAHUATL = [
+    (64_000_000, "poaltzonxiquipilli"),   # 20 x 400 x 8000
+    (3_200_000, "tzonxiquipilli"),        # 400 x 8000
+    (160_000, "poalxiquipilli"),          # 20^4
+    (8_000, "xiquipilli"),                # 20^3  "a bag"
+    (400, "tzontli"),                     # 20^2  "a head of hair"
+    (20, "pohualli"),                     # 20^1  "one whole count"
+]
+
 
 def name_by_pivots(n, pivots):
     """Greedy decomposition of n against a descending pivot list."""
@@ -348,10 +360,19 @@ if raw:
 </div>
 """, unsafe_allow_html=True)
 
-        # --- Mayan ---
-        dotted, rows = mayan_long_count(n)
-        st.markdown('<div class="ling-subsection-title">Mayan Long Count</div>',
+        # --- Mesoamerica: two treatments of the same base ---
+        st.markdown('<div class="ling-subsection-title">Mesoamerica — one base, two treatments</div>',
                     unsafe_allow_html=True)
+        st.markdown(f"""
+<div class="xl-result">
+    <div class="xl-result-label">Nahuatl — pure vigesimal</div>
+    <div class="xl-result-value">{name_by_pivots(n, NAHUATL)}</div>
+    <div class="xl-result-sub">Every pivot a true power of twenty: pohualli 20, tzontli 400,
+    xiquipilli 8,000. The prefix cem- means &ldquo;one&rdquo;.</div>
+</div>
+""", unsafe_allow_html=True)
+
+        dotted, rows = mayan_long_count(n)
         mc1, mc2 = st.columns([1, 2], gap="large")
         with mc1:
             st.markdown(
@@ -466,6 +487,125 @@ st.markdown("""
     clear case of a numeral system shaped by what it was <em>for</em> — the cultural
     function leaving a permanent mark on the mathematical structure. Above the
     <em>tun</em>, regular multiplication by 20 resumes.</p>
+</div>
+""", unsafe_allow_html=True)
+
+# ── The myriad convergence ───────────────────────────────────────────────────
+st.markdown('<div class="ling-section-label">Convergence</div>', unsafe_allow_html=True)
+st.markdown('<div class="ling-section-title">Why So Many Traditions Stop at 10,000</div>',
+            unsafe_allow_html=True)
+
+st.markdown("""
+<div class="ling-callout">
+    <div class="ling-callout-label">Key Fact</div>
+    <p>Ten thousand is the single most widely recognised pivot above a thousand. It was named
+    separately in Greek, in Hebrew and Aramaic, and — with no possibility of contact
+    — in Chinese. The international 3–3–3 system is in this respect the
+    outlier, not the norm.</p>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="ling-card">
+    <div class="ling-morph-table">
+        <div class="ling-morph-row">
+            <span class="ling-morph-source">Greek</span>
+            <span class="ling-morph-arrow">·</span>
+            <span class="ling-morph-target">μύριοι <em>myrioi</em></span>
+            <span class="ling-morph-gloss">10⁴ — the source of English <em>myriad</em></span>
+        </div>
+        <div class="ling-morph-row">
+            <span class="ling-morph-source">Hebrew</span>
+            <span class="ling-morph-arrow">·</span>
+            <span class="ling-morph-target"><em>revava</em></span>
+            <span class="ling-morph-gloss">10⁴, with cognates across Aramaic</span>
+        </div>
+        <div class="ling-morph-row">
+            <span class="ling-morph-source">Chinese</span>
+            <span class="ling-morph-arrow">·</span>
+            <span class="ling-morph-target">萬 <em>wàn</em></span>
+            <span class="ling-morph-gloss">10⁴ — and the whole system built on it</span>
+        </div>
+        <div class="ling-morph-row">
+            <span class="ling-morph-source">Tibetan</span>
+            <span class="ling-morph-arrow">·</span>
+            <span class="ling-morph-target"><em>khri</em></span>
+            <span class="ling-morph-gloss">10⁴, within the Indic-derived scheme</span>
+        </div>
+    </div>
+    <p style="margin:.85rem 0 0 0">The Greek and Semitic traditions were in contact and may
+    not be independent of one another, but the Chinese myriad certainly is. Where a tradition
+    treats 10<sup>4</sup> as a unit, the square of that unit tends to follow: Chinese names
+    10<sup>8</sup> as <em>yì</em>, and Archimedes built the <em>Sand Reckoner</em> on the
+    &ldquo;myriad myriad&rdquo;, 10<sup>8</sup>, as the base of a scheme for counting the
+    grains of sand that would fill the universe.</p>
+</div>
+""", unsafe_allow_html=True)
+
+# ── Further traditions ───────────────────────────────────────────────────────
+st.markdown('<div class="ling-section-label">Further Traditions</div>', unsafe_allow_html=True)
+st.markdown('<div class="ling-section-title">Beyond the Main Four</div>', unsafe_allow_html=True)
+
+st.markdown('<div class="ling-subsection-title">Sanskrit — the deepest named series</div>',
+            unsafe_allow_html=True)
+
+st.markdown("""
+<div class="ling-card">
+    <p>The modern Indian series stops at everyday values, but the classical Sanskrit
+    tradition continued far past them, naming successive powers well beyond any practical
+    counting need. Buddhist and Jain cosmological texts extend the sequence further still,
+    into powers that exist purely to express scale.</p>
+    <p style="margin-bottom:0">This is the tradition that later travelled east, reaching
+    Tibetan as a <em>pattern</em> rather than as vocabulary — see the
+    <a href="/Numeral_Contact" target="_self">Contact &amp; Transmission</a> repository.</p>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="ling-subsection-title">Tibetan — Indic structure, native words</div>',
+            unsafe_allow_html=True)
+
+st.table({
+    "Power": ["10³", "10⁴", "10⁵", "10⁷"],
+    "Tibetan": ["stong", "khri", "'bum", "bye ba"],
+    "Note": ["thousand", "myriad pivot", "hundred thousand", "ten million"],
+})
+
+st.markdown("""
+<div class="ling-card">
+    <p style="margin:0">Tibetan adopted the Indic habit of naming successive powers while
+    keeping its own vocabulary — one of the clearest cases anywhere of a numeral
+    structure travelling without its words. Tibetan numerals are in this repository's
+    <a href="/Tibetan_Converter" target="_self">converter</a>.</p>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="ling-subsection-title">Nahuatl — vigesimal all the way up</div>',
+            unsafe_allow_html=True)
+
+st.table({
+    "Power": ["20¹", "20²", "20³", "20⁴"],
+    "Value": ["20", "400", "8,000", "160,000"],
+    "Nahuatl": ["cempōhualli", "centzontli", "cenxiquipilli", "cempōhualxiquipilli"],
+    "Literally": ["one whole count", "one head of hair", "one bag", "twenty bags"],
+})
+
+st.markdown("""
+<div class="ling-callout">
+    <div class="ling-callout-label">The contrast worth noticing</div>
+    <p>Nahuatl and the Mayan Long Count are neighbours in the same linguistic area and share
+    the same base. Nahuatl keeps it perfectly regular — 20, 400, 8,000, every pivot a
+    true power. The Mayan Long Count bends it at the second position to fit the solar year.
+    The base was shared across Mesoamerica by contact; what each culture <em>did</em> with it
+    was not.</p>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="ling-card">
+    <p style="margin:0">The etymologies are worth reading on their own: a score is
+    &ldquo;one whole count&rdquo; — the fingers and toes — four hundred is
+    &ldquo;one head of hair&rdquo;, and eight thousand is &ldquo;one bag&rdquo;, reportedly
+    of cacao beans. The series records how the quantities were actually encountered.</p>
 </div>
 """, unsafe_allow_html=True)
 
