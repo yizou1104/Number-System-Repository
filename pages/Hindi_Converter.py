@@ -84,7 +84,7 @@ def number_to_hindi_words(n: int, romanized: bool = False) -> str:
         return atom_map[n]
     if 100 <= n < 200:
         if n == 100:
-            return "sau" if romanized else "सौ"
+            return "ek sau" if romanized else "एक सौ"
         one     = "ek"  if romanized else "एक"
         hundred = "sau" if romanized else "सौ"
         return f"{one} {hundred} {number_to_hindi_words(n - 100, romanized)}"

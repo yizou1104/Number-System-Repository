@@ -87,12 +87,12 @@ st.markdown('<div class="ling-subsection-title" style="margin-top:1.5rem">11–1
 
 st.table({
     "Number": ["11","12","13","14","15","16","17","18","19"],
-    "Form":   ["এগারো","বারো","তেরো","চোদ্দো","পনেরো","ষোলো","সতেরো","আঠারো","উনিশ"]
+    "Form":   ["এগারো","বারো","তেরো","চৌদ্দ","পনেরো","ষোলো","সতেরো","আঠারো","ঊনিশ"]
 })
 
 st.markdown("""
 <div class="ling-card">
-    <p>Teens are lexicalized. <em>উনিশ</em> (19) historically derives from "one less than twenty" — a vestige of a once-productive subtractive pattern that is no longer active in modern Bengali.</p>
+    <p>Teens are lexicalized. <em>ঊনিশ</em> (19) historically derives from "one less than twenty" — a vestige of a once-productive subtractive pattern that is no longer active in modern Bengali.</p>
 </div>
 """, unsafe_allow_html=True)
 

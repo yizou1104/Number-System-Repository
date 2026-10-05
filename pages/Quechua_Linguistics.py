@@ -65,7 +65,7 @@ st.table({
     "Number": ["0","1","2","3","4","5","6","7","8","9","10"],
     "Form": [
         "cero","huk","iskay","kimsa","tawa","pichqa",
-        "soqta","qanchis","pusaq","isqun","chunka"
+        "suqta","qanchis","pusaq","isqun","chunka"
     ]
 })
 
@@ -162,7 +162,7 @@ st.markdown("""
 st.markdown("""
 <div class="ling-examples">
     <div class="ling-examples-label">Example</div>
-    <div class="ling-ex-line"><span class="num">256</span><span class="word">iskay pachak pichqa chunka soqta</span></div>
+    <div class="ling-ex-line"><span class="num">256</span><span class="word">iskay pachak pichqa chunka suqta</span></div>
 </div>
 """, unsafe_allow_html=True)
 

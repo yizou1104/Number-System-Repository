@@ -52,8 +52,10 @@ def number_to_thai(n: int) -> str:
             else:
                 result += THAI_DIGITS[digit] + "สิบ"
         else:
+            # สิบ stands bare, but the higher units keep หนึ่ง in standard
+            # written Thai: 1,234 is หนึ่งพัน…, not พัน…
             if digit == 1:
-                result += unit
+                result += "หนึ่ง" + unit
             else:
                 result += THAI_DIGITS[digit] + unit
     if remaining > 0:

@@ -18,7 +18,16 @@ ATOMS = {v: k for k, v in IGBO_DIGITS.items()}
 
 VIG_BASE  = "ọgụ"   # one score = 20
 VIG_SUPER = "nnu"   # superbase = 400
-CONNECTOR = "na"
+CONNECTOR = "na"    # additive conjunction, "and"
+SUBTRACT  = "bere"  # subtractive verb, "take away"
+
+
+def _from(base_phrase: str) -> str:
+    """
+    Prepositional "from" before a minuend. `na` elides to `n'` before a
+    vowel-initial word (n'ọgụ) but stays separate before a consonant (na nnu).
+    """
+    return f"n'{base_phrase}" if base_phrase[0] in "aeiouọụịAEIOU" else f"na {base_phrase}"
 
 # ── Arabic → Igbo (decimal) ────────────────────────────────────────────────
 def number_to_igbo_decimal(n: int) -> str:
@@ -56,9 +65,9 @@ def _multiplier_word(m: int) -> str:
         return f"iri na {IGBO_DIGITS[m - 10]}"
     raise ValueError(f"Multiplier {m} out of expected range (1–19)")
 
-def number_to_igbo_vigesimal(n: int) -> str:
+def _vigesimal_form(n: int) -> str:
     """
-    Convert n to traditional Igbo vigesimal form.
+    Build the traditional Igbo vigesimal form for n.
     Range: 0–1999.
     ọgụ = 20 (one score), nnu = 400 (one superbase, 20²).
     Subtractive for 11–19 (from 20), 30–39 (from 40),
@@ -70,17 +79,17 @@ def number_to_igbo_vigesimal(n: int) -> str:
         return "not defined (beyond traditional vigesimal range)"
     if n in IGBO_DIGITS:
         return IGBO_DIGITS[n]
-    # 11–19: subtractive from 20
+    # 11–19: subtractive from one score
     if 10 < n < 20:
-        return f"{IGBO_DIGITS[20 - n]} na iri abụọ"
+        return f"{SUBTRACT} {IGBO_DIGITS[20 - n]} {_from(VIG_BASE)}"
     if n == 20:
         return VIG_BASE
     # 21–29: additive to one score
     if 20 < n < 30:
         return f"{VIG_BASE} na {IGBO_DIGITS[n - 20]}"
-    # 30–39: subtractive from 40
+    # 30–39: subtractive from two scores
     if 30 <= n < 40:
-        return f"{IGBO_DIGITS[40 - n]} na {VIG_BASE} abụọ"
+        return f"{SUBTRACT} {IGBO_DIGITS[40 - n]} {_from(VIG_BASE + ' abụọ')}"
     # 40–399: score multiples
     if n < 400:
         multiple, remainder = n // 20, n % 20
@@ -92,15 +101,41 @@ def number_to_igbo_vigesimal(n: int) -> str:
         # Subtractive remainder 11–19: short of next score
         next_multiple = multiple + 1
         next_head = VIG_SUPER if next_multiple == 20 else f"{VIG_BASE} {_multiplier_word(next_multiple)}"
-        return f"{IGBO_DIGITS[20 - remainder]} na {next_head}"
+        return f"{SUBTRACT} {IGBO_DIGITS[20 - remainder]} {_from(next_head)}"
     if n == 400:
         return VIG_SUPER
     if n < 800:
-        return f"{VIG_SUPER} na {number_to_igbo_vigesimal(n - 400)}"
+        return f"{VIG_SUPER} na {_vigesimal_form(n - 400)}"
     # 800–1999: nnu multiples
     multiple, remainder = n // 400, n % 400
     head = f"{VIG_SUPER} {IGBO_DIGITS[multiple]}"
-    return head if remainder == 0 else f"{head} na {number_to_igbo_vigesimal(remainder)}"
+    return head if remainder == 0 else f"{head} na {_vigesimal_form(remainder)}"
+
+
+def number_to_igbo_vigesimal(n: int) -> str:
+    """
+    Traditional Igbo vigesimal form for n, or a notice where the system
+    cannot express n unambiguously.
+
+    A score multiplier of 11-19 is itself built with the additive connector
+    ("iri na otu" = 11), so "ọgụ iri na otu" can equally be read as ten
+    scores plus one (201) or as eleven scores (220). The traditional system
+    is genuinely ambiguous here, which is among the reasons it was displaced.
+    Rather than return one reading and hide the other, generation is checked
+    by re-parsing and refused when the form does not round-trip.
+    """
+    if n < 0:
+        raise ValueError("Negative numbers not supported")
+    if n > 1999:
+        return "not defined (beyond traditional vigesimal range)"
+    form = _vigesimal_form(n)
+    try:
+        if igbo_to_number(form) == n:
+            return form
+    except ValueError:
+        pass
+    return (f"ambiguous in the traditional system — \u201c{form}\u201d "
+            f"also reads as a different value; use the decimal form")
 
 
 # ── Igbo → Arabic (parser) ─────────────────────────────────────────────────
@@ -110,23 +145,19 @@ def igbo_to_number(text: str) -> int:
 
     Decimal uses: iri (×10 as tens), narị (×100), puku (×1000)
     Vigesimal uses: ọgụ (×20), nnu (×400)
-    Connector: na
+    Connectors: na (additive "and"), bere ... n'/na (subtractive "take X from")
 
-    Subtractive patterns detected:
-      X na iri abụọ  → 20 − X  (vigesimal teens 11–19)
-      X na ọgụ N    → N×20 − X (vigesimal proximity 30–39 and others)
-      X na nnu [N]  → N×400 − X (e.g. otu na nnu = 399)
+    Subtractive pattern detected:
+      bere X n'ọgụ [N]  → N×20 − X   (teens, 30–39, and proximity remainders)
+      bere X na nnu [N] → N×400 − X
     """
     text = text.strip()
     if not text:
         raise ValueError("Empty input")
     tokens = text.split()
 
-    # Detect subtractive teen (X na iri abụọ) — vigesimal but no ọgụ/nnu token
-    if len(tokens) >= 4 and tokens[-2:] == ["iri", "abụọ"] and tokens[-3] == CONNECTOR:
-        pre = tokens[:-3]
-        if pre and all(t in ATOMS for t in pre):
-            return 20 - ATOMS[pre[0]]
+    if tokens[0] == SUBTRACT:
+        return _parse_subtractive(tokens)
 
     is_vigesimal = VIG_BASE in tokens or VIG_SUPER in tokens
     return _parse_vigesimal(tokens) if is_vigesimal else _parse_decimal(tokens)
@@ -142,18 +173,8 @@ def _parse_vigesimal(tokens: list) -> int:
         if t == VIG_SUPER: return 400
         raise ValueError(f"Unknown token: {t!r}")
 
-    # Subtractive teen: X na iri abụọ
-    if tokens[-2:] == ["iri", "abụọ"] and CONNECTOR in tokens:
-        na_i = next(i for i, t in enumerate(tokens) if t == CONNECTOR)
-        left = tokens[:na_i]
-        if left and left[0] in ATOMS:
-            return 20 - ATOMS[left[0]]
-
-    # Subtractive to ọgụ/nnu: X na [VIG_BASE or VIG_SUPER] ...
-    if len(tokens) >= 3 and tokens[1] == CONNECTOR and tokens[2] in (VIG_BASE, VIG_SUPER):
-        sub = ATOMS.get(tokens[0])
-        if sub is not None:
-            return _parse_vigesimal(tokens[2:]) - sub
+    if tokens[0] == SUBTRACT:
+        return _parse_subtractive(tokens)
 
     if tokens[0] == VIG_SUPER:
         return _parse_vig_base(tokens, VIG_SUPER, 400)
@@ -165,6 +186,23 @@ def _parse_vigesimal(tokens: list) -> int:
         return _parse_vigesimal(tokens[:i]) + _parse_vigesimal(tokens[i + 1:])
 
     raise ValueError(f"Cannot parse vigesimal: {' '.join(tokens)!r}")
+
+
+def _parse_subtractive(tokens: list) -> int:
+    """bere X n'ọgụ [N]  /  bere X na nnu [N]  ->  minuend - X"""
+    if len(tokens) < 3 or tokens[0] != SUBTRACT:
+        raise ValueError(f"Not a subtractive form: {' '.join(tokens)!r}")
+    sub = ATOMS.get(tokens[1])
+    if sub is None:
+        raise ValueError(f"Unknown subtrahend: {tokens[1]!r}")
+    rest = tokens[2:]
+    if rest[0].startswith("n'"):
+        rest = [rest[0][2:]] + rest[1:]
+    elif rest[0] == CONNECTOR:
+        rest = rest[1:]
+    if not rest:
+        raise ValueError("Subtractive form has no minuend")
+    return _parse_vigesimal(rest) - sub
 
 
 def _parse_vig_base(tokens: list, base_word: str, base_value: int) -> int:
@@ -337,11 +375,11 @@ with left_col:
     # Igbo presets: mix of decimal and vigesimal forms
     igbo_presets = [
         "ise",               # 5
-        "itoolu na iri abụọ", # 11 (vigesimal teen)
+        "bere itoolu n'ọgụ",  # 11 (vigesimal subtractive teen)
         "ọgụ",              # 20
-        "iri na ọgụ abụọ",  # 30 (vigesimal subtractive)
+        "bere iri n'ọgụ abụọ",  # 30 (vigesimal subtractive)
         "ọgụ abụọ",         # 40
-        "otu na ọgụ atọ",   # 59 (vigesimal proximity subtractive)
+        "bere otu n'ọgụ atọ",   # 59 (vigesimal proximity subtractive)
         "otu narị",          # 100 (decimal)
         "nnu",              # 400
     ]

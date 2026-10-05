@@ -264,7 +264,7 @@ st.markdown("""
         <span class="nsr-chip">Linguistics</span>
         <span class="nsr-chip">Olympiad Problems</span>
         <span class="nsr-chip">Comparative</span>
-        <span class="nsr-chip">19 Languages</span>
+        <span class="nsr-chip">20 Languages</span>
         <span class="nsr-chip">7 Families</span>
     </div>
 </div>
@@ -328,7 +328,7 @@ st.markdown('<div class="nsr-section-label">Language Families</div>', unsafe_all
 
 st.markdown("""
 <div class="nsr-family-heading">
-    <span class="nsr-family-name">Sino-Tibetan &amp; East Asian</span>
+    <span class="nsr-family-name">Sino-Tibetan &amp; Kra-Dai</span>
     <span class="nsr-family-count">3 languages</span>
 </div>
 <div class="nsr-lang-tiles">
@@ -344,7 +344,7 @@ st.markdown("""
     </a>
     <a class="nsr-tile" href="/Thai_Converter" target="_self">
         <div class="nsr-tile-name">Thai</div>
-        <div class="nsr-tile-meta">Sino-Tibetan · Decimal</div>
+        <div class="nsr-tile-meta">Kra-Dai · Decimal</div>
         <div class="nsr-tile-arrow">→</div>
     </a>
 </div>
@@ -422,11 +422,16 @@ st.markdown('<div class="nsr-section-label">Other Systems</div>', unsafe_allow_h
 st.markdown("""
 <div class="nsr-family-heading">
     <span class="nsr-family-name">Independent Systems</span>
-    <span class="nsr-family-count">1 language</span>
+    <span class="nsr-family-count">2 languages</span>
 </div>
 <div class="nsr-lang-tiles">
     <a class="nsr-tile" href="/Basque_Converter" target="_self">
         <div class="nsr-tile-name">Basque</div>
+        <div class="nsr-tile-meta">Language isolate · Vigesimal</div>
+        <div class="nsr-tile-arrow">→</div>
+    </a>
+    <a class="nsr-tile" href="/Ainu_Converter" target="_self">
+        <div class="nsr-tile-name">Ainu</div>
         <div class="nsr-tile-meta">Language isolate · Vigesimal</div>
         <div class="nsr-tile-arrow">→</div>
     </a>
@@ -466,7 +471,7 @@ st.markdown("""
     </a>
     <a class="nsr-tile" href="/Klingon_Converter" target="_self">
         <div class="nsr-tile-name">Klingon</div>
-        <div class="nsr-tile-meta">Constructed · Senary (base-6)</div>
+        <div class="nsr-tile-meta">Constructed · Decimal</div>
         <div class="nsr-tile-arrow">→</div>
     </a>
     <a class="nsr-tile" href="/High_Valyrian_Converter" target="_self">

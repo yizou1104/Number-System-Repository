@@ -5,6 +5,7 @@ import streamlit as st
 # Language page registries
 # --------------------------------------------------
 LANG_PAGES_CONV = {
+    "Ainu":          "pages/Ainu_Converter.py",
     "Basque":        "pages/Basque_Converter.py",
     "Bengali":       "pages/Bengali_Converter.py",
     "Chinese":       "pages/Chinese_Converter.py",
@@ -27,6 +28,7 @@ LANG_PAGES_CONV = {
 }
 
 LANG_PAGES_LING = {
+    "Ainu":          "pages/Ainu_Linguistics.py",
     "Basque":        "pages/Basque_Linguistics.py",
     "Bengali":       "pages/Bengali_Linguistics.py",
     "Chinese":       "pages/Chinese_Linguistics.py",

@@ -65,11 +65,9 @@ st.markdown('<div class="ling-section-title">Basic Digits (1–10)</div>', unsaf
 
 st.table({
     "Number": ["1","2","3","4","5","6","7","8","9","10"],
-    "Form": [
-        "atausiq","malruk","pingayun","cetaman","talliman",
-        "talliman atausiq","talliman malruk","talliman pingayun",
-        "talliman cetaman","qula"
-    ]
+    "Form":   ["atauciq", "malruk", "pingayun", "cetaman", "talliman",
+               "arvinlegen", "malrunlegen", "pingayunlegen",
+               "qulngunritaraan", "qula"]
 })
 
 st.markdown("""
@@ -92,7 +90,7 @@ st.markdown("""
 <div class="ling-examples">
     <div class="ling-examples-label">Examples</div>
     <div class="ling-ex-line"><span class="num">13</span><span class="word">qula pingayun</span></div>
-    <div class="ling-ex-line"><span class="num">17</span><span class="word">qula talliman malruk</span></div>
+    <div class="ling-ex-line"><span class="num">17</span><span class="word">akimiaq malruk</span></div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -124,8 +122,8 @@ st.markdown("""
 st.markdown("""
 <div class="ling-examples">
     <div class="ling-examples-label">Examples</div>
-    <div class="ling-ex-line"><span class="num">6</span><span class="word">talliman atausiq</span></div>
-    <div class="ling-ex-line"><span class="num">9</span><span class="word">talliman cetaman</span></div>
+    <div class="ling-ex-line"><span class="num">6</span><span class="word">arvinlegen</span></div>
+    <div class="ling-ex-line"><span class="num">9</span><span class="word">qulngunritaraan</span></div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -229,7 +227,7 @@ st.markdown("""
     <div class="ling-subsection-title">Ordinal Formation</div>
     <p>Ordinals are derived via suffixation from cardinal stems.</p>
     <ul>
-        <li>atausiq → ordinal form</li>
+        <li>atauciq → ordinal form</li>
         <li>malruk → ordinal form</li>
         <li>pingayun → ordinal form</li>
     </ul>

@@ -49,10 +49,10 @@ TAMIL_ATOMS = {
     81:"எண்பத்தி ஒன்று",82:"எண்பத்தி இரண்டு",83:"எண்பத்தி மூன்று",
     84:"எண்பத்தி நான்கு",85:"எண்பத்தி ஐந்து",86:"எண்பத்தி ஆறு",
     87:"எண்பத்தி ஏழு",88:"எண்பத்தி எட்டு",89:"எண்பத்தி ஒன்பது",
-    90:"தொன்னூறு",91:"தொன்னூற்றி ஒன்று",92:"தொன்னூற்றி இரண்டு",
-    93:"தொன்னூற்றி மூன்று",94:"தொன்னூற்றி நான்கு",95:"தொன்னூற்றி ஐந்து",
-    96:"தொன்னூற்றி ஆறு",97:"தொன்னூற்றி ஏழு",98:"தொன்னூற்றி எட்டு",
-    99:"தொன்னூற்றி ஒன்பது",
+    90:"தொண்ணூறு",91:"தொண்ணூற்றி ஒன்று",92:"தொண்ணூற்றி இரண்டு",
+    93:"தொண்ணூற்றி மூன்று",94:"தொண்ணூற்றி நான்கு",95:"தொண்ணூற்றி ஐந்து",
+    96:"தொண்ணூற்றி ஆறு",97:"தொண்ணூற்றி ஏழு",98:"தொண்ணூற்றி எட்டு",
+    99:"தொண்ணூற்றி ஒன்பது",
 }
 
 ROMANIZED_ATOMS = {
@@ -103,8 +103,51 @@ BASE_UNITS = [
     ("நூறு",   "nuru",     100),
 ]
 
+# ------------------------------------------------------------
+# 3b. HUNDREDS — fused forms, and the oblique form used before a remainder
+#
+# Tamil fuses the multiplier into the hundred rather than placing it
+# alongside: 200 is irunuru, not "irandu nuru". When a remainder follows,
+# the hundred takes an oblique form in -tti: 201 is irunurri onru and
+# 734 is ezhunurri muppathi nalu. 900 is built on aayiram, not nuru,
+# because "nine hundred" is already taken by the word for 90.
+# ------------------------------------------------------------
+HUNDREDS = {
+    1: ("நூறு",        "nuru",        "நூற்றி",        "nurri"),
+    2: ("இருநூறு",     "irunuru",     "இருநூற்றி",     "irunurri"),
+    3: ("முந்நூறு",    "munnuru",     "முந்நூற்றி",    "munnurri"),
+    4: ("நானூறு",      "nanuru",      "நானூற்றி",      "nanurri"),
+    5: ("ஐந்நூறு",     "ainnuru",     "ஐந்நூற்றி",     "ainnurri"),
+    6: ("அறுநூறு",     "arunuru",     "அறுநூற்றி",     "arunurri"),
+    7: ("எழுநூறு",     "ezhunuru",    "எழுநூற்றி",     "ezhunurri"),
+    8: ("எண்ணூறு",     "ennuru",      "எண்ணூற்றி",     "ennurri"),
+    9: ("தொள்ளாயிரம்", "thollayiram", "தொள்ளாயிரத்து", "thollayiraththu"),
+}
+
+# Oblique forms of the higher units, used when a remainder follows.
+OBLIQUE_UNITS = {
+    "ஆயிரம்":  "ஆயிரத்து",
+    "ayiram":   "ayiraththu",
+    "இலட்சம்": "இலட்சத்து",
+    "ilatcham": "ilatchaththu",
+    "கோடி":    "கோடியே",
+    "kodi":     "kodiye",
+}
+
 TAMIL_BASE_VALUES    = {tam: value for tam, roman, value in BASE_UNITS}
 ROMANIZED_BASE_VALUES = {roman: value for _, roman, value in BASE_UNITS}
+
+# A unit's oblique form denotes the same value, so the parser accepts both.
+for _plain, _obl in OBLIQUE_UNITS.items():
+    if _plain in TAMIL_BASE_VALUES:
+        TAMIL_BASE_VALUES[_obl] = TAMIL_BASE_VALUES[_plain]
+    if _plain in ROMANIZED_BASE_VALUES:
+        ROMANIZED_BASE_VALUES[_obl] = ROMANIZED_BASE_VALUES[_plain]
+
+TAMIL_HUNDREDS    = {h[0]: v * 100 for v, h in HUNDREDS.items()}
+TAMIL_HUNDREDS_OB = {h[2]: v * 100 for v, h in HUNDREDS.items()}
+ROMAN_HUNDREDS    = {h[1]: v * 100 for v, h in HUNDREDS.items()}
+ROMAN_HUNDREDS_OB = {h[3]: v * 100 for v, h in HUNDREDS.items()}
 
 # ------------------------------------------------------------
 # 4. ARABIC → TAMIL
@@ -125,18 +168,24 @@ def number_to_tamil_words(n: int, romanized: bool = False) -> str:
     if n <= 99:
         return atom_map[n]
     if 100 <= n < 1000:
-        hundreds  = n // 100
-        remainder = n % 100
-        hundred_word = "nuru" if romanized else "நூறு"
-        prefix = hundred_word if hundreds == 1 else atom_map[hundreds] + " " + hundred_word
-        return prefix if remainder == 0 else prefix + " " + atom_map[remainder]
+        hundreds, remainder = divmod(n, 100)
+        standalone, r_standalone, oblique, r_oblique = HUNDREDS[hundreds]
+        if remainder == 0:
+            return r_standalone if romanized else standalone
+        head = r_oblique if romanized else oblique
+        return head + " " + atom_map[remainder]
     for tam, roman, value in BASE_UNITS:
         if n >= value:
             quotient  = n // value
             remainder = n % value
             unit_name = roman if romanized else tam
             prefix = unit_name if quotient == 1 else number_to_tamil_words(quotient, romanized) + " " + unit_name
-            return prefix if remainder == 0 else prefix + " " + number_to_tamil_words(remainder, romanized)
+            if remainder == 0:
+                return prefix
+            # The unit takes its oblique form before a remainder.
+            oblique_unit = OBLIQUE_UNITS.get(unit_name, unit_name)
+            prefix = prefix[: len(prefix) - len(unit_name)] + oblique_unit
+            return prefix + " " + number_to_tamil_words(remainder, romanized)
     return ""
 
 # ------------------------------------------------------------
@@ -162,6 +211,18 @@ def _parse_words(tokens, value_map, base_map):
     full = " ".join(tokens)
     if full in value_map:
         return value_map[full]
+
+    tamil = value_map is TAMIL_VALUES
+    plain = TAMIL_HUNDREDS if tamil else ROMAN_HUNDREDS
+    oblique = TAMIL_HUNDREDS_OB if tamil else ROMAN_HUNDREDS_OB
+
+    head = tokens[0]
+    if head in plain and len(tokens) == 1:
+        return plain[head]
+    if head in oblique:
+        rest = _parse_words(tokens[1:], value_map, base_map)
+        return None if rest is None else oblique[head] + rest
+
     for base_word, base_value in sorted(base_map.items(), key=lambda x: -x[1]):
         if base_word in tokens:
             idx = tokens.index(base_word)

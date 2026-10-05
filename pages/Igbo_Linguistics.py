@@ -144,7 +144,49 @@ st.markdown("""
         <div class="ling-examples-label">Traditional base</div>
         <div class="ling-ex-line"><span class="word">ọgụ = 20</span><span class="gloss">vigesimal base unit</span></div>
         <div class="ling-ex-line"><span class="word">ọgụ abụọ = 40</span><span class="gloss">2 × 20</span></div>
+        <div class="ling-ex-line"><span class="word">nnu = 400</span><span class="gloss">superbase, 20²</span></div>
     </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="ling-formula">
+    <span class="ling-formula-label">Subtractive form</span>
+    <span class="ling-formula-rule"><em>bere</em> [shortfall] <em>n\u2019</em> [next pivot]</span>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="ling-examples">
+    <div class="ling-examples-label">Subtraction towards the next score</div>
+    <div class="ling-ex-line"><span class="num">19</span><span class="word">bere otu n\u2019ọgụ</span><span class="gloss">take one from a score</span></div>
+    <div class="ling-ex-line"><span class="num">15</span><span class="word">bere ise n\u2019ọgụ</span><span class="gloss">take five from a score</span></div>
+    <div class="ling-ex-line"><span class="num">39</span><span class="word">bere otu n\u2019ọgụ abụọ</span><span class="gloss">take one from two scores</span></div>
+    <div class="ling-ex-line"><span class="num">73</span><span class="word">bere asaa n\u2019ọgụ anọ</span><span class="gloss">take seven from four scores</span></div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="ling-info">
+    <p>The subtractive verb is <em>bere</em> &lsquo;take away&rsquo;, and the minuend is introduced
+    by the preposition <em>na</em>, which elides to <em>n\u2019</em> before a vowel
+    (<em>n\u2019ọgụ</em>) but stays separate before a consonant (<em>na nnu</em>).
+    This is the one place where the connector matters: <em>na</em> alone is the
+    additive conjunction, so <em>ọgụ na ise</em> is 25, while
+    <em>bere ise n\u2019ọgụ</em> is 15.</p>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="ling-callout">
+    <div class="ling-callout-label">Where the traditional system breaks down</div>
+    <p>Score multipliers above ten are themselves built additively &mdash;
+    <em>iri na otu</em> is 11 &mdash; so <em>ọgụ iri na otu</em> can be read either as
+    ten scores plus one (201) or as eleven scores (220). The traditional system is
+    genuinely ambiguous in this range, which is one of the reasons it was judged
+    unworkable for modern use and displaced by the decimal system. The converter
+    detects these cases by re-parsing what it generates, and declines to pick a
+    reading rather than silently returning one of the two.</p>
 </div>
 """, unsafe_allow_html=True)
 

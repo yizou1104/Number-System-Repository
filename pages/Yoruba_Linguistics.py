@@ -88,7 +88,7 @@ st.table({
 st.markdown("""
 <div class="ling-callout">
     <div class="ling-callout-label">Odd Decades</div>
-    <p>50, 70, and 90 are not formed additively but subtractively: 50 = àádọ́ta ("10 less than 60"), 70 = àádọ́rin ("10 less than 80"), 90 = àádọ́rùn-ún ("10 less than 100"). The prefix <em>àádọ́-</em> is a fossilized subtractive morpheme.</p>
+    <p>50, 70, and 90 are not formed additively but subtractively: 50 = àádọ́ta ("10 less than 60"), 70 = àádọ́rin ("10 less than 80"), 90 = àádọ́rùn ("10 less than 100"). The prefix <em>àádọ́-</em> is a fossilized subtractive morpheme.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -113,7 +113,7 @@ st.markdown("""
     <div class="ling-ex-line"><span class="num">40</span><span class="word">ogójì</span><span class="gloss">2 × 20</span></div>
     <div class="ling-ex-line"><span class="num">60</span><span class="word">ọgọ́ta</span><span class="gloss">3 × 20</span></div>
     <div class="ling-ex-line"><span class="num">200</span><span class="word">igba</span><span class="gloss">10 × 20</span></div>
-    <div class="ling-ex-line"><span class="num">400</span><span class="word">irinwo</span><span class="gloss">20 × 20</span></div>
+    <div class="ling-ex-line"><span class="num">400</span><span class="word">irinwó</span><span class="gloss">20 × 20</span></div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -161,11 +161,11 @@ st.markdown("""
 st.markdown("""
 <div class="ling-examples">
     <div class="ling-examples-label">Subtractive examples</div>
-    <div class="ling-ex-line"><span class="num">15</span><span class="word">ẹ̀ẹ́dógún</span><span class="gloss">5 from 20</span></div>
-    <div class="ling-ex-line"><span class="num">16</span><span class="word">ẹ̀rìndínlógún</span><span class="gloss">4 less than 20</span></div>
-    <div class="ling-ex-line"><span class="num">19</span><span class="word">ọ̀kàndínlógún</span><span class="gloss">1 less than 20</span></div>
+    <div class="ling-ex-line"><span class="num">15</span><span class="word">ẹ́ẹdógún</span><span class="gloss">5 from 20</span></div>
+    <div class="ling-ex-line"><span class="num">16</span><span class="word">ẹẹ́rìndílógún</span><span class="gloss">4 less than 20</span></div>
+    <div class="ling-ex-line"><span class="num">19</span><span class="word">oókàndílógún</span><span class="gloss">1 less than 20</span></div>
     <div class="ling-ex-line"><span class="num">50</span><span class="word">àádọ́ta</span><span class="gloss">10 less than 60</span></div>
-    <div class="ling-ex-line"><span class="num">90</span><span class="word">àádọ́rùn-ún</span><span class="gloss">10 less than 100</span></div>
+    <div class="ling-ex-line"><span class="num">90</span><span class="word">àádọ́rùn</span><span class="gloss">10 less than 100</span></div>
 </div>
 """, unsafe_allow_html=True)
 

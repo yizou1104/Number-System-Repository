@@ -84,6 +84,9 @@ for k, v in ROMANIZED_ATOMS.items():
 for val, (g, r) in TENS.items():
     ATOMIC[_norm(g)] = val
     ATOMIC[_norm(r)] = val
+# The movable -n form used in 101-199 denotes the same value.
+ATOMIC[_norm("εκατόν")] = 100
+ATOMIC[_norm("ekatón")] = 100
 for val, (g, r) in HUNDREDS_NEUTER.items():
     ATOMIC[_norm(g)] = val
     ATOMIC[_norm(r)] = val
@@ -99,6 +102,15 @@ for w in THOUSAND_PLURAL_WORDS:
     MULT[_norm(w)] = 1000
 for w in MILLION_PLURAL_WORDS:
     MULT[_norm(w)] = 1_000_000
+# Greek distinguishes the singular thousand/million from the plural. The
+# generator emits the singular for 1000-1999, so the parser must accept it
+# too, or every value in that range loses its thousands component.
+for w in THOUSAND_SINGULAR:
+    MULT[_norm(w)] = 1000
+for w in MILLION_SINGULAR:
+    for part in _norm(w).split():
+        if part not in ATOMIC:
+            MULT[part] = 1_000_000
 
 # ------------------------------------------------------------
 # 8. ARABIC → GREEK GENERATOR
@@ -128,6 +140,9 @@ def number_to_greek_words(n: int, romanized: bool = False) -> str:
         hundred_word = _choose(HUNDREDS_NEUTER[hundreds])
         if rem == 0:
             return hundred_word
+        # 101-199 take the movable -n: εκατόν ένα, not εκατό ένα.
+        if hundreds == 100:
+            hundred_word = "ekatón" if romanized else "εκατόν"
         return hundred_word + " " + number_to_greek_words(rem, romanized)
     if n <= 999_999:
         thousands = n // 1000

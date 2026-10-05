@@ -121,7 +121,7 @@ st.markdown("""
     <div class="ling-examples-label">Compound examples</div>
     <div class="ling-ex-line"><span class="num">23</span><span class="word">二十三</span><span class="gloss">(2×10) + 3</span></div>
     <div class="ling-ex-line"><span class="num">456</span><span class="word">四百五十六</span><span class="gloss">(4×100) + (5×10) + 6</span></div>
-    <div class="ling-ex-line"><span class="num">12,345</span><span class="word">一万二千三百四十五</span><span class="gloss">(1×10⁴) + (2×10³) + (3×10²) + (4×10) + 5</span></div>
+    <div class="ling-ex-line"><span class="num">12,345</span><span class="word">一万两千三百四十五</span><span class="gloss">(1×10⁴) + (2×10³) + (3×10²) + (4×10) + 5</span></div>
 </div>
 """, unsafe_allow_html=True)
 

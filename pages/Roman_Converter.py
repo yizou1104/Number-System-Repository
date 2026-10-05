@@ -17,7 +17,8 @@ ROMAN_PAIRS = [
 
 ROMAN_VALUES = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000}
 
-def _int_to_roman_under_1000(n):
+def _int_to_roman(n):
+    """Standard Roman numeral for 1-3999, using M for the thousands."""
     result = []
     for value, symbol in ROMAN_PAIRS:
         while n >= value:
@@ -25,25 +26,32 @@ def _int_to_roman_under_1000(n):
             n -= value
     return "".join(result)
 
+
+# Retained name for any caller expecting the old helper.
+_int_to_roman_under_1000 = _int_to_roman
+
 def _apply_overline(s, level):
     for _ in range(level):
         s = "".join(ch + OVERLINE for ch in s)
     return s
 
 def arabic_to_roman(n):
+    """
+    Standard Roman numerals to 3,999 (so 2024 is MMXXIV, not an overlined
+    form). The vinculum, which multiplies by a thousand, is used only above
+    that, where the Romans themselves had no single symbol left to use.
+    """
     if not isinstance(n, int) or n <= 0:
         raise ValueError("Roman numerals require a positive integer")
-    parts = []
-    level = 0
-    while n > 0:
-        chunk = n % 1000
-        if chunk:
-            roman_chunk = _int_to_roman_under_1000(chunk)
-            roman_chunk = _apply_overline(roman_chunk, level)
-            parts.append(roman_chunk)
-        n //= 1000
-        level += 1
-    return "".join(reversed(parts))
+    if n > 3_999_999:
+        raise ValueError("Supported range is 1-3,999,999")
+    if n < 4000:
+        return _int_to_roman(n)
+    thousands, rest = divmod(n, 1000)
+    out = _apply_overline(_int_to_roman(thousands), 1)
+    if rest:
+        out += _int_to_roman(rest)
+    return out
 
 def roman_to_arabic(s):
     if not s:

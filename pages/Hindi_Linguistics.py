@@ -125,7 +125,7 @@ st.markdown('<div class="ling-subsection-title" style="margin-top:1.5rem">Higher
 
 st.table({
     "Value":     ["100","1,000","1,00,000","1,00,00,000","1,00,00,00,000","1,00,00,00,00,000"],
-    "Form":      ["सौ","हज़ार","लाख","करोड़","अरब","खरब"],
+    "Form":      ["एक सौ","हज़ार","लाख","करोड़","अरब","खरब"],
     "Structure": ["Hundred unit","Thousand unit","10⁵ pivot","10⁷ pivot","10⁹ unit","10¹¹ unit"]
 })
 

@@ -13,6 +13,7 @@ ATOMS = {
 BASES = {
     20:"ogún",30:"ọgbọ̀n",40:"ogójì",50:"àádọ́ta",
     60:"ọgọ́ta",70:"àádọ́rin",80:"ọgọ́rin",90:"àádọ́rùn",
+    100:"ọgọ́rùn-ún",
 }
 
 THOUSAND = "ẹgbẹ̀rún"
@@ -52,7 +53,11 @@ def number_to_yoruba(n):
     if n <= 109:
         base = select_base(n)
         remainder = n - base
-        if remainder <= base / 2:
+        # Units 1-4 are added to the decade below; 5-9 are subtracted from the
+        # decade above. The threshold is fixed at 4, not proportional to the
+        # base: with decades spaced ten apart a proportional test can never be
+        # exceeded, which left the subtractive branch unreachable.
+        if remainder <= 4:
             return additive(number_to_yoruba(remainder), BASES[base])
         higher_bases = [b for b in BASES if b > base]
         if not higher_bases:

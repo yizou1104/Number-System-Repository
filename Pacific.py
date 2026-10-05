@@ -24,7 +24,7 @@ _IU_ATOMS: dict[int, str] = {
     1: "atausiq",
     2: "marruuk",
     3: "pingasut",
-    4: "sisamat",
+    4: "sitamat",
     5: "tallimat",
     6: "arfinillit",
     7: "arvinillit",
@@ -39,7 +39,7 @@ _IU_OBLIQUE: dict[int, str] = {
     1: "atausirmik",
     2: "marruungnik",
     3: "pingasunik",
-    4: "sisamanik",
+    4: "sitamanik",
     5: "tallimanik",
     6: "arfinilingnik",
     7: "arvinilingnik",
@@ -52,7 +52,7 @@ _IU_SCORES: dict[int, str] = {
     20: "avatit",       # 1×20 — HIGH confidence
     40: "arvinik",      # 2×20 — documented; some sources: marluk avatittik
     60: "pingasuujunik avatittik",   # 3×20 — compositional
-    80: "sisamat avatittik",         # 4×20 — compositional
+    80: "sitamat avatittik",         # 4×20 — compositional
 }
 
 
@@ -125,13 +125,13 @@ def number_to_inuktitut(n: int) -> str:
     if 61 <= n <= 79:
         return f"pingasuujunik avatittik {_iu_remainder(n - 60)}"
 
-    # 80: sisamat avatittik (4×20)
+    # 80: sitamat avatittik (4×20)
     if n == 80:
-        return "sisamat avatittik"
+        return "sitamat avatittik"
 
     # 81–99
     if 81 <= n <= 99:
-        return f"sisamat avatittik {_iu_remainder(n - 80)}"
+        return f"sitamat avatittik {_iu_remainder(n - 80)}"
 
     # Should not reach here given guards above
     raise ValueError(f"Cannot convert {n} to Inuktitut.")
@@ -164,7 +164,7 @@ def inuktitut_to_number(text: str) -> int:
         "avatit": 20,
         "arvinik": 40,
         "pingasuujunik avatittik": 60,
-        "sisamat avatittik": 80,
+        "sitamat avatittik": 80,
     }
     if text in score_map:
         return score_map[text]
@@ -193,7 +193,7 @@ def inuktitut_to_number(text: str) -> int:
     # We need to try longest score prefix first (pingasuujunik avatittik is 3 words)
     score_prefixes = [
         ("pingasuujunik avatittik", 60),
-        ("sisamat avatittik", 80),
+        ("sitamat avatittik", 80),
         ("avatit", 20),
         ("arvinik", 40),
     ]

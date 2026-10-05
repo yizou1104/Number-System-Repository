@@ -53,8 +53,17 @@ HUNDREDS_MAP = {
 }
 
 THOUSAND = "mila"
+MILLION = "milioi"
+
+# The score words fuse with the connector: hogei + eta -> hogeita. ehun and
+# mila do not fuse, so 101 stays ehun eta bat.
+FUSING_SCORES = ("hogei", "berrogei", "hirurogei", "laurogei")
+
 
 def additive(x, y):
+    for score in FUSING_SCORES:
+        if x == score or x.endswith(" " + score):
+            return f"{x}ta {y}"
     return f"{x} eta {y}"
 
 def multiplicative(x, base):
@@ -65,6 +74,10 @@ def number_to_basque(n):
         raise ValueError("Negative numbers are not supported")
     if n in ATOMS:
         return ATOMS[n]
+    if n >= 1_000_000:
+        millions, remainder = n // 1_000_000, n % 1_000_000
+        head = f"{MILLION} bat" if millions == 1 else multiplicative(number_to_basque(millions), MILLION)
+        return head if remainder == 0 else additive(head, number_to_basque(remainder))
     if n >= 1000:
         thousands, remainder = n // 1000, n % 1000
         head = THOUSAND if thousands == 1 else multiplicative(number_to_basque(thousands), THOUSAND)
@@ -85,14 +98,33 @@ LEXICAL_VALUES = {
     "hogei": 20, "berrogei": 40, "hirurogei": 60, "laurogei": 80,
     "ehun": 100, "berrehun": 200, "hirurehun": 300, "laurehun": 400,
     "bostehun": 500, "seiehun": 600, "zazpiehun": 700,
-    "zortziehun": 800, "bederatziehun": 900, "mila": 1000,
+    "zortziehun": 800, "bederatziehun": 900, "mila": 1000, "milioi": 1_000_000,
 }
 
 def basque_to_number(text):
     text = text.strip()
     if not text:
         raise ValueError("Empty input")
-    tokens = text.split()
+    tokens = []
+    for tok in text.split():
+        # Undo the score+connector fusion so the additive branch can see it.
+        if tok.endswith("ta") and tok[:-2] in FUSING_SCORES:
+            tokens += [tok[:-2], "eta"]
+        else:
+            tokens.append(tok)
+    for big, factor in (("milioi", 1_000_000), ("mila", 1000)):
+        if big in tokens:
+            idx = tokens.index(big)
+            left, right = tokens[:idx], tokens[idx + 1:]
+            if right and right[0] == "bat" and big == "milioi":
+                right = right[1:]
+            if right and right[0] == "eta":
+                right = right[1:]
+            multiplier = 1 if not left else basque_to_number(" ".join(left))
+            value = multiplier * factor
+            if right:
+                value += basque_to_number(" ".join(right))
+            return value
     if "eta" in tokens:
         idx = tokens.index("eta")
         return basque_to_number(" ".join(tokens[:idx])) + basque_to_number(" ".join(tokens[idx + 1:]))

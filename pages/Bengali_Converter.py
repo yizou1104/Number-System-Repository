@@ -70,6 +70,15 @@ BASE_UNITS = [
 
 BENGALI_BASE_VALUES   = {beng: value for beng, roman, value in BASE_UNITS}
 ROMANIZED_BASE_VALUES = {roman: value for _, roman, value in BASE_UNITS}
+# Everyday Bengali fuses the hundreds: একশো, দুইশো, তিনশো — not তিন শত.
+HUNDREDS = {
+    1: ("একশো", "ækshô"),   2: ("দুইশো", "duishô"),  3: ("তিনশো", "tinshô"),
+    4: ("চারশো", "charshô"), 5: ("পাঁচশো", "pãchshô"), 6: ("ছয়শো", "chhôyshô"),
+    7: ("সাতশো", "satshô"),  8: ("আটশো", "atshô"),    9: ("নয়শো", "nôyshô"),
+}
+for _d, (_b, _r) in HUNDREDS.items():
+    BENGALI_BASE_VALUES[_b] = _d * 100
+    ROMANIZED_BASE_VALUES[_r] = _d * 100
 BENGALI_BASE_VALUES["একশ"]   = 100
 ROMANIZED_BASE_VALUES["ækshô"] = 100
 
@@ -87,12 +96,12 @@ def number_to_bengali_words(n: int, romanized: bool = False) -> str:
     atom_map = ROMANIZED_ATOMS if romanized else BENGALI_ATOMS
     if n <= 99 and n in atom_map:
         return atom_map[n]
-    if 100 <= n < 200:
-        hundred = "ækshô" if romanized else "একশ"
-        if n == 100:
-            return hundred
-        rem = number_to_bengali_words(n - 100, romanized)
-        return f"{hundred} {rem}"
+    if 100 <= n < 1000:
+        h, rem = divmod(n, 100)
+        head = HUNDREDS[h][1] if romanized else HUNDREDS[h][0]
+        if rem == 0:
+            return head
+        return f"{head} {number_to_bengali_words(rem, romanized)}"
     for beng, roman, value in BASE_UNITS:
         if n >= value:
             q, r = n // value, n % value

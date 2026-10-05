@@ -101,7 +101,7 @@ st.markdown('<div class="ling-subsection-title" style="margin-top:1.5rem">Decade
 
 st.table({
     "Value":     ["20","30","40","50","60","70","80","90"],
-    "Script":    ["ཉི་ཤུ་","སུམ་ཅུ","བཞི་བཅུ","ལྔ་བཅུ","དྲུག་ཅུ","བདུན་ཅུ","བརྒྱད་ཅུ","དགུ་བཅུ"],
+    "Script":    ["ཉི་ཤུ་","སུམ་ཅུ་","བཞི་བཅུ་","ལྔ་བཅུ་","དྲུག་ཅུ་","བདུན་ཅུ་","བརྒྱད་ཅུ་","དགུ་བཅུ་"],
     "Romanized": ["nyi shu","sum ju","shi ju","nga ju","trug chu","dün ju","gyay ju","gu ju"],
     "Linker":    ["རྩ་ tsa","སོ་ so","ཞེ་ shey","ང་ nga","རེ་ rey","དོན་ dön","གྱ་ gya","གོ་ go"],
 })
@@ -176,7 +176,7 @@ st.markdown("""
     is a separate syntactic word.</p>
     <div class="ling-examples" style="margin-top:.75rem;margin-bottom:0">
         <div class="ling-examples-label">Coordinator examples</div>
-        <div class="ling-ex-line"><span class="num">108</span><span class="word">བརྒྱ་དང་བཅུ་གཅིག་</span><span class="gloss">gya dang chu chig · 100 dang 11</span></div>
+        <div class="ling-ex-line"><span class="num">108</span><span class="word">བརྒྱ་དང་བརྒྱད་</span><span class="gloss">gya dang chu chig · 100 dang 11</span></div>
         <div class="ling-ex-line"><span class="num">1,045</span><span class="word">སྟོང་དང་བཞི་བཅུ་ཞེ་ལྔ་</span><span class="gloss">tong dang shi ju shey nga · 1000 dang 45</span></div>
     </div>
 </div>
