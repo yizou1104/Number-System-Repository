@@ -580,27 +580,21 @@ st.markdown("""
     <p><strong>Batchelor, John.</strong> 1905. <em>An Ainu–English–Japanese Dictionary
     (including a Grammar of the Ainu Language)</em>, ch. VII "Numerals". The earliest complete
     numeral table, 1 to 1,000, and the source of the subtractive analysis of <em>e</em>.</p>
-
     <p><strong>Ochiai, Izumi.</strong> 2021. "Ainu Numerals Revisited: The Shift from
     Undercounting to Overcounting in the Vigesimal System." <em>Northern Language Studies</em>
     11: 99–121. Reconstructs the vigesimal system across the Hokkaido, Sakhalin and Kuril
     dialects, and establishes the undercounting/overcounting split.</p>
-
     <p><strong>Dékány, Éva.</strong> 2025. "The syntax of numeral modification in Ainu."
     <em>Acta Linguistica Academica</em> 72(4): 455–515. Open access. The first syntactic
     analysis of the overcounting numerals, and the direct/indirect modification split.</p>
-
     <p><strong>Tamura, Suzuko.</strong> 1988/2000. <em>The Ainu Language</em>; and 1999,
     on the practical limits of the numeral system.</p>
-
     <p><strong>Refsing, Kirsten.</strong> 1986. <em>The Ainu Language: The Morphology and
     Syntax of the Shizunai Dialect</em>.</p>
-
     <p><strong>Chan, Eugene S. L.</strong> <em>Numeral Systems of the World's Languages</em>,
     Ainu page (Max Planck Institute). Three independent informant sets: Tomomi Sato (2013,
     Chitose dialect), Kirsten Refsing (2013), and Jiro Ikegami with Toshiyuki Shinozaki (1983).
     The disagreements between them are the basis of the attestation tiers above.</p>
-
     <p><strong>Alonso de la Fuente, José Andrés.</strong> "Counting days in Hokkaidō Ainu:
     Some thoughts on internal reconstruction and etymology." On the suppletive day-counting
     forms.</p>
