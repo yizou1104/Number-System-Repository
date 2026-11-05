@@ -6,6 +6,7 @@ import streamlit as st
 # --------------------------------------------------
 LANG_PAGES_CONV = {
     "Ainu":          "pages/Ainu_Converter.py",
+    "Babylonian":    "pages/Babylonian_Converter.py",
     "Basque":        "pages/Basque_Converter.py",
     "Bengali":       "pages/Bengali_Converter.py",
     "Chinese":       "pages/Chinese_Converter.py",
@@ -17,6 +18,8 @@ LANG_PAGES_CONV = {
     "Igbo":          "pages/Igbo_Converter.py",
     "Inuktitut":     "pages/Inuktitut_Converter.py",
     "Klingon":       "pages/Klingon_Converter.py",
+    "Maya":          "pages/Maya_Converter.py",
+    "Oksapmin":      "pages/Oksapmin_Converter.py",
     "Quechua":       "pages/Quechua_Converter.py",
     "Roman":         "pages/Roman_Converter.py",
     "Swahili":       "pages/Swahili_Converter.py",
@@ -29,6 +32,7 @@ LANG_PAGES_CONV = {
 
 LANG_PAGES_LING = {
     "Ainu":          "pages/Ainu_Linguistics.py",
+    "Babylonian":    "pages/Babylonian_Linguistics.py",
     "Basque":        "pages/Basque_Linguistics.py",
     "Bengali":       "pages/Bengali_Linguistics.py",
     "Chinese":       "pages/Chinese_Linguistics.py",
@@ -40,6 +44,8 @@ LANG_PAGES_LING = {
     "Igbo":          "pages/Igbo_Linguistics.py",
     "Inuktitut":     "pages/Inuktitut_Linguistics.py",
     "Klingon":       "pages/Klingon_Linguistics.py",
+    "Maya":          "pages/Maya_Linguistics.py",
+    "Oksapmin":      "pages/Oksapmin_Linguistics.py",
     "Quechua":       "pages/Quechua_Linguistics.py",
     "Roman":         "pages/Roman_Linguistics.py",
     "Swahili":       "pages/Swahili_Linguistics.py",

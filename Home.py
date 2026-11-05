@@ -264,7 +264,7 @@ st.markdown("""
         <span class="nsr-chip">Linguistics</span>
         <span class="nsr-chip">Olympiad Problems</span>
         <span class="nsr-chip">Comparative</span>
-        <span class="nsr-chip">20 Languages</span>
+        <span class="nsr-chip">23 Languages</span>
         <span class="nsr-chip">7 Families</span>
     </div>
 </div>
@@ -395,9 +395,14 @@ st.markdown("""
 
 <div class="nsr-family-heading">
     <span class="nsr-family-name">Ancient &amp; Classical</span>
-    <span class="nsr-family-count">3 languages</span>
+    <span class="nsr-family-count">4 languages</span>
 </div>
 <div class="nsr-lang-tiles">
+    <a class="nsr-tile" href="/Babylonian_Converter" target="_self">
+        <div class="nsr-tile-name">Babylonian</div>
+        <div class="nsr-tile-meta">Ancient · Sexagesimal</div>
+        <div class="nsr-tile-arrow">→</div>
+    </a>
     <a class="nsr-tile" href="/Roman_Converter" target="_self">
         <div class="nsr-tile-name">Roman</div>
         <div class="nsr-tile-meta">Ancient · Subtractive</div>
@@ -422,7 +427,7 @@ st.markdown('<div class="nsr-section-label">Other Systems</div>', unsafe_allow_h
 st.markdown("""
 <div class="nsr-family-heading">
     <span class="nsr-family-name">Independent Systems</span>
-    <span class="nsr-family-count">2 languages</span>
+    <span class="nsr-family-count">3 languages</span>
 </div>
 <div class="nsr-lang-tiles">
     <a class="nsr-tile" href="/Basque_Converter" target="_self">
@@ -435,11 +440,16 @@ st.markdown("""
         <div class="nsr-tile-meta">Language isolate · Vigesimal</div>
         <div class="nsr-tile-arrow">→</div>
     </a>
+    <a class="nsr-tile" href="/Oksapmin_Converter" target="_self">
+        <div class="nsr-tile-name">Oksapmin</div>
+        <div class="nsr-tile-meta">Trans New Guinea isolate · Body tally</div>
+        <div class="nsr-tile-arrow">→</div>
+    </a>
 </div>
 
 <div class="nsr-family-heading">
     <span class="nsr-family-name">Pacific &amp; Americas</span>
-    <span class="nsr-family-count">3 languages</span>
+    <span class="nsr-family-count">4 languages</span>
 </div>
 <div class="nsr-lang-tiles">
     <a class="nsr-tile" href="/Inuktitut_Converter" target="_self">
@@ -455,6 +465,11 @@ st.markdown("""
     <a class="nsr-tile" href="/Quechua_Converter" target="_self">
         <div class="nsr-tile-name">Quechua</div>
         <div class="nsr-tile-meta">Quechuan · Decimal</div>
+        <div class="nsr-tile-arrow">→</div>
+    </a>
+    <a class="nsr-tile" href="/Maya_Converter" target="_self">
+        <div class="nsr-tile-name">Maya</div>
+        <div class="nsr-tile-meta">Mayan · Long Count</div>
         <div class="nsr-tile-arrow">→</div>
     </a>
 </div>

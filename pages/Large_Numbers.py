@@ -255,7 +255,7 @@ st.markdown("""
         <span class="ling-prop-key">East Asian</span>
         <span class="ling-prop-val">Names every 10<sup>4</sup> — <strong>wan, yi, zhao, jing</strong></span>
         <span class="ling-prop-key">Mayan Long Count</span>
-        <span class="ling-prop-val">Vigesimal, but 20<sup>2</sup> = <strong>360</strong>, not 400</span>
+        <span class="ling-prop-val">Vigesimal, but the third place is worth <strong>360</strong>, not 20<sup>2</sup> = 400</span>
         <span class="ling-prop-key">Independence</span>
         <span class="ling-prop-val">The Indian, East Asian and Mayan traditions arose independently of one another</span>
         <span class="ling-prop-key">Relative age</span>
