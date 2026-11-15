@@ -301,7 +301,6 @@ div[data-testid="stRadio"] label:has(input:checked){background:var(--ink)!import
 div[data-testid="stRadio"] label:has(input:checked) p,div[data-testid="stRadio"] label:has(input:checked) span{color:var(--parchment)!important}
 div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;font-size:.9rem!important;font-weight:600!important;margin:0!important;line-height:1!important}
 div[data-testid="stTextInput"] input{font-family:'DM Sans','Noto Sans Mayan Numerals',sans-serif!important}
-div[class*="st-key-maya_rp_"] .stButton>button,div[class*="st-key-maya_rp_"] .stButton>button p,div[class*="st-key-maya_dp_"] .stButton>button,div[class*="st-key-maya_dp_"] .stButton>button p{text-transform:none!important;letter-spacing:0!important}
 .conv-presets-sublabel{font-family:'DM Sans',sans-serif;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-faint);margin-bottom:.65rem;margin-top:0}
 .conv-input-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:6px;padding:1.3rem 1.5rem 1.4rem;margin-bottom:.5rem;box-shadow:0 1px 3px rgba(26,22,18,.05),0 6px 20px rgba(26,22,18,.06),inset 0 1px 0 rgba(255,255,255,.7)}
 .conv-input-title{font-family:'Crimson Pro',Georgia,serif;font-size:1.3rem;font-weight:600;color:var(--ink);letter-spacing:-.02em;margin:0 0 .25rem 0;line-height:1.2}
@@ -464,7 +463,7 @@ with left_col:
         st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
         cols = st.columns(4)
         for i, val in enumerate(presets):
-            if cols[i % 4].button(val, key=f"maya_p_{i}", use_container_width=True):
+            if cols[i % 4].button(val, key=f"p_a_{i}", use_container_width=True):
                 st.session_state["maya_arabic_input"] = val
 
         st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
@@ -485,7 +484,7 @@ with left_col:
         st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
         cols = st.columns(2)
         for i, val in enumerate(presets):
-            if cols[i % 2].button(val, key=f"maya_rp_{i}", use_container_width=True):
+            if cols[i % 2].button(val, key=f"p_b_{i}", use_container_width=True):
                 st.session_state["maya_word_input"] = val
         st.markdown("""
 <div class="conv-caption" style="margin-top:.2rem">
@@ -516,7 +515,7 @@ with left_col:
         st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
         cols = st.columns(3)
         for i, val in enumerate(presets):
-            if cols[i % 3].button(val, key=f"maya_dp_{i}", use_container_width=True):
+            if cols[i % 3].button(val, key=f"p_b_date_{i}", use_container_width=True):
                 st.session_state["maya_date_input"] = val
 
         st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)

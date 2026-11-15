@@ -4,284 +4,191 @@ from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 # ============================================================
 # IGBO NUMERAL SYSTEM
 # Bidirectional: Arabic ↔ Igbo
-# Two output systems: modern decimal + traditional vigesimal
+# Standard Igbo decimal numerals, 1-9,999 (Asonye & Okwaraji 2018 and
+# Kari 1997, in Chan's numeral database): the multiplier follows narị and
+# puku, as it follows iri (iri abụọ 20, narị abụọ 200, puku abụọ 2,000).
+# The vigesimal row gives Ndimele's (2010) forms for Échiè, an Igboid
+# variety, only for the numbers he recorded, in his transcription.
 # ============================================================
+import re
+import unicodedata
 
 IGBO_DIGITS = {
-    0: "efu",    1: "otu",    2: "abụọ",  3: "atọ",
-    4: "anọ",    5: "ise",    6: "isii",  7: "asaa",
-    8: "asatọ",  9: "itoolu", 10: "iri",
+    1: "otu",    2: "abụọ",  3: "atọ",   4: "anọ",
+    5: "ise",    6: "isii",  7: "asaa",  8: "asatọ",
+    9: "itoolu", 10: "iri",
+}
+CONNECTOR = "na"    # additive conjunction, "and"
+IGBO_MAX = 9999
+
+# Recorded alternatives for numbers said alone (Welmers & Welmers 1964)
+IGBO_ALTERNATIVES = {
+    1:  [("ofu", "Onitsha area, often heard elsewhere (Welmers and Welmers 1964)")],
+    9:  [("iteghete", "used in fairly large areas (Welmers and Welmers 1964)")],
+    20: [("ọgụ", "a noun, 'score' (Welmers and Welmers 1964); Onitsha ọrụ")],
 }
 
-# Reverse lookup for parser
-ATOMS = {v: k for k, v in IGBO_DIGITS.items()}
+# Échiè, Ndimele (2010) in Chan's database. His 80 and 90 repeat the forms
+# for 60 and 70 (atɔ 'three' where four is meant), so they are left out.
+ECHIE = {
+    1: "ot\u00f9",
+    2: "\u00e0b\u028a\u0300\u0254\u0301 ~ m\u0300b\u028a\u0300\u0254\u0300 ~ nam\u0300",
+    3: "t\u0254 ~ \u00e0t\u0254",
+    4: "(\u01f9)n\u0254 ~ \u00e0n\u0254",
+    5: "se ~ \u00ecse",
+    6: "\u0283i\u00ec ~ \u00ec\u0283i\u00ec",
+    7: "sa\u00e0 ~ \u00e0sa\u00e0",
+    8: "sat\u0254\u0304 ~ \u00e0sat\u0254\u0304",
+    9: "tot\u016b ~ \u00ectol\u016b",
+    10: "\u00ecri",
+    11: "\u00ecri n\u0101 ot\u00f9",
+    12: "\u00ecri n\u00e0 \u00e0b\u028a\u0300\u0254\u0300",
+    13: "\u00ecri n\u00e0 \u00e0t\u0254",
+    14: "\u00ecri n\u00e0 \u00e0n\u0254",
+    15: "\u00ecri n\u00e0 \u00ecse",
+    16: "\u00ecri n\u00e0 \u00ec\u0283i\u00ec",
+    17: "\u00ecri n\u00e0 \u00e0sa\u00e0",
+    18: "\u00ecri n\u00e0 \u00e0sat\u0254\u0304",
+    19: "\u00ecri n\u00e0 \u00ectol\u016b",
+    20: "\u0254\u0263\u02b0\u028a\u0304",
+    21: "\u0254\u0263\u02b0\u028a\u0304 na ot\u00f9",
+    22: "\u0254\u0263\u02b0\u028a\u0304 n\u00e0 \u00e0b\u028a\u0300\u0254\u0301",
+    23: "\u0254\u0263\u02b0\u028a\u0304 n\u00e0 \u00e0t\u0254",
+    24: "\u0254\u0263\u02b0\u028a\u0304 n\u00e0 \u00e0n\u0254",
+    25: "\u0254\u0263\u02b0\u028a\u0304 n\u00e0 \u00ecse",
+    26: "\u0254\u0263\u02b0\u028a\u0304 n\u00e0 \u00ec\u0283i\u00ec",
+    27: "\u0254\u0263\u02b0\u028a\u0304 n\u00e0 \u00e0sa\u00e0",
+    28: "\u0254\u0263\u02b0\u028a\u0304 n\u00e0 \u00e0sat\u0254\u0300",
+    29: "\u0254\u0263\u02b0\u028a\u0304 n\u00e0 \u00ectol\u016b",
+    30: "\u0254\u0263\u02b0\u028a\u0304 na \u00ecri",
+    40: "\u0254\u0263\u02b0\u028a\u0304 nam\u0300",
+    50: "\u0254\u0263\u02b0\u028a\u0304 nam\u0300 na \u00ecri",
+    60: "\u0254\u0263\u02b0\u028a\u0304 at\u0254",
+    70: "\u0254\u0263\u02b0\u028a\u0304 at\u0254 na \u00ecri",
+    100: "\u0254\u0263\u02b0\u028a\u0304 ise",
+    200: "\u0254\u0263\u02b0\u028a\u0304 \u00ecri",
+    400: "nn\u028a\u0300",
+    800: "nn\u028a\u0300 nam\u0300",
+    1000: "nn\u028a\u0300 nam\u0300 n\u00e0 \u0254\u0263\u02b0\u028a\u0304 \u00ecri"
+}
 
-VIG_BASE  = "ọgụ"   # one score = 20
-VIG_SUPER = "nnu"   # superbase = 400
-CONNECTOR = "na"    # additive conjunction, "and"
-SUBTRACT  = "bere"  # subtractive verb, "take away"
 
-
-def _from(base_phrase: str) -> str:
-    """
-    Prepositional "from" before a minuend. `na` elides to `n'` before a
-    vowel-initial word (n'ọgụ) but stays separate before a consonant (na nnu).
-    """
-    return f"n'{base_phrase}" if base_phrase[0] in "aeiouọụịAEIOU" else f"na {base_phrase}"
-
-# ── Arabic → Igbo (decimal) ────────────────────────────────────────────────
-def number_to_igbo_decimal(n: int) -> str:
+def _igbo_check(n: int) -> None:
+    if not isinstance(n, int) or isinstance(n, bool):
+        raise TypeError(f"Expected int, got {type(n).__name__}")
     if n < 0:
-        raise ValueError("Negative numbers not supported")
+        raise ValueError("Negative numbers are not supported.")
     if n == 0:
-        return IGBO_DIGITS[0]
+        raise ValueError(
+            "None of the sources consulted gives an Igbo word for zero, so none "
+            "is given here. Popular lists offer efu and others."
+        )
+    if n > IGBO_MAX:
+        raise ValueError(
+            "The converter covers 1 to 9,999: the sources give narị (100) and "
+            "puku (1,000) but no word above a thousand."
+        )
+
+
+def _below_100(n: int) -> str:
     if n <= 10:
         return IGBO_DIGITS[n]
-    if n < 100:
-        tens, units = n // 10, n % 10
-        result = f"iri {IGBO_DIGITS[tens]}" if tens > 1 else "iri"
-        if units:
-            result += f" na {IGBO_DIGITS[units]}"
-        return result
-    if n < 1000:
-        hundreds, rem = n // 100, n % 100
-        result = "otu narị" if hundreds == 1 else f"{IGBO_DIGITS[hundreds]} narị"
-        if rem:
-            result += f" na {number_to_igbo_decimal(rem)}"
-        return result
-    thousands, rem = n // 1000, n % 1000
-    result = "otu puku" if thousands == 1 else f"{number_to_igbo_decimal(thousands)} puku"
+    tens, units = divmod(n, 10)
+    head = "iri" if tens == 1 else f"iri {IGBO_DIGITS[tens]}"
+    return head if units == 0 else f"{head} {CONNECTOR} {IGBO_DIGITS[units]}"
+
+
+def number_to_igbo_decimal(n: int) -> str:
+    """Standard Igbo for 1-9,999."""
+    _igbo_check(n)
+    thousands, rest = divmod(n, 1000)
+    hundreds, rem = divmod(rest, 100)
+    parts = []
+    if thousands:
+        parts.append("puku" if thousands == 1 else f"puku {IGBO_DIGITS[thousands]}")
+    if hundreds:
+        parts.append("narị" if hundreds == 1 else f"narị {IGBO_DIGITS[hundreds]}")
     if rem:
-        result += f" na {number_to_igbo_decimal(rem)}"
-    return result
+        parts.append(_below_100(rem))
+    return f" {CONNECTOR} ".join(parts)
 
 
-# ── Arabic → Igbo (vigesimal) ──────────────────────────────────────────────
-def _multiplier_word(m: int) -> str:
-    """Express a score-multiplier (1–19) in Igbo words."""
-    if m in IGBO_DIGITS:
-        return IGBO_DIGITS[m]
-    if 11 <= m <= 19:
-        return f"iri na {IGBO_DIGITS[m - 10]}"
-    raise ValueError(f"Multiplier {m} out of expected range (1–19)")
-
-def _vigesimal_form(n: int) -> str:
-    """
-    Build the traditional Igbo vigesimal form for n.
-    Range: 0–1999.
-    ọgụ = 20 (one score), nnu = 400 (one superbase, 20²).
-    Subtractive for 11–19 (from 20), 30–39 (from 40),
-    and proximity-based for remainders 11–19 within score groups.
-    """
-    if n < 0:
-        raise ValueError("Negative numbers not supported")
-    if n > 1999:
-        return "not defined (beyond traditional vigesimal range)"
-    if n in IGBO_DIGITS:
-        return IGBO_DIGITS[n]
-    # 11–19: subtractive from one score
-    if 10 < n < 20:
-        return f"{SUBTRACT} {IGBO_DIGITS[20 - n]} {_from(VIG_BASE)}"
-    if n == 20:
-        return VIG_BASE
-    # 21–29: additive to one score
-    if 20 < n < 30:
-        return f"{VIG_BASE} na {IGBO_DIGITS[n - 20]}"
-    # 30–39: subtractive from two scores
-    if 30 <= n < 40:
-        return f"{SUBTRACT} {IGBO_DIGITS[40 - n]} {_from(VIG_BASE + ' abụọ')}"
-    # 40–399: score multiples
-    if n < 400:
-        multiple, remainder = n // 20, n % 20
-        head = VIG_BASE if multiple == 1 else f"{VIG_BASE} {_multiplier_word(multiple)}"
-        if remainder == 0:
-            return head
-        if remainder <= 10:
-            return f"{head} na {IGBO_DIGITS[remainder]}"
-        # Subtractive remainder 11–19: short of next score
-        next_multiple = multiple + 1
-        next_head = VIG_SUPER if next_multiple == 20 else f"{VIG_BASE} {_multiplier_word(next_multiple)}"
-        return f"{SUBTRACT} {IGBO_DIGITS[20 - remainder]} {_from(next_head)}"
-    if n == 400:
-        return VIG_SUPER
-    if n < 800:
-        return f"{VIG_SUPER} na {_vigesimal_form(n - 400)}"
-    # 800–1999: nnu multiples
-    multiple, remainder = n // 400, n % 400
-    head = f"{VIG_SUPER} {IGBO_DIGITS[multiple]}"
-    return head if remainder == 0 else f"{head} na {_vigesimal_form(remainder)}"
+def igbo_alternatives(n: int) -> list:
+    """Recorded alternatives to the main form, each with its source."""
+    _igbo_check(n)
+    return list(IGBO_ALTERNATIVES.get(n, []))
 
 
 def number_to_igbo_vigesimal(n: int) -> str:
-    """
-    Traditional Igbo vigesimal form for n, or a notice where the system
-    cannot express n unambiguously.
-
-    A score multiplier of 11-19 is itself built with the additive connector
-    ("iri na otu" = 11), so "ọgụ iri na otu" can equally be read as ten
-    scores plus one (201) or as eleven scores (220). The traditional system
-    is genuinely ambiguous here, which is among the reasons it was displaced.
-    Rather than return one reading and hide the other, generation is checked
-    by re-parsing and refused when the form does not round-trip.
-    """
-    if n < 0:
-        raise ValueError("Negative numbers not supported")
-    if n > 1999:
-        return "not defined (beyond traditional vigesimal range)"
-    form = _vigesimal_form(n)
-    try:
-        if igbo_to_number(form) == n:
-            return form
-    except ValueError:
-        pass
-    return (f"ambiguous in the traditional system — \u201c{form}\u201d "
-            f"also reads as a different value; use the decimal form")
+    """Ndimele's Échiè form for n; only the numbers he recorded."""
+    _igbo_check(n)
+    if n not in ECHIE:
+        raise ValueError(f"Ndimele (2010) does not record {n} in Échiè.")
+    return ECHIE[n]
 
 
-# ── Igbo → Arabic (parser) ─────────────────────────────────────────────────
+def _fold(text: str) -> str:
+    """Lowercase, unify apostrophes and spacing, and drop tone marks and dots
+    below, so that abuo matches abụọ."""
+    t = unicodedata.normalize("NFD", text.strip().lower())
+    t = "".join(c for c in t if not unicodedata.combining(c))
+    t = t.replace("\u2019", "'")
+    return re.sub(r"\s+", " ", t)
+
+
+def _nfc(text: str) -> str:
+    return re.sub(r"\s+", " ", unicodedata.normalize("NFC", text.strip().lower()))
+
+
+_IGBO_READ = {}
+for _n in range(1, IGBO_MAX + 1):
+    _forms = [number_to_igbo_decimal(_n)] + [f for f, _ in IGBO_ALTERNATIVES.get(_n, [])]
+    for _f in _forms:
+        assert _IGBO_READ.get(_fold(_f), _n) == _n, (_f, _n)
+        _IGBO_READ[_fold(_f)] = _n
+_ECHIE_READ = {}
+for _n, _f in ECHIE.items():
+    for _v in _f.split(" ~ ") if _n < 10 else [_f]:
+        _ECHIE_READ[_nfc(_v)] = _n
+
+
 def igbo_to_number(text: str) -> int:
-    """
-    Parse an Igbo numeral string (decimal or vigesimal) into an integer.
-
-    Decimal uses: iri (×10 as tens), narị (×100), puku (×1000)
-    Vigesimal uses: ọgụ (×20), nnu (×400)
-    Connectors: na (additive "and"), bere ... n'/na (subtractive "take X from")
-
-    Subtractive pattern detected:
-      bere X n'ọgụ [N]  → N×20 − X   (teens, 30–39, and proximity remainders)
-      bere X na nnu [N] → N×400 − X
-    """
-    text = text.strip()
-    if not text:
-        raise ValueError("Empty input")
-    tokens = text.split()
-
-    if tokens[0] == SUBTRACT:
-        return _parse_subtractive(tokens)
-
-    is_vigesimal = VIG_BASE in tokens or VIG_SUPER in tokens
-    return _parse_vigesimal(tokens) if is_vigesimal else _parse_decimal(tokens)
-
-
-def _parse_vigesimal(tokens: list) -> int:
-    if not tokens:
-        raise ValueError("Empty")
-    if len(tokens) == 1:
-        t = tokens[0]
-        if t in ATOMS:    return ATOMS[t]
-        if t == VIG_BASE: return 20
-        if t == VIG_SUPER: return 400
-        raise ValueError(f"Unknown token: {t!r}")
-
-    if tokens[0] == SUBTRACT:
-        return _parse_subtractive(tokens)
-
-    if tokens[0] == VIG_SUPER:
-        return _parse_vig_base(tokens, VIG_SUPER, 400)
-    if tokens[0] == VIG_BASE:
-        return _parse_vig_base(tokens, VIG_BASE, 20)
-
-    if CONNECTOR in tokens:
-        i = tokens.index(CONNECTOR)
-        return _parse_vigesimal(tokens[:i]) + _parse_vigesimal(tokens[i + 1:])
-
-    raise ValueError(f"Cannot parse vigesimal: {' '.join(tokens)!r}")
-
-
-def _parse_subtractive(tokens: list) -> int:
-    """bere X n'ọgụ [N]  /  bere X na nnu [N]  ->  minuend - X"""
-    if len(tokens) < 3 or tokens[0] != SUBTRACT:
-        raise ValueError(f"Not a subtractive form: {' '.join(tokens)!r}")
-    sub = ATOMS.get(tokens[1])
-    if sub is None:
-        raise ValueError(f"Unknown subtrahend: {tokens[1]!r}")
-    rest = tokens[2:]
-    if rest[0].startswith("n'"):
-        rest = [rest[0][2:]] + rest[1:]
-    elif rest[0] == CONNECTOR:
-        rest = rest[1:]
-    if not rest:
-        raise ValueError("Subtractive form has no minuend")
-    return _parse_vigesimal(rest) - sub
-
-
-def _parse_vig_base(tokens: list, base_word: str, base_value: int) -> int:
-    """
-    tokens[0] == base_word.
-    Format: base_word [multiplier]? (na [remainder])?
-    The multiplier may itself contain 'na' (e.g. 'iri na otu' = 11), so we
-    only split on a 'na' that is NOT immediately preceded by 'iri'.
-    """
-    rest = tokens[1:]
-    if not rest:
-        return base_value
-
-    # Find the additive separator: first 'na' NOT preceded by 'iri'
-    split_at = len(rest)
-    for i, t in enumerate(rest):
-        if t == CONNECTOR and not (i > 0 and rest[i - 1] == "iri"):
-            split_at = i
-            break
-
-    mult_tokens = rest[:split_at]
-    rem_tokens  = rest[split_at + 1:]  # skip the 'na'
-
-    mult  = _parse_vigesimal(mult_tokens) if mult_tokens else 1
-    total = mult * base_value
-    if rem_tokens:
-        total += _parse_vigesimal(rem_tokens)
-    return total
-
-
-def _parse_decimal(tokens: list) -> int:
-    if not tokens:
-        raise ValueError("Empty")
-    if len(tokens) == 1:
-        t = tokens[0]
-        if t in ATOMS: return ATOMS[t]
-        raise ValueError(f"Unknown token: {t!r}")
-
-    if "puku" in tokens:
-        i = tokens.index("puku")
-        lt, rt = tokens[:i], tokens[i + 1:]
-        total = (_parse_decimal(lt) if lt else 1) * 1000
-        if rt:
-            if rt[0] == CONNECTOR: rt = rt[1:]
-            total += _parse_decimal(rt)
-        return total
-
-    if "narị" in tokens:
-        i = tokens.index("narị")
-        lt, rt = tokens[:i], tokens[i + 1:]
-        total = (_parse_decimal(lt) if lt else 1) * 100
-        if rt:
-            if rt[0] == CONNECTOR: rt = rt[1:]
-            total += _parse_decimal(rt)
-        return total
-
-    if "iri" in tokens:
-        i = tokens.index("iri")
-        rt = tokens[i + 1:]
-        # If the next token is a digit (not a connector), it's the tens multiplier
-        if rt and rt[0] != CONNECTOR and rt[0] in ATOMS:
-            total = ATOMS[rt[0]] * 10
-            rem = rt[1:]
-            if rem:
-                if rem[0] == CONNECTOR: rem = rem[1:]
-                total += _parse_decimal(rem)
-            return total
-        # iri alone or iri na [unit]
-        total = 10
-        if rt:
-            if rt[0] == CONNECTOR: rt = rt[1:]
-            if rt: total += _parse_decimal(rt)
-        return total
-
-    if CONNECTOR in tokens:
-        i = tokens.index(CONNECTOR)
-        return _parse_decimal(tokens[:i]) + _parse_decimal(tokens[i + 1:])
-
-    raise ValueError(f"Cannot parse decimal: {' '.join(tokens)!r}")
+    """Read a Standard Igbo numeral (1-9,999), a recorded alternative, or one
+    of Ndimele's Échiè forms."""
+    if not text.strip():
+        raise ValueError("Empty input.")
+    if _nfc(text) in _ECHIE_READ:
+        return _ECHIE_READ[_nfc(text)]
+    t = _fold(text)
+    if t in _IGBO_READ:
+        return _IGBO_READ[t]
+    words = t.split()
+    digits = {_fold(v) for v in IGBO_DIGITS.values()}
+    for big in ("nari", "puku"):
+        if big in words:
+            i = words.index(big)
+            if i > 0 and words[i - 1] == "otu":
+                raise ValueError(
+                    "The sources give 100 as narị and 1,000 as puku, without otu."
+                )
+            if i > 0 and words[i - 1] in digits:
+                raise ValueError(
+                    f"The multiplier follows {'narị' if big == 'nari' else 'puku'} in Igbo, "
+                    f"as it follows iri: narị abụọ is 200, puku abụọ 2,000."
+                )
+    if t in ("efu", "oruoghoro", "ncha", "adigi", "okpokoro"):
+        raise ValueError("None of the sources consulted gives an Igbo word for zero.")
+    if t.startswith("bere "):
+        raise ValueError(
+            "None of the sources consulted records counting by subtraction with bere; "
+            "they count up from each score (Échiè ɔɣʰʊ̄ nà ìse, 25)."
+        )
+    if "nde" in words:
+        raise ValueError("The converter stops at 9,999; nde (a million) is not covered.")
+    raise ValueError(
+        "Not a recorded Igbo numeral. Standard forms join parts with na, "
+        "largest first: puku na narị abụọ na iri atọ na anọ is 1,234."
+    )
 
 
 # ============================================================
@@ -329,6 +236,11 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 </style>"""
 st.markdown(CONV_CSS, unsafe_allow_html=True)
 st.markdown(CONV_CSS_ADDITIONS, unsafe_allow_html=True)
+st.markdown("""<style>
+/* Charis SIL, subset to the characters in Ndimele's Échiè transcriptions */
+@import url('https://fonts.googleapis.com/css2?family=Charis+SIL&text=%20%28%29abeilmnorstu~%C3%A0%C3%AC%C3%B9%C4%81%C5%AB%C7%B9%C9%94%C9%A3%CA%83%CA%8A%CA%B0%CC%80%CC%81%CC%84&display=swap');
+.ig-ipa{font-family:'Charis SIL',serif;font-size:1.1rem}
+</style>""", unsafe_allow_html=True)
 
 # ── MASTHEAD ────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -336,9 +248,9 @@ st.markdown("""
     <div class="conv-masthead-eyebrow">Numeral Converter</div>
     <div class="conv-masthead-title">Igbo Numerals</div>
     <div class="conv-masthead-desc">
-        Bidirectional conversion between Arabic numerals and Igbo —
-        modern decimal system and traditional vigesimal system
-        (<em>ọgụ</em> = 20, <em>nnu</em> = 400).
+        Convert between Arabic numerals and Standard Igbo, which counts in tens, with the
+        older counting by scores shown for Échiè, an Igboid variety, wherever its forms
+        are recorded.
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -368,20 +280,13 @@ with left_col:
     # ── PRESET EXAMPLES ─────────────────────────────────────────────────────
     st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
 
-    # Arabic presets cover: atom, subtractive teen, exact score, additive, subtractive-to-next,
-    # exact double-score, large decimal, 400-range
-    arabic_presets = [5, 11, 20, 30, 40, 59, 100, 400]
+    # Arabic presets: Échiè forms recorded for 9, 20, 25, 40, 100, 400 and 1000
+    arabic_presets = [9, 20, 25, 40, 47, 100, 200, 400, 1000, 1234, 2000, 9999]
 
-    # Igbo presets: mix of decimal and vigesimal forms
+    # Igbo presets: Standard decimal forms, a recorded alternative, Échiè forms
     igbo_presets = [
-        "ise",               # 5
-        "bere itoolu n'ọgụ",  # 11 (vigesimal subtractive teen)
-        "ọgụ",              # 20
-        "bere iri n'ọgụ abụọ",  # 30 (vigesimal subtractive)
-        "ọgụ abụọ",         # 40
-        "bere otu n'ọgụ atọ",   # 59 (vigesimal proximity subtractive)
-        "otu narị",          # 100 (decimal)
-        "nnu",              # 400
+        "iri na ise", "iri abụọ na ise", "narị abụọ", "puku na narị abụọ na iri atọ na anọ",
+        "iteghete", "ọgụ", "ɔɣʰʊ̄ nà ìse", "nnʊ̀ nam̀",
     ]
 
     with st.container(border=False):
@@ -404,93 +309,103 @@ with left_col:
         <div class="conv-input-card">
             <div class="conv-input-title">Enter an Arabic numeral</div>
             <div class="conv-input-hint">
-                Returns both decimal and vigesimal forms.
-                Vigesimal range is 0–1999.
+                A whole number from 1 to 9,999. The Échiè form is shown for the numbers
+                Ndimele recorded.
             </div>
         </div>
         """, unsafe_allow_html=True)
         arabic_input = st.text_input(
             "Arabic numeral", key="arabic_input",
-            placeholder="e.g. 59", label_visibility="collapsed",
+            placeholder="e.g. 25", label_visibility="collapsed",
         )
     else:  # Igbo → Arabic
         st.markdown("""
         <div class="conv-input-card">
             <div class="conv-input-title">Enter an Igbo numeral</div>
             <div class="conv-input-hint">
-                Accepts both decimal forms (<em>iri, narị, puku</em>) and vigesimal forms
-                (<em>ọgụ, nnu</em>), including subtractive constructions.
+                Standard forms such as <em>narị abụọ na iri atọ</em> (230), with or without
+                the dots and tone marks, or one of Ndimele's Échiè forms.
             </div>
         </div>
         """, unsafe_allow_html=True)
         igbo_input = st.text_input(
             "Igbo numeral", key="igbo_input",
-            placeholder="e.g. ọgụ abụọ na iri",
+            placeholder="e.g. narị abụọ na iri atọ",
             label_visibility="collapsed",
         )
+
+def rows_html(rows):
+    return "".join(
+        f'<div class="conv-result-row">'
+        f'<span class="conv-result-sublabel">{label}</span>'
+        f'<span class="conv-result-subvalue">{value}</span>'
+        f"</div>"
+        for label, value in rows
+    )
+
+
+def alternatives_html(n):
+    return "".join(
+        f"<span style='display:block'><em>{form}</em> "
+        f"<span style='font-family:DM Sans,sans-serif;font-size:.74rem;color:var(--ink-faint)'>· {why}</span></span>"
+        for form, why in igbo_alternatives(n)
+    )
+
+
+def error_html(msg):
+    return f'<div class="conv-error-card"><p class="conv-error-text">{msg}</p></div>'
+
+
+EMPTY = '<div class="conv-empty-state"><p>Enter a value on the left to see the result.</p></div>'
 
 with right_col:
     if direction == "Arabic → Igbo":
         if arabic_input:
-            if arabic_input.lstrip("-").isdigit():
-                try:
-                    n   = int(arabic_input)
-                    dec = number_to_igbo_decimal(n)
-                    vig = number_to_igbo_vigesimal(n)
-                    st.markdown(f"""
-                    <div class="conv-result-card">
-                        <div class="conv-result-label">Igbo numeral</div>
-                        <div class="conv-result-row">
-                            <span class="conv-result-sublabel">Decimal</span>
-                            <span class="conv-result-subvalue">{dec}</span>
-                        </div>
-                        <div class="conv-result-row">
-                            <span class="conv-result-sublabel">Vigesimal</span>
-                            <span class="conv-result-subvalue">{vig}</span>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                except Exception as e:
-                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                                unsafe_allow_html=True)
-            else:
-                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                            unsafe_allow_html=True)
+            try:
+                s_in = arabic_input.strip().replace(",", "")
+                if not s_in.lstrip("-").isdigit():
+                    raise ValueError("Please enter a valid whole number.")
+                n = int(s_in)
+                rows = [("Standard Igbo", number_to_igbo_decimal(n))]
+                alts = alternatives_html(n)
+                if alts:
+                    rows.append(("Also recorded", alts))
+                if n in ECHIE:
+                    rows.append(("Échiè (by scores)", f'<span class="ig-ipa">{ECHIE[n]}</span>'))
+                st.markdown(
+                    f'<div class="conv-result-card"><div class="conv-result-label">Igbo numeral</div>'
+                    f"{rows_html(rows)}</div>",
+                    unsafe_allow_html=True,
+                )
+            except ValueError as e:
+                st.markdown(error_html(e), unsafe_allow_html=True)
         else:
-            st.markdown("""
-<div class="conv-empty-state">
-    <p>Enter a value on the left to see the result.</p>
-</div>
-""", unsafe_allow_html=True)
+            st.markdown(EMPTY, unsafe_allow_html=True)
     else:
         if igbo_input:
             try:
-                result = str(igbo_to_number(igbo_input))
-                st.markdown(f"""
-                <div class="conv-result-card">
-                    <div class="conv-result-label">Arabic numeral</div>
-                    <div class="conv-result-single">{result}</div>
-                </div>
-                """, unsafe_allow_html=True)
-            except Exception as e:
-                st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                            unsafe_allow_html=True)
+                n = igbo_to_number(igbo_input)
+                rows = [("Arabic numeral", f"{n:,}"), ("Standard Igbo", number_to_igbo_decimal(n))]
+                if n in ECHIE:
+                    rows.append(("Échiè (by scores)", f'<span class="ig-ipa">{ECHIE[n]}</span>'))
+                st.markdown(
+                    f'<div class="conv-result-card"><div class="conv-result-label">Arabic numeral</div>'
+                    f"{rows_html(rows)}</div>",
+                    unsafe_allow_html=True,
+                )
+            except ValueError as e:
+                st.markdown(error_html(e), unsafe_allow_html=True)
         else:
-            st.markdown("""
-<div class="conv-empty-state">
-    <p>Enter a value on the left to see the result.</p>
-</div>
-""", unsafe_allow_html=True)
+            st.markdown(EMPTY, unsafe_allow_html=True)
 
 
     # ── CAPTION ───────────────────────────────────────────────────────────────
     st.markdown("""
 <div class="conv-caption">
-    Implements both modern decimal Igbo and the traditional vigesimal system
-    (<em>ọgụ</em> = 20, <em>nnu</em> = 400). Vigesimal uses subtractive construction
-    for 11–19, 30–39, and proximity-based subtraction within score groups.
-    Reverse parser handles decimal and vigesimal forms, including subtractive patterns.
-    Data from <a href="https://www.omniglot.com/language/numbers/igbo.htm" target="_blank">Omniglot</a>.
+    Standard Igbo numerals as recorded by Emma Asonye and Queenette Okwaraji (2018) and by
+    Ethelbert Kari (1997) in Chan's <em>Numeral Systems of the World's Languages</em>, with
+    alternatives from Welmers and Welmers's Peace Corps course (1964). Counting by scores is shown
+    in Ozo-mekuri Ndimele's transcription of Échiè (2010), only for the numbers he recorded.
     Algorithm by Yi Zou.
 </div>
 """, unsafe_allow_html=True)

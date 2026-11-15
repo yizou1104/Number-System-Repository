@@ -339,7 +339,7 @@ with left_col:
         st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
         cols = st.columns(4)
         for i, num in enumerate(presets):
-            if cols[i % 4].button(str(num), key=f"ainu_p_{i}", use_container_width=True):
+            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
                 st.session_state["ainu_arabic_input"] = str(num)
 
         st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
@@ -363,7 +363,7 @@ with left_col:
         st.markdown('<p class="conv-presets-sublabel">Click a form to load it</p>', unsafe_allow_html=True)
         cols = st.columns(2)
         for i, form in enumerate(presets):
-            if cols[i % 2].button(form, key=f"ainu_rp_{i}", use_container_width=True):
+            if cols[i % 2].button(form, key=f"p_b_{i}", use_container_width=True):
                 st.session_state["ainu_word_input"] = form
 
         st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)

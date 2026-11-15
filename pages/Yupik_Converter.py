@@ -1,12 +1,14 @@
 import streamlit as st
 from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
-from Pacific import number_to_yupik, yupik_to_number
+from Pacific import (number_to_yupik, yupik_to_number, yupik_literal,
+                     yupik_alternatives, yupik_alternative_forms, _yu_normalise)
 
 # ============================================================
 # YUPIK NUMERAL SYSTEM
 # Bidirectional: Arabic ↔ Central Alaskan Yup'ik (Yugtun)
-# Base-20 with 5/10/15 sub-pivots. Range: 0–400.
-# Sources: Jacobson (1984/2012 ANLC), Miyaoka (2012)
+# Base 20, with 10 and 15 inside each twenty. Range: 1–199 and 400.
+# Sources: Jacobson, Yup'ik Eskimo Dictionary (ANLC 2012), Appendix 6;
+# Chan's numeral database (Kaplan 2007; Rubino & Charles 1999)
 # ============================================================
 
 st.set_page_config(page_title="Yupik Numeral Converter", layout="wide")
@@ -35,6 +37,12 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 .conv-result-card{background:rgba(46,107,122,.04);border:1px solid rgba(46,107,122,.18);border-left:3px solid var(--teal);border-radius:0 4px 4px 0;padding:.75rem 1.1rem;margin-top:.8rem}
 .conv-result-label{font-family:'DM Sans',sans-serif;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--teal);margin-bottom:.3rem}
 .conv-result-value{font-family:'Crimson Pro',Georgia,serif;font-size:1.05rem;font-weight:400;color:var(--ink);line-height:1.55;word-break:break-word}
+.conv-result-row{display:grid;grid-template-columns:8.5rem 1fr;gap:.35rem .9rem;align-items:baseline;padding:.12rem 0}
+.conv-result-sublabel{font-family:'DM Sans',sans-serif;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint)}
+.conv-result-subvalue{font-family:'Crimson Pro',Georgia,serif;font-size:1.05rem;font-weight:400;color:var(--ink);line-height:1.55;word-break:break-word}
+.yu-main{font-size:1.95rem;font-weight:600;letter-spacing:-.01em;line-height:1.25}
+.yu-muted{font-family:'DM Sans',sans-serif;font-size:.74rem;color:var(--ink-faint);letter-spacing:.02em}
+.yu-alt{display:block;padding:.15rem 0;font-size:1.25rem;line-height:1.4}
 .conv-error-card{background:rgba(184,92,56,.05);border:1px solid rgba(184,92,56,.2);border-left:3px solid var(--accent);border-radius:0 4px 4px 0;padding:.75rem 1.1rem;margin-top:.8rem}
 .conv-error-text{font-family:'Crimson Pro',Georgia,serif;font-size:1rem;color:var(--accent);font-style:italic;margin:0}
 .conv-nav-footer{display:flex;gap:.75rem;padding:1.4rem 0 .5rem 0;border-top:1px solid var(--rule);margin-top:2.5rem;flex-wrap:wrap}
@@ -54,9 +62,9 @@ st.markdown("""
     <div class="conv-masthead-eyebrow">Numeral Converter</div>
     <div class="conv-masthead-title">Yupik Numerals</div>
     <div class="conv-masthead-desc">
-        Bidirectional conversion between Arabic numerals and Central Alaskan Yup'ik (Yugtun) —
-        vigesimal (base-20) system with 5, 10, and 15 sub-pivots, including the
-        subtractive form for 9. Range: 0–400.
+        Convert between Arabic numerals and Central Alaskan Yup'ik (Yugtun), which counts in
+        twenties, with ten and fifteen as steps inside each twenty. Nine, fourteen and nineteen
+        are named as falling just short of the next step. Range: 1–199 and 400.
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -83,11 +91,10 @@ with left_col:
     # ── Presets ───────────────────────────────────────────────────────────────────
     st.markdown('<div class="conv-section-label">Preset Examples</div>', unsafe_allow_html=True)
 
-    arabic_presets = [1, 9, 15, 20, 40, 50, 100, 400]
+    arabic_presets = [6, 9, 14, 15, 19, 20, 37, 40, 60, 86, 100, 400]
     yu_presets = [
-        "atauciq", "qulngunritaraan", "akimiaq", "yuinaq",
-        "yuinaak malruk", "yuinaak malruk qula",
-        "yuinaak talliman", "yuinaak yuinaq",
+        "qulngunritaraan", "akimiaq", "yuinaunritaraan", "yuinaq akimiaq malruk",
+        "yuinaak malruk", "malruk ipiaq", "yuinaat talliman", "yuinaam yuum ipia",
     ]
 
     with st.container(border=False):
@@ -109,7 +116,7 @@ with left_col:
         st.markdown("""
     <div class="conv-input-card">
         <div class="conv-input-title">Enter an Arabic numeral</div>
-        <div class="conv-input-hint">Whole number in range 0–400.</div>
+        <div class="conv-input-hint">A whole number from 1 to 199, or 400. The sources give no word for zero and no multiples of twenty from ten twenties up.</div>
     </div>
     """, unsafe_allow_html=True)
         arabic_input = st.text_input(
@@ -120,66 +127,97 @@ with left_col:
         st.markdown("""
     <div class="conv-input-card">
         <div class="conv-input-title">Enter a Yupik numeral</div>
-        <div class="conv-input-hint">Use the forms produced by this converter, or click a preset above.</div>
+        <div class="conv-input-hint">Any form recorded by Jacobson or in Chan's database, such as <em>yuinaq akimiaq malruk</em> (37) or <em>malruk ipiaq</em> (40).</div>
     </div>
     """, unsafe_allow_html=True)
         yu_input = st.text_input(
             "Yupik numeral", key="yu_input",
-            placeholder="e.g. yuinaak malruk", label_visibility="collapsed",
+            placeholder="e.g. yuinaq akimiaq malruk", label_visibility="collapsed",
         )
+
+def rows_html(rows):
+    return "".join(
+        f'<div class="conv-result-row">'
+        f'<span class="conv-result-sublabel">{label}</span>'
+        f'<span class="conv-result-subvalue">{value}</span>'
+        f"</div>"
+        for label, value in rows
+    )
+
+
+def alternatives_html(n, skip=None):
+    return "".join(
+        f"<span class='yu-alt'><em>{form}</em> <span class='yu-muted'>· {why}</span></span>"
+        for form, why in yupik_alternatives(n)
+        if skip is None or _yu_normalise(form) != skip
+    )
+
+
+def error_html(msg):
+    return f'<div class="conv-error-card"><p class="conv-error-text">{msg}</p></div>'
+
+
+def result_card(label, rows):
+    st.markdown(
+        f'<div class="conv-result-card"><div class="conv-result-label">{label}</div>'
+        f"{rows_html(rows)}</div>",
+        unsafe_allow_html=True,
+    )
+
+
+EMPTY = '<div class="conv-empty-state"><p>Enter a value on the left to see the result.</p></div>'
 
 with right_col:
     if direction == "Arabic → Yupik":
         if arabic_input:
-            if arabic_input.strip().lstrip("-").isdigit():
-                try:
-                    result = number_to_yupik(int(arabic_input.strip()))
-                    st.markdown(f"""
-                <div class="conv-result-card">
-                    <div class="conv-result-label">Yupik numeral</div>
-                    <div class="conv-result-value">{result}</div>
-                </div>
-                """, unsafe_allow_html=True)
-                except Exception as e:
-                    st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                                unsafe_allow_html=True)
-            else:
-                st.markdown('<div class="conv-error-card"><p class="conv-error-text">Please enter a valid whole number.</p></div>',
-                            unsafe_allow_html=True)
+            try:
+                s = arabic_input.strip().replace(",", "")
+                if not s.lstrip("-").isdigit():
+                    raise ValueError("Please enter a valid whole number.")
+                n = int(s)
+                rows = [("Yup'ik", f'<span class="yu-main">{number_to_yupik(n)}</span>')]
+                lit = yupik_literal(n)
+                if lit:
+                    rows.append(("Literally", lit))
+                alts = alternatives_html(n)
+                if alts:
+                    rows.append(("Also recorded", alts))
+                result_card("Yup'ik numeral", rows)
+            except ValueError as e:
+                st.markdown(error_html(e), unsafe_allow_html=True)
         else:
-            st.markdown("""
-<div class="conv-empty-state">
-    <p>Enter a value on the left to see the result.</p>
-</div>
-""", unsafe_allow_html=True)
+            st.markdown(EMPTY, unsafe_allow_html=True)
     else:
         if yu_input:
             try:
-                result = str(yupik_to_number(yu_input.strip()))
-                st.markdown(f"""
-            <div class="conv-result-card">
-                <div class="conv-result-label">Arabic numeral</div>
-                <div class="conv-result-value">{result}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            except Exception as e:
-                st.markdown(f'<div class="conv-error-card"><p class="conv-error-text">{e}</p></div>',
-                            unsafe_allow_html=True)
+                n = yupik_to_number(yu_input)
+                main = number_to_yupik(n)
+                rows = [("Arabic numeral", f'<span class="yu-main">{n}</span>')]
+                typed = _yu_normalise(yu_input)
+                if typed != _yu_normalise(main):
+                    rows.append(("Main form", main))
+                    note = dict((_yu_normalise(f), why) for f, why in yupik_alternatives(n)).get(typed)
+                    if note:
+                        rows.append(("Your form", note))
+                lit = yupik_literal(n)
+                if lit:
+                    rows.append(("Literally", lit))
+                alts = alternatives_html(n, skip=typed)
+                if alts:
+                    rows.append(("Also recorded", alts))
+                result_card("Arabic numeral", rows)
+            except ValueError as e:
+                st.markdown(error_html(e), unsafe_allow_html=True)
         else:
-            st.markdown("""
-<div class="conv-empty-state">
-    <p>Enter a value on the left to see the result.</p>
-</div>
-""", unsafe_allow_html=True)
-
+            st.markdown(EMPTY, unsafe_allow_html=True)
 
     st.markdown("""
 <div class="conv-caption">
-    Central Alaskan Yup'ik (Yugtun). Vigesimal (base-20) with 5, 10, and 15 as
-    lexicalized sub-pivots. The form for 9 is subtractive
-    (<em>qulngunritaraan</em> — "almost ten"). Range 0–400 (one complete 20² cycle).
-    Sources: Jacobson (1984/2012) Alaska Native Language Center,
-    Miyaoka (2012) <em>A Grammar of Central Alaskan Yupik</em>. Algorithm by Yi Zou.
+    Central Alaskan Yup'ik (Yugtun), following the numeral appendix and entries of
+    Jacobson's <em>Yup'ik Eskimo Dictionary</em> (2nd ed., Alaska Native Language Center, 2012),
+    with the lists by Lawrence Kaplan and by Carl Rubino and Kanaqluk George Charles in Chan's
+    <em>Numeral Systems of the World's Languages</em>. Where they differ, the others are shown
+    under <em>Also recorded</em>. Algorithm by Yi Zou.
 </div>
 """, unsafe_allow_html=True)
 

@@ -1,5 +1,5 @@
 import streamlit as st
-from ui import apply_global_styles, LING_CSS, LING_WIDTH_CSS
+from ui import apply_global_styles, LING_CSS, LING_WIDTH_CSS, PRESET_TILE_CSS
 
 # ============================================================
 # LARGE NUMBER NAMING TRADITIONS
@@ -138,6 +138,7 @@ st.set_page_config(page_title="Naming Large Numbers — Comparative", layout="wi
 apply_global_styles()
 st.markdown(LING_CSS, unsafe_allow_html=True)
 st.markdown(LING_WIDTH_CSS, unsafe_allow_html=True)
+st.markdown(PRESET_TILE_CSS, unsafe_allow_html=True)
 
 st.markdown("""
 <style>
@@ -275,7 +276,7 @@ preset_labels = ["100,000 (1 lakh)", "10,000 (1 wan)", "1 million", "12,345,678"
 st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
 pcols = st.columns(4)
 for i, (val, lab) in enumerate(zip(presets, preset_labels)):
-    if pcols[i % 4].button(lab, key=f"xl_p_{i}", use_container_width=True):
+    if pcols[i % 4].button(lab, key=f"p_a_{i}", use_container_width=True):
         st.session_state["xl_input"] = str(val)
 
 raw = st.text_input(

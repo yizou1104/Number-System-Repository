@@ -478,7 +478,7 @@ with left_col:
         st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
         cols = st.columns(4)
         for i, val in enumerate(presets):
-            if cols[i % 4].button(val, key=f"bab_p_{i}", use_container_width=True):
+            if cols[i % 4].button(val, key=f"p_a_{i}", use_container_width=True):
                 st.session_state["bab_arabic_input"] = val
 
         st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
@@ -498,7 +498,7 @@ with left_col:
         st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
         cols = st.columns(2)
         for i, val in enumerate(presets):
-            if cols[i % 2].button(val, key=f"bab_rp_{i}", use_container_width=True):
+            if cols[i % 2].button(val, key=f"p_b_{i}", use_container_width=True):
                 st.session_state["bab_word_input"] = val
         st.markdown("""
 <div class="conv-caption" style="margin-top:.2rem">

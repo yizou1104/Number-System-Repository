@@ -123,13 +123,16 @@ st.markdown("""
     <div class="ling-ex-line"><span class="num">21</span><span class="word">ishirini na moja</span><span class="gloss">20 + 1</span></div>
     <div class="ling-ex-line"><span class="num">32</span><span class="word">thelathini na mbili</span><span class="gloss">30 + 2</span></div>
     <div class="ling-ex-line"><span class="num">105</span><span class="word">mia moja na tano</span><span class="gloss">100 + 5</span></div>
-    <div class="ling-ex-line"><span class="num">1,234</span><span class="word">elfu moja mia mbili thelathini na nne</span></div>
+    <div class="ling-ex-line"><span class="num">650</span><span class="word">mia sita na hamsini</span><span class="gloss">600 + 50</span></div>
 </div>
 """, unsafe_allow_html=True)
 
 st.markdown("""
 <div class="ling-info">
-    <p><em>Na</em> appears before the final unit component. In longer compounds, the higher magnitude components are juxtaposed directly (no connector), and only the last addition uses <em>na</em>.</p>
+    <p><em>Na</em> 'and' joins each part to the next, including the hundreds to the tens:
+    <em>shilingi mia moja na arobaini</em> '140 shillings' and <em>mia sita na hamsini</em>
+    '650', in the Peace Corps handbook <em>Tanzanian Swahili</em> (Hawkinson 1979). The
+    converter joins every part this way.</p>
 </div>
 """, unsafe_allow_html=True)
 

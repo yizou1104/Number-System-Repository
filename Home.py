@@ -264,8 +264,8 @@ st.markdown("""
         <span class="nsr-chip">Linguistics</span>
         <span class="nsr-chip">Olympiad Problems</span>
         <span class="nsr-chip">Comparative</span>
-        <span class="nsr-chip">23 Languages</span>
-        <span class="nsr-chip">7 Families</span>
+        <span class="nsr-chip">27 Languages</span>
+        <span class="nsr-chip">8 Families</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -373,7 +373,7 @@ st.markdown("""
 
 <div class="nsr-family-heading">
     <span class="nsr-family-name">Indo-Aryan &amp; Dravidian</span>
-    <span class="nsr-family-count">3 languages</span>
+    <span class="nsr-family-count">5 languages</span>
 </div>
 <div class="nsr-lang-tiles">
     <a class="nsr-tile" href="/Hindi_Converter" target="_self">
@@ -389,6 +389,28 @@ st.markdown("""
     <a class="nsr-tile" href="/Tamil_Converter" target="_self">
         <div class="nsr-tile-name">Tamil</div>
         <div class="nsr-tile-meta">Dravidian · Decimal</div>
+        <div class="nsr-tile-arrow">→</div>
+    </a>
+    <a class="nsr-tile" href="/Tulu_Converter" target="_self">
+        <div class="nsr-tile-name">Tulu</div>
+        <div class="nsr-tile-meta">Dravidian · Decimal</div>
+        <div class="nsr-tile-arrow">→</div>
+    </a>
+    <a class="nsr-tile" href="/Koraga_Converter" target="_self">
+        <div class="nsr-tile-name">Koraga</div>
+        <div class="nsr-tile-meta">Dravidian · Recorded forms only</div>
+        <div class="nsr-tile-arrow">→</div>
+    </a>
+</div>
+
+<div class="nsr-family-heading">
+    <span class="nsr-family-name">Celtic — Europe</span>
+    <span class="nsr-family-count">1 language</span>
+</div>
+<div class="nsr-lang-tiles" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">
+    <a class="nsr-tile" href="/Breton_Converter" target="_self">
+        <div class="nsr-tile-name">Breton</div>
+        <div class="nsr-tile-meta">Celtic · Vigesimal</div>
         <div class="nsr-tile-arrow">→</div>
     </a>
 </div>
@@ -427,7 +449,7 @@ st.markdown('<div class="nsr-section-label">Other Systems</div>', unsafe_allow_h
 st.markdown("""
 <div class="nsr-family-heading">
     <span class="nsr-family-name">Independent Systems</span>
-    <span class="nsr-family-count">3 languages</span>
+    <span class="nsr-family-count">4 languages</span>
 </div>
 <div class="nsr-lang-tiles">
     <a class="nsr-tile" href="/Basque_Converter" target="_self">
@@ -443,6 +465,11 @@ st.markdown("""
     <a class="nsr-tile" href="/Oksapmin_Converter" target="_self">
         <div class="nsr-tile-name">Oksapmin</div>
         <div class="nsr-tile-meta">Trans New Guinea isolate · Body tally</div>
+        <div class="nsr-tile-arrow">→</div>
+    </a>
+    <a class="nsr-tile" href="/Ngkolmpu_Converter" target="_self">
+        <div class="nsr-tile-name">Ngkolmpu</div>
+        <div class="nsr-tile-meta">Yam family, New Guinea · Senary</div>
         <div class="nsr-tile-arrow">→</div>
     </a>
 </div>

@@ -48,7 +48,6 @@ div[data-testid="stRadio"] label p{font-family:'DM Sans',sans-serif!important;fo
 .conv-error-text{font-family:'Crimson Pro',Georgia,serif;font-size:1rem;color:var(--accent);font-style:italic;margin:0}
 .conv-empty-state{font-family:'Crimson Pro',Georgia,serif;font-style:italic;color:var(--ink-faint);padding:1.1rem 0}
 .conv-caption{font-family:'DM Sans',sans-serif;font-size:.75rem;color:var(--ink-faint);line-height:1.55;margin-top:1rem}
-div[class*="st-key-ok_rp_"] .stButton>button,div[class*="st-key-ok_rp_"] .stButton>button p{text-transform:none!important;font-family:'DM Mono','Courier New',monospace!important;letter-spacing:0!important}
 .ok-form{font-family:'DM Mono','Courier New',monospace;font-size:1.25rem;color:var(--ink)}
 .ok-mono{font-family:'DM Mono','Courier New',monospace;font-size:.95rem;color:var(--ink)}
 .ok-figure{background:var(--card-bg);border:1px solid var(--card-border);border-radius:6px;padding:.6rem .8rem .2rem;margin-top:.8rem}
@@ -138,7 +137,7 @@ with left_col:
         st.markdown('<p class="conv-presets-sublabel">Click a value to load it</p>', unsafe_allow_html=True)
         cols = st.columns(4)
         for i, num in enumerate(presets):
-            if cols[i % 4].button(str(num), key=f"ok_p_{i}", use_container_width=True):
+            if cols[i % 4].button(str(num), key=f"p_a_{i}", use_container_width=True):
                 st.session_state["ok_arabic_input"] = str(num)
 
         st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)
@@ -159,7 +158,7 @@ with left_col:
         st.markdown('<p class="conv-presets-sublabel">Click a form to load it</p>', unsafe_allow_html=True)
         cols = st.columns(2)
         for i, form in enumerate(presets):
-            if cols[i % 2].button(form, key=f"ok_rp_{i}", use_container_width=True):
+            if cols[i % 2].button(form, key=f"p_b_{i}", use_container_width=True):
                 st.session_state["ok_word_input"] = form
 
         st.markdown('<div class="conv-section-label">Convert</div>', unsafe_allow_html=True)

@@ -3,7 +3,8 @@ numerals.py — Production numeral converter for Inuktitut, Yupik, Quechua.
 
 Research basis:
   Inuktitut : Dorais (2010), Spalding (1998 Nunavut dict), Tusaalanga
-  Yupik     : Jacobson (1984/2012 ANLC), Miyaoka (2012)
+  Yupik     : Jacobson (2012 ANLC dictionary); Chan's database (Kaplan 2007,
+              from Jacobson 1995; Rubino & Charles 1999)
   Quechua   : Parker (1969), Cerrón-Palomino (1987), Soto Ruiz (1976)
 
 Confidence tiers are marked per language — see research_notes.md.
@@ -219,13 +220,21 @@ def inuktitut_to_number(text: str) -> int:
 
 # ══════════════════════════════════════════════════════════════════════════════
 # YUPIK (Central Alaskan Yup'ik / Yugtun)
-# Base-20 with 5/10/15 sub-pivots.  Subtractive form for 9.
-# Sources: Jacobson (1984/2012), Miyaoka (2012) — HIGH confidence.
-# Implemented range: 0–400 (20² = one full vigesimal cycle).
+# Base 20, with 10 and 15 inside each twenty. 9, 14 and 19 are 'not quite'
+# forms of the next pivot (qulngunritaraan 'not quite ten').
+# Source: Jacobson, Yup'ik Eskimo Dictionary, 2nd ed. (ANLC 2012), Appendix 6
+# and the numeral entries; Kaplan's list in Chan's database (from Jacobson
+# 1995) for 60-100 and the qula-based teens.
+# Implemented range: 1-199 and 400. No source gives multiples of twenty from
+# ten twenties up, and a two-word multiplier would make forms ambiguous
+# (yuinaat qula atauciq: 201 or 220?). No word for zero is recorded.
 # ══════════════════════════════════════════════════════════════════════════════
 
-# Core verified atoms
-_YU_ATOMS: dict[int, str] = {
+YU_MAX = 199
+YU_FOUR_HUNDRED = 400
+
+# Standalone forms, Jacobson (2012) Appendix 6
+_YU_UNITS: dict[int, str] = {
     1:  "atauciq",
     2:  "malruk",
     3:  "pingayun",
@@ -234,154 +243,282 @@ _YU_ATOMS: dict[int, str] = {
     6:  "arvinlegen",
     7:  "malrunlegen",
     8:  "pingayunlegen",
-    9:  "qulngunritaraan",   # subtractive "almost ten" — Jacobson primary form
+    9:  "qulngunritaraan",
     10: "qula",
-    15: "akimiaq",           # lexicalized pivot
-    20: "yuinaq",
+    11: "qula atauciq",
+    12: "qula malruk",
+    13: "qula pingayun",
+    14: "akimiarunritaraan",
+    15: "akimiaq",
+    16: "akimiaq atauciq",
+    17: "akimiaq malruk",
+    18: "akimiaq pingayun",
+    19: "yuinaunritaraan",
 }
 
+# Inside a larger number the appendix uses other forms for 9, 14 and 19:
+# 29 yuinaq qulngunrita'ar, 34 yuinaq qula cetaman, 39 yuinaq akimiaq cetaman.
+_YU_IN_COMPOUND: dict[int, str] = {
+    9:  "qulngunrita'ar",
+    14: "qula cetaman",
+    19: "akimiaq cetaman",
+}
 
-def _yu_1_to_19(n: int) -> str:
-    """Return Yup'ik word(s) for 1–19."""
-    assert 1 <= n <= 19
-    if n in _YU_ATOMS:
-        return _YU_ATOMS[n]
-    # 11–14: qula + unit
-    if 11 <= n <= 14:
-        return f"qula {_YU_ATOMS[n - 10]}"
-    # 16–19: akimiaq + unit
-    if 16 <= n <= 19:
-        return f"akimiaq {_YU_ATOMS[n - 15]}"
-    raise AssertionError(f"Unreachable: {n}")
+# Each multiple of twenty: yuinaak (dual) for two twenties, yuinaat (plural)
+# from three. Jacobson's appendix prints 60 as yuinaak pingayun, but Kaplan's
+# list and the dictionary's own example (KIP 1998:319) have yuinaat pingayun.
+_YU_TWENTIES: dict[int, str] = {
+    2: "yuinaak malruk",
+    3: "yuinaat pingayun",
+    4: "yuinaat cetaman",
+    5: "yuinaat talliman",
+    6: "yuinaat arvinlegen",
+    7: "yuinaat malrunlegen",
+    8: "yuinaat pingayunlegen",
+    9: "yuinaat qulngunritaraan",
+}
+
+_YU_400 = "yuinaam yuum ipia"
+
+_QULA_NOTE = ("built on ten, as in Rubino and Charles (1999) and in Kaplan's "
+              "list from Jacobson (1995), both in Chan's database")
+_SPELLING = "variant spelling (Jacobson 2012)"
+
+# Recorded alternatives for a number said on its own
+_YU_ALT_ALONE: dict[int, list[tuple[str, str]]] = {
+    6:  [("arvinelgen", _SPELLING)],
+    7:  [("malrunelgen", _SPELLING)],
+    8:  [("pingayunelgen", _SPELLING),
+         ("inglulgen", "Bristol Bay, Nushagak River, Lake Iliamna and Egegik (Jacobson 2012)")],
+    9:  [("qulngunrita'ar", "the form used when counting aloud (Jacobson 2012)")],
+    10: [("qulen", "variant of qula (Jacobson 2012)")],
+    14: [("akimiarunrita'ar", "variant (Jacobson 2012)"), ("qula cetaman", _QULA_NOTE)],
+    15: [("qula talliman", _QULA_NOTE)],
+    16: [("qula arvinlegen", _QULA_NOTE)],
+    17: [("qula malrunlegen", _QULA_NOTE)],
+    18: [("qula pingayunlegen", _QULA_NOTE)],
+    19: [("yuinaunrita'ar", "variant (Jacobson 2012)"), ("qula qulngunritaraan", _QULA_NOTE)],
+}
+
+# Recorded alternatives for the remainder inside a larger number
+_YU_ALT_INSIDE: dict[int, list[tuple[str, str]]] = {
+    6:  _YU_ALT_ALONE[6],
+    7:  _YU_ALT_ALONE[7],
+    8:  _YU_ALT_ALONE[8],
+    9:  [("qulngunritaraan", "as in 29 in Rubino and Charles (1999), in Chan's database")],
+    10: [("qulen", "as in 50, yuinaak malruk qulen (Jacobson 2012)")],
+}
+
+_IPIAQ_NOTE = "ipiaq 'unit of twenty', used from 40 on (Jacobson 2012)"
 
 
-def number_to_yupik(n: int) -> str:
-    """
-    Convert a non-negative integer to Central Alaskan Yup'ik numerals.
-
-    Supported range: 0–400 (complete verified vigesimal cycle).
-    Numbers > 400 raise ValueError.
-    """
+def _yu_check(n: int) -> None:
     if not isinstance(n, int) or isinstance(n, bool):
         raise TypeError(f"Expected int, got {type(n).__name__}")
     if n < 0:
         raise ValueError("Negative numbers are not supported.")
     if n == 0:
-        # Yup'ik: "nallunriamek" / "imkuk" — no standard zero; use descriptor
-        return "imkuk"
-    if n > 400:
         raise ValueError(
-            f"Yup'ik conversion is limited to 1–400 (one full 20² cycle). "
-            f"Forms above 400 are not sufficiently verified."
+            "Jacobson's Yup'ik Eskimo Dictionary records no word for zero, "
+            "so none is given here."
+        )
+    if YU_MAX < n < YU_FOUR_HUNDRED:
+        raise ValueError(
+            f"{n} needs ten or more twenties. The sources give no such "
+            f"multiples apart from 400, and a two-word multiplier would be "
+            f"ambiguous: yuinaat qula atauciq could mean 201 or 220."
+        )
+    if n > YU_FOUR_HUNDRED:
+        raise ValueError(
+            "Above 400 the sources give only scattered forms, such as talliman "
+            "kavluutet 'five hundred' and tiissitsaaq 'one thousand' (a Russian "
+            "loan word), so the converter stops at 400."
         )
 
-    # 1–19: handled by helper
-    if 1 <= n <= 19:
-        return _yu_1_to_19(n)
 
-    # 20: yuinaq
-    if n == 20:
-        return "yuinaq"
+def _yu_remainder(r: int) -> str:
+    return _YU_IN_COMPOUND.get(r, _YU_UNITS[r])
 
-    # 21–39: yuinaq + unit
-    if 21 <= n <= 39:
-        return f"yuinaq {_yu_1_to_19(n - 20)}"
 
-    # 40–400: [multiplier] yuinaak [+ remainder]
-    # yuinaak = combining form of yuinaq for multiples
-    if 40 <= n <= 400:
-        scores = n // 20
-        remainder = n % 20
-        # scores can be 2–20; _yu_1_to_19 handles 1–19; 20=yuinaq
-        if scores == 20:
-            mult_word = "yuinaq"
-        else:
-            mult_word = _yu_1_to_19(scores)
-        base = f"yuinaak {mult_word}"
-        if remainder == 0:
-            return base
-        return f"{base} {_yu_1_to_19(remainder)}"
+def number_to_yupik(n: int) -> str:
+    """Central Alaskan Yup'ik for 1-199 and 400 (Jacobson 2012)."""
+    _yu_check(n)
+    if n == YU_FOUR_HUNDRED:
+        return _YU_400
+    if n < 20:
+        return _YU_UNITS[n]
+    scores, r = divmod(n, 20)
+    head = "yuinaq" if scores == 1 else _YU_TWENTIES[scores]
+    return head if r == 0 else f"{head} {_yu_remainder(r)}"
 
-    raise ValueError(f"Cannot convert {n} to Yup'ik.")
+
+def yupik_literal(n: int) -> str:
+    """Word-for-word reading, e.g. 37 -> 'twenty + fifteen + two'. Empty for 400,
+    which Jacobson records without a gloss."""
+    _yu_check(n)
+    if n == YU_FOUR_HUNDRED:
+        return ""
+    words = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five",
+             6: "six ('crossing over' to the other hand)", 7: "seven", 8: "eight",
+             9: "not quite ten", 10: "ten", 14: "not quite fifteen",
+             15: "fifteen", 19: "not quite twenty"}
+
+    def part(r: int, inside: bool) -> str:
+        if inside and r == 6:
+            return "six"
+        if inside and r == 14:
+            return "ten + four"
+        if inside and r == 19:
+            return "fifteen + four"
+        if r in words:
+            return words[r]
+        return f"ten + {words[r - 10]}" if r < 15 else f"fifteen + {words[r - 15]}"
+
+    if n < 20:
+        return part(n, False)
+    scores, r = divmod(n, 20)
+    if scores == 1:
+        head = "twenty"
+    elif scores == 9:
+        head = "nine ('not quite ten') twenties"
+    else:
+        head = f"{words[scores].split(' (')[0]} twenties"
+    return head if r == 0 else f"{head} + {part(r, True)}"
+
+
+def yupik_alternatives(n: int) -> list[tuple[str, str]]:
+    """Recorded alternatives to the main form, each with its source."""
+    _yu_check(n)
+    main = number_to_yupik(n)
+    out: list[tuple[str, str]] = []
+
+    def add(form: str, note: str) -> None:
+        if form != main and form not in [f for f, _ in out]:
+            out.append((form, note))
+
+    if n == YU_FOUR_HUNDRED:
+        add("yuinaat yuinaat", "'twenty twenties', in a text quoted by Jacobson (2012)")
+        return out
+    if n < 20:
+        for form, note in _YU_ALT_ALONE.get(n, []):
+            add(form, note)
+        return out
+    scores, r = divmod(n, 20)
+    head = "yuinaq" if scores == 1 else _YU_TWENTIES[scores]
+    tail = "" if r == 0 else _yu_remainder(r)
+    join = (lambda h, t: f"{h} {t}".strip())
+    for form, note in _YU_ALT_INSIDE.get(r, []):
+        add(join(head, form), note)
+    if scores >= 2:
+        stem = _YU_UNITS[scores]
+        if scores == 3:
+            add(join("yuinaak pingayun", tail), "as printed in Jacobson's numeral appendix (2012)")
+        add(join(f"{stem} ipiaq", tail), _IPIAQ_NOTE)
+        for form, note in _YU_ALT_ALONE.get(scores, []):
+            if scores in (6, 7, 8):
+                add(join(f"yuinaat {form}", tail), note)
+    if n == 100:
+        add("kavluun", "Lower Yukon and Nunivak (Jacobson 2012)")
+        add("negavaq", "Bristol Bay and Nushagak River (Jacobson 2012)")
+    return out
+
+
+def yupik_alternative_forms(n: int) -> list[str]:
+    """The recorded alternatives as plain strings (used by the page checks)."""
+    return [form for form, _ in yupik_alternatives(n)]
+
+
+def _yu_unit_forms(r: int) -> list[str]:
+    """Every form accepted for 1-19 when reading Yup'ik (a superset of the
+    recorded alternatives, so that a reader's spelling choices combine)."""
+    forms = [_YU_UNITS[r]]
+    forms += [f for f, _ in _YU_ALT_ALONE.get(r, []) + _YU_ALT_INSIDE.get(r, [])]
+    if r in _YU_IN_COMPOUND:
+        forms.append(_YU_IN_COMPOUND[r])
+    tens = ("qula", "qulen")
+    if 11 <= r <= 14:
+        forms += [f"{t} {w}" for t in tens for w in _yu_unit_forms(r - 10)]
+    if 16 <= r <= 18:
+        forms += [f"akimiaq {w}" for w in _yu_unit_forms(r - 15)]
+    if 15 <= r <= 19:
+        forms += [f"{t} {w}" for t in tens for w in _yu_unit_forms(r - 10)]
+    return list(dict.fromkeys(forms))
+
+
+def yupik_forms(n: int) -> list[str]:
+    """Every form accepted for n when reading Yup'ik, main form first."""
+    _yu_check(n)
+    if n == YU_FOUR_HUNDRED:
+        return [_YU_400, "yuinaat yuinaat"]
+    if n < 20:
+        return list(dict.fromkeys([number_to_yupik(n)] + _yu_unit_forms(n)))
+    scores, r = divmod(n, 20)
+    if scores == 1:
+        heads = ["yuinaq"]
+    else:
+        stems = _yu_unit_forms(scores)
+        nouns = ["yuinaak"] if scores == 2 else ["yuinaat"] + (["yuinaak"] if scores == 3 else [])
+        heads = [f"{a} {s}" for a in nouns for s in stems] + [f"{s} ipiaq" for s in stems]
+    if n == 100:
+        heads += ["kavluun", "negavaq"]
+    tails = [""] if r == 0 else _yu_unit_forms(r)
+    return list(dict.fromkeys([number_to_yupik(n)] + [f"{h} {t}".strip() for h in heads for t in tails]))
+
+
+_YU_APOSTROPHES = "\u2019\u02bc\u2018`\u00b4"
+
+
+def _yu_normalise(text: str) -> str:
+    t = text.strip().lower()
+    for a in _YU_APOSTROPHES:
+        t = t.replace(a, "'")
+    t = t.replace("-", " ")
+    return re.sub(r"\s+", " ", t)
+
+
+_YU_READ: dict[str, int] = {}
+for _n in list(range(1, YU_MAX + 1)) + [YU_FOUR_HUNDRED]:
+    for _f in yupik_forms(_n):
+        _k = _yu_normalise(_f)
+        assert _YU_READ.get(_k, _n) == _n, (_f, _YU_READ.get(_k), _n)
+        _YU_READ[_k] = _n
+_YU_WORDS = {w for k in _YU_READ for w in k.split()}
 
 
 def yupik_to_number(text: str) -> int:
-    """
-    Parse a Central Alaskan Yup'ik numeral string to an integer.
-
-    Handles all forms produced by number_to_yupik().
-    Raises ValueError for unrecognised strings.
-    """
-    text = text.strip().lower()
-    if not text:
+    """Read any recorded Central Alaskan Yup'ik form for 1-199 or 400."""
+    t = _yu_normalise(text)
+    if not t:
         raise ValueError("Empty input.")
-
-    if text == "imkuk":
-        return 0
-
-    # Build reverse lookups
-    _atoms_rev: dict[str, int] = {v.lower(): k for k, v in _YU_ATOMS.items()}
-
-    # Add compound 1–19 forms
-    _1_19_rev: dict[str, int] = {}
-    for i in range(1, 20):
-        _1_19_rev[_yu_1_to_19(i).lower()] = i
-
-    # Exact match in 1–19
-    if text in _1_19_rev:
-        return _1_19_rev[text]
-
-    # Exact "yuinaq"
-    if text == "yuinaq":
-        return 20
-
-    # "yuinaq <1–19>" → 20 + unit
-    m = re.fullmatch(r"yuinaq\s+(.+)", text)
-    if m:
-        tail = m.group(1)
-        if tail in _1_19_rev:
-            return 20 + _1_19_rev[tail]
-        raise ValueError(f"Unrecognised unit after 'yuinaq': '{tail}'")
-
-    # "yuinaak <multiplier>" or "yuinaak <multiplier> <remainder>"
-    # multiplier can be 1–19 (via _1_19_rev) or "yuinaq" (=20 scores = 400)
-    if text.startswith("yuinaak "):
-        tail = text[len("yuinaak"):].strip()
-
-        # Special case: yuinaak yuinaq = 400
-        if tail == "yuinaq":
-            return 400
-        if tail.startswith("yuinaq "):
-            # yuinaak yuinaq <remainder> — would be 400+x but we cap at 400
-            raise ValueError(
-                f"Yup'ik values above 400 are not supported: '{text}'"
-            )
-
-        # Try to extract multiplier (possibly 2-word like "qula atauciq")
-        # Strategy: greedily match known 1–19 forms from the start of the tail
-        mult = None
-        remainder_str = ""
-        for length in [3, 2, 1]:  # word counts to try
-            candidate = " ".join(tail.split()[:length])
-            rest = " ".join(tail.split()[length:])
-            if candidate in _1_19_rev:
-                mult = _1_19_rev[candidate]
-                remainder_str = rest
-                break
-        if mult is None:
-            raise ValueError(f"Cannot parse multiplier in Yup'ik: '{tail}'")
-        base_val = mult * 20
-        if not remainder_str:
-            return base_val
-        if remainder_str in _1_19_rev:
-            return base_val + _1_19_rev[remainder_str]
+    if t in _YU_READ:
+        return _YU_READ[t]
+    if t in ("imkuk",):
         raise ValueError(
-            f"Cannot parse remainder in Yup'ik: '{remainder_str}'"
+            "imkuk is a demonstrative ('those two'), not a numeral; "
+            "Jacobson records no Yup'ik word for zero."
         )
-
+    if "kavluutet" in t:
+        raise ValueError(
+            "kavluutet is the plural of kavluun 'one hundred' (talliman kavluutet "
+            "'five hundred'); counts of hundreds are beyond the converter's range."
+        )
+    if t.startswith("tiis") or t.startswith("tiic"):
+        raise ValueError(
+            "tiissitsaaq 'one thousand' (a Russian loan word) is beyond the "
+            "converter's range of 1-199 and 400."
+        )
+    unknown = [w for w in t.split() if w not in _YU_WORDS]
+    if unknown:
+        import difflib
+        hints = []
+        for w in unknown:
+            close = difflib.get_close_matches(w, sorted(_YU_WORDS), n=1, cutoff=0.75)
+            hints.append(f"'{w}'" + (f" (did you mean '{close[0]}'?)" if close else ""))
+        raise ValueError("Not a recorded Yup'ik numeral word: " + ", ".join(hints) + ".")
     raise ValueError(
-        f"Cannot parse Yup'ik numeral: '{text}'. "
-        f"Only forms produced by number_to_yupik() (range 0–400) are supported."
+        f"'{text.strip()}' uses Yup'ik numeral words, but not in a combination "
+        f"the sources record. Multiples of twenty come first (yuinaq, "
+        f"yuinaak malruk, yuinaat pingayun ...), then the remainder."
     )
 
 
@@ -434,7 +571,9 @@ def number_to_quechua(n: int) -> str:
             "Quechua conversion is limited to 0–9999."
         )
     if n == 0:
-        return "ch'usaq"   # "empty" — the accepted zero equivalent
+        # 'empty'; Ayacucho spelling of Cusco ch'usaq (AMLQ 2005), the word for 0
+        # in the University of Texas Quechua Tinkuy course
+        return "chusaq"
 
     parts: list[str] = []
 
@@ -482,7 +621,7 @@ def quechua_to_number(text: str) -> int:
     if not text:
         raise ValueError("Empty input.")
 
-    if text == "ch'usaq":
+    if text in ("chusaq", "ch'usaq", "ch’usaq"):
         return 0
 
     # Build reverse maps

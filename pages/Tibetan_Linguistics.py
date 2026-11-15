@@ -110,7 +110,7 @@ st.markdown('<div class="ling-subsection-title" style="margin-top:1.5rem">Higher
 
 st.table({
     "Value":     ["100","1,000","10,000","100,000"],
-    "Script":    ["བརྒྱ་","སྟོང་","ཁྲི་","འབུམ"],
+    "Script":    ["བརྒྱ་","སྟོང་","ཁྲི་","འབུམ་"],
     "Romanized": ["gya","tong","thri","bum"],
     "Structure": ["independent unit","independent unit","independent 10⁴","independent 10⁵"],
 })

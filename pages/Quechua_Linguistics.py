@@ -64,14 +64,17 @@ st.markdown('<div class="ling-section-title">Basic Digits (1–10)</div>', unsaf
 st.table({
     "Number": ["0","1","2","3","4","5","6","7","8","9","10"],
     "Form": [
-        "cero","huk","iskay","kimsa","tawa","pichqa",
+        "chusaq","huk","iskay","kimsa","tawa","pichqa",
         "suqta","qanchis","pusaq","isqun","chunka"
     ]
 })
 
 st.markdown("""
 <div class="ling-info">
-    <p>Zero (<em>cero</em>) is a Spanish loan; there is no indigenous pre-contact term.</p>
+    <p>For 0 the converter uses <em>chusaq</em>, 'empty, nothing': the Ayacucho spelling of
+    Cusco <em>ch'usaq</em>, as the Academia Mayor de la Lengua Quechua's dictionary
+    (2005) gives it. <em>Ch'usaq</em> is the word for 0 in the University of Texas's
+    Quechua Tinkuy course; both spellings are accepted.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -162,7 +165,7 @@ st.markdown("""
 st.markdown("""
 <div class="ling-examples">
     <div class="ling-examples-label">Example</div>
-    <div class="ling-ex-line"><span class="num">256</span><span class="word">iskay pachak pichqa chunka suqta</span></div>
+    <div class="ling-ex-line"><span class="num">256</span><span class="word">iskay pachak pichqa chunka suqtayuq</span></div>
 </div>
 """, unsafe_allow_html=True)
 

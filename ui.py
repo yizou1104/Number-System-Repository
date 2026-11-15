@@ -9,6 +9,7 @@ LANG_PAGES_CONV = {
     "Babylonian":    "pages/Babylonian_Converter.py",
     "Basque":        "pages/Basque_Converter.py",
     "Bengali":       "pages/Bengali_Converter.py",
+    "Breton":        "pages/Breton_Converter.py",
     "Chinese":       "pages/Chinese_Converter.py",
     "Esperanto":     "pages/Esperanto_Converter.py",
     "Greek":         "pages/Greek_Converter.py",
@@ -18,7 +19,9 @@ LANG_PAGES_CONV = {
     "Igbo":          "pages/Igbo_Converter.py",
     "Inuktitut":     "pages/Inuktitut_Converter.py",
     "Klingon":       "pages/Klingon_Converter.py",
+    "Koraga":        "pages/Koraga_Converter.py",
     "Maya":          "pages/Maya_Converter.py",
+    "Ngkolmpu":      "pages/Ngkolmpu_Converter.py",
     "Oksapmin":      "pages/Oksapmin_Converter.py",
     "Quechua":       "pages/Quechua_Converter.py",
     "Roman":         "pages/Roman_Converter.py",
@@ -26,6 +29,7 @@ LANG_PAGES_CONV = {
     "Tamil":         "pages/Tamil_Converter.py",
     "Thai":          "pages/Thai_Converter.py",
     "Tibetan":       "pages/Tibetan_Converter.py",
+    "Tulu":          "pages/Tulu_Converter.py",
     "Yoruba":        "pages/Yoruba_Converter.py",
     "Yupik":         "pages/Yupik_Converter.py",
 }
@@ -35,6 +39,7 @@ LANG_PAGES_LING = {
     "Babylonian":    "pages/Babylonian_Linguistics.py",
     "Basque":        "pages/Basque_Linguistics.py",
     "Bengali":       "pages/Bengali_Linguistics.py",
+    "Breton":        "pages/Breton_Linguistics.py",
     "Chinese":       "pages/Chinese_Linguistics.py",
     "Esperanto":     "pages/Esperanto_Linguistics.py",
     "Greek":         "pages/Greek_Linguistics.py",
@@ -44,7 +49,9 @@ LANG_PAGES_LING = {
     "Igbo":          "pages/Igbo_Linguistics.py",
     "Inuktitut":     "pages/Inuktitut_Linguistics.py",
     "Klingon":       "pages/Klingon_Linguistics.py",
+    "Koraga":        "pages/Koraga_Linguistics.py",
     "Maya":          "pages/Maya_Linguistics.py",
+    "Ngkolmpu":      "pages/Ngkolmpu_Linguistics.py",
     "Oksapmin":      "pages/Oksapmin_Linguistics.py",
     "Quechua":       "pages/Quechua_Linguistics.py",
     "Roman":         "pages/Roman_Linguistics.py",
@@ -52,6 +59,7 @@ LANG_PAGES_LING = {
     "Tamil":         "pages/Tamil_Linguistics.py",
     "Thai":          "pages/Thai_Linguistics.py",
     "Tibetan":       "pages/Tibetan_Linguistics.py",
+    "Tulu":          "pages/Tulu_Linguistics.py",
     "Yoruba":        "pages/Yoruba_Linguistics.py",
     "Yupik":         "pages/Yupik_Linguistics.py",
 }
@@ -645,6 +653,78 @@ NAV_CARD_CSS = """
 """
 
 
+# ── PRESET VALUE TILE CSS ─────────────────────────────────────
+PRESET_TILE_CSS = """
+<style>
+/* ── PRESET VALUE TILES ──
+   Preset buttons carry numeral *values*, not UI verbs, so they drop the dark
+   uppercase chip styling for the card treatment used elsewhere on the site.
+   Streamlit 1.57 stamps `st-key-<key>` on the element container, and every
+   page with presets keys them p_a_<i> / p_b_<i> — a stable central hook.
+   Kept apart from CONV_CSS_ADDITIONS so non-converter pages can load it. */
+div[class*="st-key-p_a_"] .stButton > button,
+div[class*="st-key-p_b_"] .stButton > button {
+    position: relative;
+    overflow: hidden;
+    min-height: 62px;
+    padding: .85rem .6rem !important;
+    background: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 6px !important;
+    box-shadow:
+        0 1px 3px rgba(26,22,18,.05),
+        0 4px 14px rgba(26,22,18,.04),
+        inset 0 1px 0 rgba(255,255,255,.7) !important;
+    transition: all .22s cubic-bezier(.4,0,.2,1) !important;
+}
+/* The label is wrapped in a <p>, which picks up the global body-text rule */
+div[class*="st-key-p_a_"] .stButton > button,
+div[class*="st-key-p_b_"] .stButton > button,
+div[class*="st-key-p_a_"] .stButton > button p,
+div[class*="st-key-p_b_"] .stButton > button p {
+    font-family: 'Crimson Pro', Georgia, serif !important;
+    font-size: 1.35rem !important;
+    font-weight: 600 !important;
+    color: var(--ink) !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    line-height: 1.25 !important;
+    word-break: break-word;
+    margin: 0 !important;
+}
+div[class*="st-key-p_a_"] .stButton > button::before,
+div[class*="st-key-p_b_"] .stButton > button::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 0;
+    background: var(--accent);
+    border-radius: 6px 0 0 6px;
+    transition: width .22s cubic-bezier(.4,0,.2,1);
+}
+div[class*="st-key-p_a_"] .stButton > button:hover::before,
+div[class*="st-key-p_b_"] .stButton > button:hover::before { width: 3px; }
+div[class*="st-key-p_a_"] .stButton > button:hover,
+div[class*="st-key-p_b_"] .stButton > button:hover {
+    transform: translateY(-2px) !important;
+    background: rgba(255,255,255,.98) !important;
+    border-color: rgba(26,22,18,.17) !important;
+    box-shadow: 0 6px 20px rgba(26,22,18,.10) !important;
+}
+div[class*="st-key-p_a_"] .stButton > button:active,
+div[class*="st-key-p_b_"] .stButton > button:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 1px 3px rgba(26,22,18,.06), inset 0 1px 2px rgba(26,22,18,.05) !important;
+}
+div[class*="st-key-p_a_"] .stButton > button:focus-visible,
+div[class*="st-key-p_b_"] .stButton > button:focus-visible {
+    border-color: var(--accent) !important;
+    box-shadow: 0 1px 3px rgba(26,22,18,.05), 0 0 0 3px var(--accent-glow) !important;
+    outline: none !important;
+}
+</style>
+"""
+
+
 # ── CONVERTER CSS ADDITIONS (appended by each converter page) ─
 CONV_CSS_ADDITIONS = """
 <style>
@@ -712,73 +792,8 @@ CONV_CSS_ADDITIONS = """
 }
 .conv-error-card { min-height: 340px; display: flex; align-items: center; justify-content: center; }
 .conv-error-text { font-size: 1.2rem !important; text-align: center; }
-
-/* ── PRESET VALUE TILES ──
-   Preset buttons carry numeral *values*, not UI verbs, so they drop the dark
-   uppercase chip styling for the card treatment used elsewhere on the site.
-   Streamlit 1.57 stamps `st-key-<key>` on the element container, and every
-   converter keys its presets p_a_<i> / p_b_<i> — a stable central hook. */
-div[class*="st-key-p_a_"] .stButton > button,
-div[class*="st-key-p_b_"] .stButton > button {
-    position: relative;
-    overflow: hidden;
-    min-height: 62px;
-    padding: .85rem .6rem !important;
-    background: var(--card-bg) !important;
-    border: 1px solid var(--card-border) !important;
-    border-radius: 6px !important;
-    box-shadow:
-        0 1px 3px rgba(26,22,18,.05),
-        0 4px 14px rgba(26,22,18,.04),
-        inset 0 1px 0 rgba(255,255,255,.7) !important;
-    transition: all .22s cubic-bezier(.4,0,.2,1) !important;
-}
-/* The label is wrapped in a <p>, which picks up the global body-text rule */
-div[class*="st-key-p_a_"] .stButton > button,
-div[class*="st-key-p_b_"] .stButton > button,
-div[class*="st-key-p_a_"] .stButton > button p,
-div[class*="st-key-p_b_"] .stButton > button p {
-    font-family: 'Crimson Pro', Georgia, serif !important;
-    font-size: 1.35rem !important;
-    font-weight: 600 !important;
-    color: var(--ink) !important;
-    text-transform: none !important;
-    letter-spacing: normal !important;
-    line-height: 1.25 !important;
-    word-break: break-word;
-    margin: 0 !important;
-}
-div[class*="st-key-p_a_"] .stButton > button::before,
-div[class*="st-key-p_b_"] .stButton > button::before {
-    content: '';
-    position: absolute; left: 0; top: 0; bottom: 0;
-    width: 0;
-    background: var(--accent);
-    border-radius: 6px 0 0 6px;
-    transition: width .22s cubic-bezier(.4,0,.2,1);
-}
-div[class*="st-key-p_a_"] .stButton > button:hover::before,
-div[class*="st-key-p_b_"] .stButton > button:hover::before { width: 3px; }
-div[class*="st-key-p_a_"] .stButton > button:hover,
-div[class*="st-key-p_b_"] .stButton > button:hover {
-    transform: translateY(-2px) !important;
-    background: rgba(255,255,255,.98) !important;
-    border-color: rgba(26,22,18,.17) !important;
-    box-shadow: 0 6px 20px rgba(26,22,18,.10) !important;
-}
-div[class*="st-key-p_a_"] .stButton > button:active,
-div[class*="st-key-p_b_"] .stButton > button:active {
-    transform: translateY(0) !important;
-    box-shadow: 0 1px 3px rgba(26,22,18,.06), inset 0 1px 2px rgba(26,22,18,.05) !important;
-}
-div[class*="st-key-p_a_"] .stButton > button:focus-visible,
-div[class*="st-key-p_b_"] .stButton > button:focus-visible {
-    border-color: var(--accent) !important;
-    box-shadow: 0 1px 3px rgba(26,22,18,.05), 0 0 0 3px var(--accent-glow) !important;
-    outline: none !important;
-}
 </style>
-""" + SECTION_BAR_CSS
+""" + PRESET_TILE_CSS + SECTION_BAR_CSS
 
 # ── LINGUISTICS PAGE WIDTH CSS ────────────────────────────────
 LING_WIDTH_CSS = """

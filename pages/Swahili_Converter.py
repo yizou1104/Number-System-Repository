@@ -19,7 +19,8 @@ from ui import apply_global_styles, language_nav, CONV_CSS_ADDITIONS, footer_nav
 # (could be 10,001 or 11,000). This converter uses the greedy
 # convention: the elfu multiplier is read in full first, so
 # "elfu kumi na moja" = 11,000. Numbers like 10,001 produce
-# the same string and are documented as such.
+# the same string; swahili_readings() lists every reading and the
+# page shows them under the result.
 #
 # Sources: Ashton (1944) "Swahili Grammar", Perrot "Teach Yourself
 #          Swahili", omniglot.com/language/numbers/swahili.htm
@@ -91,12 +92,12 @@ def _parse_sub_hundred(tokens: list[str]) -> tuple[int, list[str]]:
     if tokens[0] in _TENS_REV:
         val = _TENS_REV[tokens[0]] * 10
         rest = tokens[1:]
-        if len(rest) >= 2 and rest[0] == "na" and rest[1] in _ONES_REV and _ONES_REV[rest[1]] > 0:
+        if len(rest) >= 2 and rest[0] == "na" and rest[1] in _ONES_REV and 0 < _ONES_REV[rest[1]] < 10:
             return val + _ONES_REV[rest[1]], rest[2:]
         return val, rest
     if tokens[0] == "kumi":
         rest = tokens[1:]
-        if len(rest) >= 2 and rest[0] == "na" and rest[1] in _ONES_REV and _ONES_REV[rest[1]] > 0:
+        if len(rest) >= 2 and rest[0] == "na" and rest[1] in _ONES_REV and 0 < _ONES_REV[rest[1]] < 10:
             return 10 + _ONES_REV[rest[1]], rest[2:]
         return 10, rest
     if tokens[0] in _ONES_REV and _ONES_REV[tokens[0]] > 0:
@@ -148,6 +149,65 @@ def swahili_to_number(text: str) -> int:
     if tokens:
         raise ValueError(f"Unexpected tokens: {tokens}")
     return total
+
+
+def _two_digit_parses(tok: list[str], i: int):
+    """Every (value, next index) for 1-99 starting at tok[i]."""
+    if i >= len(tok):
+        return
+    w = tok[i]
+    if w in _ONES_REV and _ONES_REV[w] > 0:
+        yield _ONES_REV[w], i + 1
+    base = 10 if w == "kumi" else (_TENS_REV[w] * 10 if w in _TENS_REV else None)
+    if base and i + 2 < len(tok) and tok[i + 1] == "na" \
+            and tok[i + 2] in _ONES_REV and 0 < _ONES_REV[tok[i + 2]] < 10:
+        yield base + _ONES_REV[tok[i + 2]], i + 3
+    if w in _TENS_REV:
+        yield base, i + 1
+
+
+def _sub_thousand_parses(tok: list[str], i: int):
+    """Every (value, next index) for 1-999 starting at tok[i]."""
+    if i + 1 < len(tok) and tok[i] == "mia" and tok[i + 1] in _ONES_REV \
+            and 0 < _ONES_REV[tok[i + 1]] < 10:
+        h = _ONES_REV[tok[i + 1]] * 100
+        yield h, i + 2
+        if i + 2 < len(tok) and tok[i + 2] == "na":
+            for v, j in _two_digit_parses(tok, i + 3):
+                yield h + v, j
+    yield from _two_digit_parses(tok, i)
+
+
+def swahili_readings(text: str) -> list[int]:
+    """Every value a Swahili numeral string can be read as. Na joins both a
+    unit to its ten and one part to the next, so 'elfu kumi na moja' is
+    11,000 or 10,001."""
+    tok = text.strip().lower().split()
+    found: set[int] = set()
+
+    def rest(i: int, total: int, stage: int) -> None:
+        if i == len(tok):
+            found.add(total)
+            return
+        if stage >= 1 and tok[i] == "na":
+            rest_after_na(i + 1, total, stage)
+            return
+        rest_after_na(i, total, stage)
+
+    def rest_after_na(i: int, total: int, stage: int) -> None:
+        for stage_word, scale, k in (("milioni", 1_000_000, 0), ("elfu", 1_000, 1)):
+            if stage <= k and i < len(tok) and tok[i] == stage_word:
+                for v, j in _sub_thousand_parses(tok, i + 1):
+                    rest(j, total + v * scale, k + 1)
+        if i < len(tok) and tok[i] not in ("milioni", "elfu"):
+            for v, j in _sub_thousand_parses(tok, i):
+                if j == len(tok):
+                    found.add(total + v)
+
+    if tok == ["sifuri"]:
+        return [0]
+    rest_after_na(0, 0, 0)
+    return sorted(found)
 
 
 # ============================================================
@@ -273,16 +333,30 @@ with left_col:
             placeholder="e.g. mia tatu na ishirini na moja", label_visibility="collapsed",
         )
 
+def ambiguity_html(others, lead):
+    """A note under the result when the words have more than one reading."""
+    if not others:
+        return ""
+    vals = ", ".join(f"{v:,}" for v in others)
+    return (f'<div class="conv-caption" style="margin-top:.6rem">Written alone, {lead} '
+            f'{vals}: <em>na</em> joins a unit to its ten as well as one part to the '
+            f'next, so speakers rely on context.</div>')
+
+
 with right_col:
     if direction == "Arabic → Swahili":
         if arabic_input:
             if arabic_input.isdigit():
                 try:
-                    result = number_to_swahili(int(arabic_input))
+                    n = int(arabic_input)
+                    result = number_to_swahili(n)
+                    others = [v for v in swahili_readings(result) if v != n]
+                    note = ambiguity_html(others, "the same words also read as")
                     st.markdown(f"""
                     <div class="conv-result-card">
                         <div class="conv-result-label">Swahili numeral</div>
                         <div class="conv-result-value">{result}</div>
+                        {note}
                     </div>
                     """, unsafe_allow_html=True)
                 except Exception as e:
@@ -300,11 +374,15 @@ with right_col:
     else:
         if swahili_input:
             try:
-                result = str(swahili_to_number(swahili_input))
+                n = swahili_to_number(swahili_input)
+                result = str(n)
+                others = [v for v in swahili_readings(swahili_input) if v != n]
+                note = ambiguity_html(others, "these words can also mean")
                 st.markdown(f"""
                 <div class="conv-result-card">
                     <div class="conv-result-label">Arabic numeral</div>
                     <div class="conv-result-value">{result}</div>
+                    {note}
                 </div>
                 """, unsafe_allow_html=True)
             except Exception as e:

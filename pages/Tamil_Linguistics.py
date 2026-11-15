@@ -121,7 +121,7 @@ st.markdown('<div class="ling-subsection-title" style="margin-top:1.5rem">Higher
 
 st.table({
     "Value":     ["100","1,000","10,000","1,00,000","1,00,00,000"],
-    "Form":      ["நூறு","ஆயிரம்","பத்தாயிரம்","இலட்சம்","கோடி"],
+    "Form":      ["நூறு","ஆயிரம்","பத்து ஆயிரம்","இலட்சம்","கோடி"],
     "Structure": ["Independent hundred","Independent thousand","10 × 1,000","Indic lakh (10⁵)","Indic crore (10⁷)"]
 })
 
